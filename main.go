@@ -8,6 +8,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	//"time"
 
 	"github.com/glycerine/embedr"
 )
@@ -35,6 +36,7 @@ func main() {
 	embedr.InitR()
 	defer embedr.EndR()
 	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
+	embedr.EvalR("require(R.utils)") // for captureOutput()
 	embedr.EvalR("x11()")
 	embedr.EvalR("hist(rnorm(1000))") // worked.
 	vv("done with eval")
@@ -63,18 +65,41 @@ func main() {
 			embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			nextSave++
 		} else {
-			embedr.EvalR(expr)
+			// doesn't work to get back output:
+			//capture := fmt.Sprintf("___cap = captureOutput(%v)", expr)
+			//ev, err := embedr.EvalR(capture)
+			//panicOn(err)
+			//vv("ev = '%#v'", ev)
+			//output, err := embedr.EvalR("___cap")
+			//panicOn(err)
+			//vv("output = '%#v'", output)
 
-			message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"text":"%v"}`, strings.ReplaceAll(cmd, `"`, `\"`))))
-			hub.broadcast <- message
+			ev, err := embedr.EvalR(expr)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+			} else {
+				vv("ev = '%#v'", ev)
+			}
+
+			hub.broadcast <- prepTextMessage(cmd)
+
+			if err != nil {
+				// heh. 100msec sleep prevents websocket from
+				// concatenating our messages... they need prepended lengths of messages!
+				//time.Sleep(100 * time.Millisecond)
+				hub.broadcast <- prepTextMessage(err.Error())
+				//vv("sent error '%v' as text", sending)
+			}
+
+			//message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"text":"%v"}`, strings.ReplaceAll(strOut, `"`, `\"`))))
+			//hub.broadcast <- message
 		}
 
 		if path != "" {
 			log.Println("Reloading browser.")
 			//sendReload()
 
-			message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"image":"%v"}`, path)))
-			hub.broadcast <- message
+			hub.broadcast <- prepImageMessage(path)
 		}
 	}
 
@@ -82,4 +107,24 @@ func main() {
 	hub.broadcast <- message
 
 	select {}
+}
+
+// add length: as prefix, so we can parse 2 messages that get piggy backed.
+func prepTextMessage(msg string) []byte {
+	if msg == "" {
+		return nil
+	}
+	escaped := strings.ReplaceAll(msg, `"`, `\"`)
+	json := fmt.Sprintf(`{"text":"%v"}`, escaped)
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return []byte(lenPrefixedJson)
+}
+
+func prepImageMessage(path string) []byte {
+	if path == "" {
+		return nil
+	}
+	json := fmt.Sprintf(`{"image":"%v"}`, path)
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return []byte(lenPrefixedJson)
 }

@@ -45,15 +45,29 @@ function tryConnectToReload(address) {
     }, 2000);
   };
 
-  conn.onmessage = function(evt) {
-      appendLog(evt.data);
-      
-      // If we uncomment this line, then the page will refresh every time a message is received.
-      //location.reload()
+    conn.onmessage = function(evt) {
+        console.log("onmessage: ", evt.data);
 
-      // After we return from this callback,
-      // the scroll position is moved up from the bottom
-      // where we had set it.
+        // We send length prefixed messages, in case they get concatenated.
+        // Break them up and append them separately here.
+        var remain = evt.data;
+        var colon = remain.indexOf(":")
+        while (colon >= 0) {
+            if (colon > 0) {
+                var len = parseInt(remain.substring(0, colon).trim());
+                var msg = remain.substring(colon+1, colon+1+len);
+                appendLog(msg);
+                remain = remain.substring(colon+2+len);
+                colon = remain.indexOf(":");
+            }
+        }
+      
+        // If we uncomment this line, then the page will refresh every time a message is received.
+        //location.reload()
+        
+        // After we return from this callback,
+        // the scroll position is moved up from the bottom
+        // where we had set it.
   };
 }
 
@@ -66,7 +80,8 @@ function scrollToBottom() {
 //window.onready = scrollToBottom;
 
       
-function appendLog(msg){
+      function appendLog(msg){
+          console.log("msg = ", msg);
     var d  = document.getElementById("log");
     var n  = 1 + (d.children.length -1);
     var n1 = n+1;
