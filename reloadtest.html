@@ -28,23 +28,44 @@ function tryConnectToReload(address) {
   };
 }
 
-function appendLog(msg){
-    var d = document.getElementById("log");
-    var n = 1 + (d.children.length -1)/2;
-    var id = "log_" + n.toString();
+function scrollToBottom() {
+   window.scrollTo(0, document.body.scrollHeight);
+}
+history.scrollRestoration = "manual";
+window.onload = scrollToBottom;
 
+      
+function appendLog(msg){
+    var d  = document.getElementById("log");
+    var n  = 1 + (d.children.length -1);
+    var n1 = n+1;
+    var id  = "log_" + n.toString();
+    var id1 = "log_" + n1.toString();
+
+    var didCode = false;
     const update = JSON.parse(msg)
-    var newstuff = '<br /> ['+ n +'] <div id="' + id + '">';
+    var newstuff = '<br /> ';
     if (update.text) {
-       newstuff += update.text + '<br />'
+        newstuff += '['+ n +'] <div id="' + id + '">' + update.text + '<br />'
+        didCode = true;
     }
     if (update.image) {
-        newstuff += ' <div style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
+        if (didCode) {
+            n = n1;
+            id = id1;
+        }
+        newstuff += ' ['+ n +'] <div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
     }
     newstuff += '</div>'
     d.innerHTML += newstuff
-    var element = document.getElementById(id);
-    element.scrollIntoView();
+    //var element = document.getElementById("END_OF_PAGE");
+    //element.scrollIntoView(true);
+    //element.scrollIntoView(false);
+    //element.scrollIntoView({block: "end", inline:"end"});
+    //window.scrollTo(0, document.body.scrollHeight);
+    //const scrollingElement = (document.scrollingElement || document.body);
+    //scrollingElement.scrollTop = scrollingElement.scrollHeight;
+    scrollToBottom();
 }
 
 try {
@@ -68,7 +89,8 @@ try {
 </head>
 
 <body>
-    <div id="log"><span>Log:</span></div>
+  <div id="log"><span>Log:</span></div>
+  <div id="END_OF_PAGE"> ___________END_OF_PAGE_________ </div>
 </body>
 
 </html>

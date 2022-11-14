@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/glycerine/embedr"
 )
@@ -48,15 +50,29 @@ func main() {
 	log.Println("Reload server started.")
 
 	log.Println("Press Enter to reload the browser!")
+	nextSave := 0
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		expr, err := reader.ReadString('\n')
 		panicOn(err)
 		vv("expr = '%v'", expr)
+		cmd := strings.TrimSpace(expr)
+		path := ""
+		if cmd == "save" {
+			path = fmt.Sprintf("hist_%03d.png", nextSave)
+			embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+			nextSave++
+		} else {
+			embedr.EvalR(expr)
+		}
 
-		log.Println("Reloading browser.")
-		//sendReload()
-		break
+		if path != "" {
+			log.Println("Reloading browser.")
+			//sendReload()
+
+			message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"image":"%v"}`, path)))
+			hub.broadcast <- message
+		}
 	}
 
 	message := bytes.TrimSpace([]byte(`{"image":"hist.png"}`))
