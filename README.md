@@ -19,20 +19,13 @@ design
 * goal: enable saving and pushing R plots to the minibook for
   display
 
-* approach: minibook runs one websocket interface for R code to
-   push code and graphics to. Along side it, minibook also runs a second
-   websocket interface so that it uses to push to subscribed web browsers 
-   each new code/plot addition.
+* approach: mini embeds R to capture commands and notice
+   when plots are made so they can be saved to disk, saved in the archive,
+   and their paths sent to the web client.
+   Simultanieously, mini also runs a websocket interface 
+   that it uses to push to subscribed web browsers 
+   each new code/plot addition for display.
    
-The websocket code for pushing code/graphics from R to a 
-websocket is already written in rmq in Go. It just
-needs to be brought into minibook from rmq.
-
-The rmq server should return the path to the graph on disk,
-so that when we save our R session text file, it can refer
-to those graphs, and perhaps even view them again without
-having to regenerate them.
-
 The websocket code for browser clients already in the repo
 from the golang-reload-browser example.
 
@@ -66,56 +59,49 @@ In R
 savePlot() # writes current plot to Rplot.png or filename=
 ~~~
 
-We can wrap savePlot() to assign a filename,
+We can invoke savePlot() to assign a filename,
 and then send the filename to minibook.
 
 Our minibook may then wish to copy the file
-version for safe keeping into the archive.
+version of plots for safe keeping into the archive.
+
+Since sometimes plots are built up interactively, we
+may want to have a final() command added to R to tell
+mini to consolidate into just the nice finished plot.
 
 how to get the code snippets
 ----------------------------
 
-The simplest thing to do would be to hook
-the ess ctrl-n so that upon execution
-of a line of R code, emacs also (somehow)
-sends the line to the minibook server.
-
-Or we could embed R in Go and have it all in
-one process, so that we get a chance to
+We'll try embedding R in our Go program 'mini',
+and have it all in one process, so that we get a chance to
 see each command that comes through before
-it is passed to R. But we'd prefer that 
-minibook be a separate process so that if
-R crashes it stays serving web clients.
+it is passed to R. 
 
-But still the wrapping of R might help in one
-process, an "upgraded" R that also logs; and
-then still talk to another minibook server?
+This seems vastly better than hacking ESS and
+trying to hook the code evaluation from there.
 
-But minibook should be saving everything to disk,
+Since mini should be saving everything to disk,
 so if we have to restart that shouldn't be
-a problem. Plus we'll know that miniserver is
+a problem. Plus we'll know that mini is
 always up if the wrapped R is running. And
 it is simple that it is all in the place; and
 we cannot miss any commands that way.
 
-Still noodling on this design. 
-
-Having to hack ess/emacs elisp code is not
-much fun; kind of brittle.
-
 Also with wrapping R, the wrapper Go code
 can recognize plot commands automatically,
-and not require anything extra to 
-save them to disk; and log them.
+and not require anything extra complicated to
+always save them to disk; perhaps copying
+them into the archive, and associating them
+with the code.
 
 I'm liking this wrapper idea, simple single
-process idea, more.
+process idea.
 
 We have embedr already working.
 
 ~~~
 import (
-   "github.com/glycerine/embedr" // theoretically; not there yet.
+   "github.com/glycerine/embedr"
 )
 
 embedr.InitR()
