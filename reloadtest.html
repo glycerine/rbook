@@ -4,6 +4,7 @@
 <head>
     <title>Reload test page</title>
     <script type="text/javascript">
+
 /**
  * Tries to connect to the reload service and start listening to reload events.
  *
@@ -20,8 +21,8 @@ function tryConnectToReload(address) {
   };
 
   conn.onmessage = function(evt) {
-      appendLog("Refresh received: " + String(evt));
-
+      appendLog(evt.data);
+      
     // If we uncomment this line, then the page will refresh every time a message is received.
     //location.reload()
   };
@@ -29,7 +30,21 @@ function tryConnectToReload(address) {
 
 function appendLog(msg){
     var d = document.getElementById("log");
-    d.innerHTML += '<br /><span>' + msg + '</span>';
+    var n = 1 + (d.children.length -1)/2;
+    var id = "log_" + n.toString();
+
+    const update = JSON.parse(msg)
+    var newstuff = '<br /> ['+ n +'] <div id="' + id + '">';
+    if (update.text) {
+       newstuff += update.text + '<br />'
+    }
+    if (update.image) {
+        newstuff += ' <div style="max-width: 800px"><img src="http://localhost:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
+    }
+    newstuff += '</div>'
+    d.innerHTML += newstuff
+    var element = document.getElementById(id);
+    element.scrollIntoView();
 }
 
 try {

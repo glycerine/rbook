@@ -35,6 +35,9 @@ func main() {
 	// feh --bg-scale ~/pexels-ian-turnell-709552.jpg
 	// x11vnc -display :99 -forever -nopw -quiet -xkb
 
+	// For this proof-of-principle, these have already
+	// been started manually.
+
 	os.Setenv("DISPLAY", ":99")
 	os.Setenv("R_HOME", "/usr/lib/R")
 	embedr.InitR()
@@ -43,6 +46,8 @@ func main() {
 	embedr.EvalR("x11()")
 	embedr.EvalR("hist(rnorm(1000))") // worked.
 	vv("done with eval")
+
+	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 
 	select {}
 }
