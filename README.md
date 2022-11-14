@@ -111,5 +111,18 @@ save them to disk; and log them.
 I'm liking this wrapper idea, simple single
 process idea, more.
 
+We have embedr already working.
+
+~~~
+import (
+   "github.com/glycerine/embedr" // theoretically; not there yet.
+)
+
+embedr.InitR()
+defer embedr.EndR()
+embedr.EvalR("R code here")
+
+~~~
+
 
 
