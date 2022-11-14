@@ -32,7 +32,7 @@ func TestFakeOut(t *testing.T) {
 		}
 
 		t.Run(testName, func(t *testing.T) {
-			fs, err := New("")
+			fs, err := NewFakeStdio("")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -52,7 +52,7 @@ func TestFakeOut(t *testing.T) {
 }
 
 func TestFakeOutLarge(t *testing.T) {
-	fs, err := New("")
+	fs, err := NewFakeStdio("")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,7 +93,7 @@ func TestFakeIn(t *testing.T) {
 		}
 
 		t.Run(testName, func(t *testing.T) {
-			fs, err := New(tt.wantIn)
+			fs, err := NewFakeStdio(tt.wantIn)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -123,7 +123,7 @@ func TestFakeInAndOut(t *testing.T) {
 	for i := 1; i <= 3; i++ {
 		t.Run(fmt.Sprintf("run #%d", i), func(t *testing.T) {
 			wantIn := fmt.Sprintf("bamboleo%d", i)
-			fs, err := New(wantIn)
+			fs, err := NewFakeStdio(wantIn)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -154,7 +154,7 @@ func TestFakeInAndOut(t *testing.T) {
 
 func TestCloseStdin(t *testing.T) {
 	wantIn := "marin\nnazar"
-	fs, err := New(wantIn)
+	fs, err := NewFakeStdio(wantIn)
 	if err != nil {
 		t.Fatal(err)
 	}

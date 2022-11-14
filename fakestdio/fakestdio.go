@@ -32,7 +32,7 @@ type FakeStdio struct {
 	stdinWriter *os.File
 }
 
-func New(stdinText string) (*FakeStdio, error) {
+func NewFakeStdio(stdinText string) (*FakeStdio, error) {
 	// Pipe for stdin.
 	//
 	//                 ======

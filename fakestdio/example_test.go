@@ -11,7 +11,7 @@ import (
 
 func ExampleFakeInOut() {
 	// Create a new fakestdio with some input to feed into Stdin.
-	fs, err := New("input text")
+	fs, err := NewFakeStdio("input text")
 	if err != nil {
 		log.Fatal(err)
 	}
