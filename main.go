@@ -64,6 +64,9 @@ func main() {
 			nextSave++
 		} else {
 			embedr.EvalR(expr)
+
+			message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"text":"%v"}`, strings.ReplaceAll(cmd, `"`, `\"`))))
+			hub.broadcast <- message
 		}
 
 		if path != "" {
