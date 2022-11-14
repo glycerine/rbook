@@ -124,3 +124,21 @@ to the miniserver via rmq websocket.
 Can elisp websockets go directly to a new minibook websocket
 server API designed for it: in order to tell minibook
 about new plot file paths, and new commands executed.
+
+Ugh, elisp websockets likely to be fragile/pita.
+
+Can an rmq/rmq like library (maybe even minibook itself)
+hook the command line eval in R
+to get every command being evaluated?
+
+Can we clone and alter the R front end command repl;
+it should be using the same calls.
+
+https://rstudio.github.io/r-manuals/r-exts/Linking-GUIs-and-other-front-ends-to-R.html
+
+suggests this is a massive undertaking, with threading,
+timers, meshing event loops difficult.
+
+Gotta keep it simple.
+
+
