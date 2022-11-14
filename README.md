@@ -103,7 +103,13 @@ Still noodling on this design.
 Having to hack ess/emacs elisp code is not
 much fun; kind of brittle.
 
+Also with wrapping R, the wrapper Go code
+can recognize plot commands automatically,
+and not require anything extra to 
+save them to disk; and log them.
 
+I'm liking this wrapper idea, simple single
+process idea, more.
 
 
 
