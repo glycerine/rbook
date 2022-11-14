@@ -1,8 +1,3 @@
-/*
-present a directory of png images to
-a web page that makes it easy to
-one-click through them
-*/
 package main
 
 import (
@@ -20,11 +15,17 @@ import (
 	//"github.com/skratchdot/open-golang/open"
 )
 
+/*
+present a directory of png images to
+a web page that makes it easy to
+one-click through them
+*/
+
 var ProgramName, Cmdline string
 
 var _ = exec.Command
 
-func ShowMeMain() {
+func StartShowme() {
 
 	ProgramName = path.Base(os.Args[0])
 	Cmdline = strings.Join(os.Args, " ")
@@ -175,8 +176,9 @@ func ShowMeMain() {
 	// hardcode darwin for now so that we can exit
 	// automatically when safari is closed.
 	//exec.Command("/usr/bin/open", "-F", "-W", "-n", fmt.Sprintf("http://%s", cfg.HostPort)).Run()
-	select {}
-	fmt.Printf("showme done.\n")
+
+	//select {}
+	//fmt.Printf("showme done.\n")
 }
 
 /*

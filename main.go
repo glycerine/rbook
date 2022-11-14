@@ -2,32 +2,22 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/glycerine/embedr"
 )
 
+func init() {
+	// Arrange that main.main runs on main thread. Hopefully this helps R startup.
+	runtime.LockOSThread()
+}
+
 func main() {
 
-	if false {
-		log.Println("Starting reload server.")
-
-		startReloadServer()
-
-		log.Println("Reload server started.")
-		log.Println("Press Enter to reload the browser!")
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			expr, err := reader.ReadString('\n')
-			panicOn(err)
-			vv("expr = '%v'", expr)
-
-			log.Println("Reloading browser.")
-			sendReload()
-		}
-
-	}
+	// start R first so maybe it gets the main thread.
 
 	// TODO: start up Xvfb on a free DISPLAY like :99
 	// Xvfb :99 -screen 0 3000x2000x16
@@ -48,6 +38,29 @@ func main() {
 	vv("done with eval")
 
 	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
+
+	StartShowme()
+
+	log.Println("Starting reload server.")
+
+	startReloadServer()
+
+	log.Println("Reload server started.")
+
+	log.Println("Press Enter to reload the browser!")
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		expr, err := reader.ReadString('\n')
+		panicOn(err)
+		vv("expr = '%v'", expr)
+
+		log.Println("Reloading browser.")
+		sendReload()
+		break
+	}
+
+	message := bytes.TrimSpace([]byte(`{ "image":"hist.png" }`))
+	hub.broadcast <- message
 
 	select {}
 }
