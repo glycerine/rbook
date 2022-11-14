@@ -39,7 +39,7 @@ function appendLog(msg){
        newstuff += update.text + '<br />'
     }
     if (update.image) {
-        newstuff += ' <div style="max-width: 800px"><img src="http://localhost:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
+        newstuff += ' <div style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
     }
     newstuff += '</div>'
     d.innerHTML += newstuff
@@ -51,12 +51,12 @@ try {
   if (window["WebSocket"]) {
     // The reload endpoint is hosted on a statically defined port.
     try {
-      tryConnectToReload("ws://localhost:12450/reload");
+      tryConnectToReload("ws://rog:12450/reload");
     }
     catch (ex) {
       // If an exception is thrown, that means that we couldn't connect to to WebSockets because of mixed content
       // security restrictions, so we try to connect using wss.
-      tryConnectToReload("wss://localhost:12451/reload");
+      tryConnectToReload("wss://rog:12451/reload");
     }
   } else {
     console.log("Your browser does not support WebSockets, cannot connect to the Reload service.");

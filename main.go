@@ -55,11 +55,11 @@ func main() {
 		vv("expr = '%v'", expr)
 
 		log.Println("Reloading browser.")
-		sendReload()
+		//sendReload()
 		break
 	}
 
-	message := bytes.TrimSpace([]byte(`{ "image":"hist.png" }`))
+	message := bytes.TrimSpace([]byte(`{"image":"hist.png"}`))
 	hub.broadcast <- message
 
 	select {}
