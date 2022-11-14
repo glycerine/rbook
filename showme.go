@@ -179,12 +179,6 @@ func ShowMeMain() {
 	fmt.Printf("showme done.\n")
 }
 
-func panicOn(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 /*
 func ListenAndServe(addr string, handler http.Handler) error {
 	srv := &http.Server{Addr: addr, Handler: handler}
