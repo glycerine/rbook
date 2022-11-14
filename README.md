@@ -111,4 +111,16 @@ embedr.EvalR("R code here")
 ~~~
 
 
+rethink
+-------
 
+After some experience, the embedded R from the .so does not
+give us the full R command line experience; prints and
+warnings are missing.
+
+Instead we just need to send saved-plot paths and commands
+to the miniserver via rmq websocket.
+
+Can elisp websockets go directly to a new minibook websocket
+server API designed for it: in order to tell minibook
+about new plot file paths, and new commands executed.

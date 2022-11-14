@@ -11,6 +11,7 @@ import (
 	//"time"
 
 	"github.com/glycerine/embedr"
+	"github.com/glycerine/rmq"
 )
 
 func init() {
@@ -61,7 +62,7 @@ func main() {
 		cmd := strings.TrimSpace(expr)
 		path := ""
 		if cmd == "save" {
-			path = fmt.Sprintf("hist_%03d.png", nextSave)
+			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
 			nextSave++
