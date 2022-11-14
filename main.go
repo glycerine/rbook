@@ -35,13 +35,13 @@ func main() {
 	os.Setenv("R_HOME", "/usr/lib/R")
 	embedr.InitR()
 	defer embedr.EndR()
-	//embedr.EvalR_quick("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
-	embedr.EvalR_quick("require(R.utils)") // for captureOutput()
-	embedr.EvalR_quick("x11()")
-	embedr.EvalR_quick("hist(rnorm(1000))") // worked.
+	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
+	embedr.EvalR("require(R.utils)") // for captureOutput()
+	embedr.EvalR("x11()")
+	embedr.EvalR("hist(rnorm(1000))") // worked.
 	vv("done with eval")
 
-	embedr.EvalR_quick(`savePlot(filename="hist.png")`) // worked.
+	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 
 	StartShowme()
 
@@ -62,20 +62,20 @@ func main() {
 		path := ""
 		if cmd == "save" {
 			path = fmt.Sprintf("hist_%03d.png", nextSave)
-			err := embedr.EvalR_quick(fmt.Sprintf(`savePlot(filename="%v")`, path))
+			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
 			nextSave++
 		} else {
 			// doesn't work to get back output:
 			//capture := fmt.Sprintf("___cap = captureOutput(%v)", expr)
-			//ev, err := embedr.EvalR_quick(capture)
+			//ev, err := embedr.EvalR(capture)
 			//panicOn(err)
 			//vv("ev = '%#v'", ev)
-			//output, err := embedr.EvalR_quick("___cap")
+			//output, err := embedr.EvalR("___cap")
 			//panicOn(err)
 			//vv("output = '%#v'", output)
 
-			err := embedr.EvalR_quick(expr)
+			err := embedr.EvalR(expr)
 			if err != nil {
 				fmt.Printf("%v\n", err)
 			}
