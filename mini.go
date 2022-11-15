@@ -4,7 +4,7 @@ import (
 	//"bufio"
 	//"bytes"
 	"fmt"
-	"log"
+	//"log"
 	"os"
 	"runtime"
 	"strings"
@@ -40,15 +40,16 @@ func main() {
 	embedr.EvalR("require(R.utils)") // for captureOutput()
 	embedr.EvalR("x11()")
 
-	embedr.EvalR("hist(rnorm(1000))") // worked.
-	vv("done with eval")
-
+	embedr.EvalR("hist(rnorm(1000))")             // worked.
 	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
+	// nice to have a starting .png so showme does not crash :)
+
+	//vv("done with eval")
 
 	StartShowme() // serve the initial html and the png files to the web browsers
-	log.Println("Showme http server started. Starting reload websocket server.")
+	//log.Println("Showme http server started. Starting reload websocket server.")
 	startReloadServer() // websockets to tell browsers what to show when there's an update.
-	log.Println("Reload server started.")
+	//log.Println("Reload server started.")
 
 	// number the saved png files.
 	nextSave := 0
@@ -59,15 +60,20 @@ func main() {
 	for {
 		path := ""
 		did := embedr.ReplDLLdo1()
-		vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
+		_ = did
+		//vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
 		// did == 0 => error evaluating
 		// did == -1 => ctrl-d (end of file).
 
 		//if did <= 0 {
 		//	break
 		//}
+		if did < 1 {
+			// error, just try again. Don't update browsers.
+			continue
+		}
 		cmd := strings.TrimSpace(embedr.Lastexpr())
-		vv("cmd = '%v'", cmd)
+		//vv("cmd = '%v'", cmd)
 
 		if cmd == "sv()" {
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
@@ -75,59 +81,12 @@ func main() {
 			panicOn(err)
 			nextSave++
 
-			vv("Reloading browser with image path '%v'", path)
+			//vv("Reloading browser with image path '%v'", path)
 			hub.broadcast <- prepImageMessage(path)
 		} else {
 			hub.broadcast <- prepTextMessage(cmd)
 		}
 	}
-	/*
-		log.Println("Press Enter to reload the browser!")
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			expr, err := reader.ReadString('\n')
-			panicOn(err)
-			vv("expr = '%v'", expr)
-			cmd := strings.TrimSpace(expr)
-			path := ""
-			if cmd == "save" {
-				path = fmt.Sprintf("plotmini_%03d.png", nextSave)
-				err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
-				panicOn(err)
-				nextSave++
-			} else {
-
-				err := embedr.EvalR(expr)
-				if err != nil {
-					fmt.Printf("%v\n", err)
-				}
-
-				hub.broadcast <- prepTextMessage(cmd)
-
-				if err != nil {
-					// heh. 100msec sleep prevents websocket from
-					// concatenating our messages... they need prepended lengths of messages!
-					//time.Sleep(100 * time.Millisecond)
-					hub.broadcast <- prepTextMessage(err.Error())
-					//vv("sent error '%v' as text", sending)
-				}
-
-				//message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"text":"%v"}`, strings.ReplaceAll(strOut, `"`, `\"`))))
-				//hub.broadcast <- message
-			}
-
-			if path != "" {
-				log.Println("Reloading browser.")
-				//sendReload()
-
-				hub.broadcast <- prepImageMessage(path)
-			}
-		}
-
-		message := bytes.TrimSpace([]byte(`{"image":"hist.png"}`))
-		hub.broadcast <- message
-	*/
-
 	select {}
 }
 

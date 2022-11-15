@@ -10,8 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/glycerine/fsnotify"
+	//"github.com/glycerine/fsnotify"
 	//"github.com/skratchdot/open-golang/open"
 )
 
@@ -50,39 +49,41 @@ func StartShowme() {
 	panicOn(err)
 	fmt.Printf("showme running in '%s' with %v png files\n", cwd, len(pngs))
 
-	watcher, err := fsnotify.NewWatcher()
-	panicOn(err)
-	err = watcher.Add(cwd)
-	panicOn(err)
-	defer watcher.Close()
+	/*
+			watcher, err := fsnotify.NewWatcher()
+			panicOn(err)
+			err = watcher.Add(cwd)
+			panicOn(err)
+			defer watcher.Close()
 
-	rescanNeeded := make(chan bool, 1)
-	go func() {
-	waitForWrite:
-		for {
-			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					continue waitForWrite
-				}
+		rescanNeeded := make(chan bool, 1)
+		go func() {
+		waitForWrite:
+			for {
 				select {
-				case rescanNeeded <- true:
-				default:
-				}
-				//fmt.Printf("event: '%v'\n", event)
-				if event.Has(fsnotify.Write) {
-					//fmt.Printf("modified file: '%v'\n", event.Name)
+				case event, ok := <-watcher.Events:
+					if !ok {
+						continue waitForWrite
+					}
+					select {
+					case rescanNeeded <- true:
+					default:
+					}
+					//fmt.Printf("event: '%v'\n", event)
+					if event.Has(fsnotify.Write) {
+						//fmt.Printf("modified file: '%v'\n", event.Name)
 
-				}
-				continue waitForWrite
-			case err, _ := <-watcher.Errors:
-				panicOn(err)
+					}
+					continue waitForWrite
+				case err, _ := <-watcher.Errors:
+					panicOn(err)
 
-				//case <-c.haltTail.ReqStop.Chan:
-				//	return
+					//case <-c.haltTail.ReqStop.Chan:
+					//	return
+				}
 			}
-		}
-	}()
+		}()
+	*/
 
 	http.Handle("/images/", http.StripPrefix("/images/",
 		http.FileServer(http.Dir("."))))
@@ -169,8 +170,10 @@ func StartShowme() {
 
 	http.HandleFunc("/", viewHandler)
 	http.HandleFunc("/view/", viewHandler)
+
+	vv("visit http://rog:%v/images  to watch the minibook R updates.", cfg.Port)
 	go func() {
-		err = http.ListenAndServe(cfg.HostPort, nil)
+		err = http.ListenAndServe(fmt.Sprintf("%v:%v", cfg.Host, cfg.Port), nil)
 		panicOn(err)
 	}()
 	// hardcode darwin for now so that we can exit
