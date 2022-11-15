@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
+	//"bufio"
+	//"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -45,20 +45,19 @@ func main() {
 
 	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 
-	//embedr.DemoTaskCallback()
+	StartShowme() // serve the initial html and the png files to the web browsers
+	log.Println("Showme http server started. Starting reload websocket server.")
+	startReloadServer() // websockets to tell browsers what to show when there's an update.
+	log.Println("Reload server started.")
 
-	/*	for {
-			vv("about to call embedr.SimpleREPL()")
-			embedr.SimpleREPL()
-			vv("back from embedr.SimpleREPL()")
-		}
-	*/
+	// number the saved png files.
+	nextSave := 0
 
 	// our repl
-
-	// needed for Lastexpr() to work
 	embedr.ReplDLLinit()
+	embedr.EvalR(`sv=function(){}`)
 	for {
+		path := ""
 		did := embedr.ReplDLLdo1()
 		vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
 		// did == 0 => error evaluating
@@ -67,70 +66,67 @@ func main() {
 		//if did <= 0 {
 		//	break
 		//}
-		vv("lastexpr = '%v'", embedr.Lastexpr())
-	}
+		cmd := strings.TrimSpace(embedr.Lastexpr())
+		vv("cmd = '%v'", cmd)
 
-	StartShowme()
-
-	log.Println("Starting reload server.")
-
-	startReloadServer()
-
-	log.Println("Reload server started.")
-
-	log.Println("Press Enter to reload the browser!")
-	nextSave := 0
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		expr, err := reader.ReadString('\n')
-		panicOn(err)
-		vv("expr = '%v'", expr)
-		cmd := strings.TrimSpace(expr)
-		path := ""
-		if cmd == "save" {
+		if cmd == "sv()" {
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
 			nextSave++
-		} else {
-			// doesn't work to get back output:
-			//capture := fmt.Sprintf("___cap = captureOutput(%v)", expr)
-			//ev, err := embedr.EvalR(capture)
-			//panicOn(err)
-			//vv("ev = '%#v'", ev)
-			//output, err := embedr.EvalR("___cap")
-			//panicOn(err)
-			//vv("output = '%#v'", output)
 
-			err := embedr.EvalR(expr)
-			if err != nil {
-				fmt.Printf("%v\n", err)
-			}
-
-			hub.broadcast <- prepTextMessage(cmd)
-
-			if err != nil {
-				// heh. 100msec sleep prevents websocket from
-				// concatenating our messages... they need prepended lengths of messages!
-				//time.Sleep(100 * time.Millisecond)
-				hub.broadcast <- prepTextMessage(err.Error())
-				//vv("sent error '%v' as text", sending)
-			}
-
-			//message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"text":"%v"}`, strings.ReplaceAll(strOut, `"`, `\"`))))
-			//hub.broadcast <- message
-		}
-
-		if path != "" {
-			log.Println("Reloading browser.")
-			//sendReload()
-
+			vv("Reloading browser with image path '%v'", path)
 			hub.broadcast <- prepImageMessage(path)
+		} else {
+			hub.broadcast <- prepTextMessage(cmd)
 		}
 	}
+	/*
+		log.Println("Press Enter to reload the browser!")
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			expr, err := reader.ReadString('\n')
+			panicOn(err)
+			vv("expr = '%v'", expr)
+			cmd := strings.TrimSpace(expr)
+			path := ""
+			if cmd == "save" {
+				path = fmt.Sprintf("plotmini_%03d.png", nextSave)
+				err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+				panicOn(err)
+				nextSave++
+			} else {
 
-	message := bytes.TrimSpace([]byte(`{"image":"hist.png"}`))
-	hub.broadcast <- message
+				err := embedr.EvalR(expr)
+				if err != nil {
+					fmt.Printf("%v\n", err)
+				}
+
+				hub.broadcast <- prepTextMessage(cmd)
+
+				if err != nil {
+					// heh. 100msec sleep prevents websocket from
+					// concatenating our messages... they need prepended lengths of messages!
+					//time.Sleep(100 * time.Millisecond)
+					hub.broadcast <- prepTextMessage(err.Error())
+					//vv("sent error '%v' as text", sending)
+				}
+
+				//message := bytes.TrimSpace([]byte(fmt.Sprintf(`{"text":"%v"}`, strings.ReplaceAll(strOut, `"`, `\"`))))
+				//hub.broadcast <- message
+			}
+
+			if path != "" {
+				log.Println("Reloading browser.")
+				//sendReload()
+
+				hub.broadcast <- prepImageMessage(path)
+			}
+		}
+
+		message := bytes.TrimSpace([]byte(`{"image":"hist.png"}`))
+		hub.broadcast <- message
+	*/
 
 	select {}
 }

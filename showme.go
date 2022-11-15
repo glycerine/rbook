@@ -180,22 +180,3 @@ func StartShowme() {
 	//select {}
 	//fmt.Printf("showme done.\n")
 }
-
-/*
-func ListenAndServe(addr string, handler http.Handler) error {
-	srv := &http.Server{Addr: addr, Handler: handler}
-
-	if srv.shuttingDown() {
-		return http.ErrServerClosed
-	}
-	addr := srv.Addr
-	if addr == "" {
-		addr = ":http"
-	}
-	ln, err := net.Listen("tcp", addr)
-	if err != nil {
-		return err
-	}
-	return srv.Serve(ln)
-}
-*/
