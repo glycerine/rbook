@@ -14,9 +14,12 @@
       //     }
       // }, false);
 
-      var dt = new Date();
-      document.getElementById("datetime").innerHTML = dt.toLocaleString();
-
+      function stamp() {
+          var dt = new Date();
+          //document.getElementById("datetime").innerHTML = dt.toLocaleString();
+          document.getElementById("datetime").innerHTML = dt.toISOString();
+      }
+      
       function disableScroll() {
           // Get the current page scroll position
           scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -78,7 +81,7 @@ function scrollToBottom() {
    window.scrollTo(0, document.body.scrollHeight);
 }
 //history.scrollRestoration = "manual";
-//window.onload = scrollToBottom;
+window.onload = stamp;
 //window.onready = scrollToBottom;
 
       
