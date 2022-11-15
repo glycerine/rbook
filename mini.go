@@ -79,7 +79,8 @@ func main() {
 		//	break
 		//}
 		if did < 1 {
-			// error, just try again. Don't update browsers.
+			// ctrl-d, EOF
+			embedr.EvalR(`q()`)
 			continue
 		}
 		cmd := strings.TrimSpace(embedr.Lastexpr())

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"flag"
+	//"flag"
 	"fmt"
-	"log"
+	//"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -29,8 +29,11 @@ func StartShowme() {
 	ProgramName = path.Base(os.Args[0])
 	Cmdline = strings.Join(os.Args, " ")
 
+	cfg := &ShowmeConfig{
+		Port: 8080,
+	}
+	/* allow any R flags ess wants to set
 	myflags := flag.NewFlagSet("myflags", flag.ExitOnError)
-	cfg := &ShowmeConfig{}
 	cfg.DefineFlags(myflags)
 
 	err := myflags.Parse(os.Args[1:])
@@ -38,6 +41,7 @@ func StartShowme() {
 	if err != nil {
 		log.Fatalf("%s command line flag error: '%s'", ProgramName, err)
 	}
+	*/
 
 	pngs, err := filepath.Glob("*.png")
 	panicOn(err)
