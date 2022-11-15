@@ -45,12 +45,29 @@ func main() {
 
 	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 
+	//embedr.DemoTaskCallback()
+
+	/*	for {
+			vv("about to call embedr.SimpleREPL()")
+			embedr.SimpleREPL()
+			vv("back from embedr.SimpleREPL()")
+		}
+	*/
+
+	// our repl
+
+	// needed for Lastexpr() to work
+	embedr.ReplDLLinit()
 	for {
-		vv("about to call embedr.SimpleREPL()")
-		embedr.SimpleREPL()
-		vv("back from embedr.SimpleREPL()")
-		embedr.DemoTaskCallback()
-		vv("back from embedr.DemoTaskCallback()")
+		did := embedr.ReplDLLdo1()
+		vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
+		// did == 0 => error evaluating
+		// did == -1 => ctrl-d (end of file).
+
+		//if did <= 0 {
+		//	break
+		//}
+		vv("lastexpr = '%v'", embedr.Lastexpr())
 	}
 
 	StartShowme()
