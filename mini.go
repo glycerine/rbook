@@ -34,7 +34,7 @@ func main() {
 
 	os.Setenv("DISPLAY", ":99")
 	os.Setenv("R_HOME", "/usr/lib/R")
-	embedr.InitR()
+	embedr.InitR(true)
 	defer embedr.EndR()
 	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
 	embedr.EvalR("require(R.utils)") // for captureOutput()
@@ -43,6 +43,16 @@ func main() {
 	embedr.EvalR("hist(rnorm(1000))")             // worked.
 	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 	// nice to have a starting .png so showme does not crash :)
+
+	// https://lapsedgeographer.london/2020-11/custom-r-prompt/
+	//The prompt is a simple character string, stored in .Options, meaning we
+	// can easily inspect it and modify it.  You can even use emoji, though
+	// I’d recommend using a base emoji rather than a composite emoji...
+	//
+	// > getOption("prompt")
+	// [1] "> "
+	//	> options("prompt" = "! ")
+	//	!
 
 	//vv("done with eval")
 
