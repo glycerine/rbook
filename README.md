@@ -110,35 +110,12 @@ embedr.EvalR("R code here")
 
 ~~~
 
+The R_ReplDLLinit() and embedr.ReplDLLdo1() was the key to 
+getting a nice REPL experience under the R loaded as DLL.
 
-rethink
--------
-
-After some experience, the embedded R from the .so does not
-give us the full R command line experience; prints and
-warnings are missing.
-
-Instead we just need to send saved-plot paths and commands
-to the miniserver via rmq websocket.
-
-Can elisp websockets go directly to a new minibook websocket
-server API designed for it: in order to tell minibook
-about new plot file paths, and new commands executed.
-
-Ugh, elisp websockets likely to be fragile/pita.
-
-Can an rmq/rmq like library (maybe even minibook itself)
-hook the command line eval in R
-to get every command being evaluated?
-
-Can we clone and alter the R front end command repl;
-it should be using the same calls.
+https://cran.r-project.org/doc/manuals/R-exts.html#index-Rf_005finitEmbeddedR
 
 https://rstudio.github.io/r-manuals/r-exts/Linking-GUIs-and-other-front-ends-to-R.html
 
-suggests this is a massive undertaking, with threading,
-timers, meshing event loops difficult.
-
-Gotta keep it simple.
 
 
