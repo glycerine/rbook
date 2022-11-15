@@ -17,7 +17,7 @@
       function stamp() {
           var dt = new Date();
           //document.getElementById("datetime").innerHTML = dt.toLocaleString();
-          document.getElementById("datetime").innerHTML = dt.toISOString();
+          document.getElementById("datetime").innerHTML = dt.toTimeString() + "   " + dt.toISOString();
       }
       
       function disableScroll() {
@@ -110,7 +110,8 @@ window.onload = stamp;
         } else {
             console.log("id is still id: ", id)
         }
-        newstuff += ' ['+ n +'] <div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
+        // newstuff += ' ['+ n +'] <div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
+        newstuff += '<div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
     }
     //newstuff += '</div>'
     //d.innerHTML += newstuff // refuses to stay at the bottom.
@@ -199,8 +200,9 @@ try {
 </head>
 
 <body>
-  <p>started: <span id="datetime"></span></p>
-  <div id="log">R session: </div>
+  <p>#R session started: <span id="datetime"></span></p>
+  <hr>
+  <div id="log"> </div>
 </body>
 
 </html>
