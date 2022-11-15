@@ -45,6 +45,14 @@ func main() {
 
 	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 
+	for {
+		vv("about to call embedr.SimpleREPL()")
+		embedr.SimpleREPL()
+		vv("back from embedr.SimpleREPL()")
+		embedr.DemoTaskCallback()
+		vv("back from embedr.DemoTaskCallback()")
+	}
+
 	StartShowme()
 
 	log.Println("Starting reload server.")
