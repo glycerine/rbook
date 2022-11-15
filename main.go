@@ -11,7 +11,7 @@ import (
 	//"time"
 
 	"github.com/glycerine/embedr"
-	"github.com/glycerine/rmq"
+	//"github.com/glycerine/rmq"
 )
 
 func init() {
@@ -39,6 +39,7 @@ func main() {
 	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
 	embedr.EvalR("require(R.utils)") // for captureOutput()
 	embedr.EvalR("x11()")
+
 	embedr.EvalR("hist(rnorm(1000))") // worked.
 	vv("done with eval")
 
