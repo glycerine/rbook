@@ -138,11 +138,11 @@ window.onload = stamp;
     // in theory the command and the output could arrive together, so
     // print the console output after the text of the command.
     if (update.console) {
-        var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput"><br/>';
+        var newstuff = '<br/><div id="' + nextID() + '" class="RconsoleOutput">';
         for (let i = 0; i < update.console.length; i++) {
-            newstuff += '<div class="RconsoleLine">' + update.console[i] + '</div><br/>';
+            newstuff += '<div class="RconsoleLine">' + update.console[i] + '<br/></div>';
         }
-        d.innerHTML += newstuff + '<br/>';
+        d.innerHTML += newstuff + '</div><br/>';
         console.log("we added console output")
     }
 
