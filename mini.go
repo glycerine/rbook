@@ -59,9 +59,11 @@ func main() {
 
 	history, appendFD, err := ReadBook(bookpath)
 	panicOn(err)
-	vv("see history len %v:", len(history.Elems))
-	for _, e := range history.Elems {
-		fmt.Printf("%v\n", e)
+	if true {
+		vv("see history len %v:", len(history.Elems))
+		for _, e := range history.Elems {
+			fmt.Printf("%v\n", e)
+		}
 	}
 	_ = appendFD
 	_ = history

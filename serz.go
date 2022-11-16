@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/glycerine/cryrand"
 	//snappy "github.com/glycerine/go-unsnap-stream"
 	"github.com/glycerine/greenpack/msgp"
 )
@@ -95,11 +96,18 @@ HashRElem{
 }
 
 type HashRBook struct {
-	Elems []*HashRElem `msg:"elems" json:"elems" zid:"0"`
+
+	// unique ID for notebook; so we don't confuse clients
+	// when switching notebooks; like UUID but not.
+	BookID string `msg:"bookID" json:"bookID" zid:"0"`
+
+	Elems []*HashRElem `msg:"elems" json:"elems" zid:"1"`
 }
 
 func NewHashRBook() *HashRBook {
-	return &HashRBook{}
+	return &HashRBook{
+		BookID: cryrand.RandomStringWithUp(24),
+	}
 }
 
 func ReadBook(path string) (h *HashRBook, appendFD *os.File, err error) {
