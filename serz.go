@@ -129,13 +129,14 @@ func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err err
 
 	fresh := true
 	if FileExists(path) {
-		fresh = false
+		sz, err := FileSize(path)
+		panicOn(err)
+		if sz != 0 {
+			fresh = false
+		}
 	}
 	appendFD, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
-
-	if err != nil {
-		return
-	}
+	panicOn(err)
 
 	if fresh {
 		// nothing to read
