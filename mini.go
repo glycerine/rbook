@@ -102,7 +102,7 @@ func main() {
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
-			vv("saved to path = '%v'", path)
+			//vv("saved to path = '%v'", path)
 			nextSave++
 
 			//vv("Reloading browser with image path '%v'", path)
