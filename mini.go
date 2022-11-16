@@ -58,7 +58,7 @@ func PathHash(path string) (hash string, imageBy []byte) {
 
 func main() {
 
-	fn := "my.hashr.book"
+	fn := "my.rbook"
 	cwd, err := os.Getwd()
 	panicOn(err)
 	bookpath := cwd + sep + fn
