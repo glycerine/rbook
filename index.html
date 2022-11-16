@@ -17,6 +17,8 @@
   
     <script type="text/javascript">
 
+      var globalLastSeqno = -1;
+      
       // press A, scroll to bottom. works. browsers are not
       // fighting this like they are the other scroll change.
       // window.addEventListener('keydown', e => {
@@ -106,6 +108,16 @@ window.onload = stamp;
 
     var didCode = false;
     const update = JSON.parse(msg)
+
+    // try to prevent duplicates due to websocket tomfoolery.
+    if (update.seqno > globalLastSeqno) {
+        // good keep it
+        globalLastSeqno = update.seqno;
+    } else {
+        // drop duplicates
+        return;
+    }
+          
     var newstuff = ''; // '<br /> ';
     if (update.text) {
         //newstuff += '['+ n +'] <div id="' + id + '">' + update.text; //  + '<br />';
