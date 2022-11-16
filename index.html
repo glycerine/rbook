@@ -12,9 +12,11 @@
         font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
         font-weight: bold;
         font-size: 20px;
-
-        .RconsoleOutput {background-color: green; }
     }
+
+    .RconsoleOutput {background-color: rgb(240, 20, 240, 0.2); }
+    .RconsoleLine   {text-indent: 50px; }
+    
     </style>
   
     <script type="text/javascript">
@@ -138,9 +140,9 @@ window.onload = stamp;
     if (update.console) {
         var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput"><br/>';
         for (let i = 0; i < update.console.length; i++) {
-            newstuff += update.console[i] + '<br/>';
+            newstuff += '<div class="RconsoleLine">' + update.console[i] + '</div><br/>';
         }
-        d.innerHTML += newstuff
+        d.innerHTML += newstuff + '<br/>';
         console.log("we added console output")
     }
 
