@@ -243,6 +243,11 @@ func main() {
 			hub.broadcast <- []byte(msg)
 			seqno++
 		}
+		history.Elems = append(history.Elems, e)
+		by, err := e.SaveToSlice()
+		panicOn(err)
+		_, err = appendFD.Write(by)
+		panicOn(err)
 	}
 	select {}
 }
