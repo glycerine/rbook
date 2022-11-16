@@ -113,9 +113,9 @@ func main() {
 			for i, line := range capture {
 				//fmt.Printf("line %02d: %v\n", i, line)
 				if i == 0 {
-					captureJSON += fmt.Sprintf(`"## %v"`, line)
+					captureJSON += fmt.Sprintf(`"## %v"`, escape(line))
 				} else {
-					captureJSON += fmt.Sprintf(`,"## %v"`, line)
+					captureJSON += fmt.Sprintf(`,"## %v"`, escape(line))
 				}
 			}
 			captureJSON += `]`
@@ -175,6 +175,10 @@ func main() {
 		}
 	}
 	select {}
+}
+
+func escape(s string) string {
+	return strings.ReplaceAll(s, `"`, `\"`)
 }
 
 // add length: as prefix, so we can parse 2 messages that get piggy backed.
