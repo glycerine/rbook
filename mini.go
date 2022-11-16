@@ -86,6 +86,10 @@ func main() {
 	embedr.EvalR(`dv=function(){}`) // easy to type. cmd == "dv()" tells us to save the last value.
 
 	seqno := 0
+
+	// need to save one console capture back for dv() recording of output
+	captureJSON := ""
+	prevJSON := ""
 	for {
 
 		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
@@ -101,8 +105,10 @@ func main() {
 		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
 		panicOn(err)
 		capture, capturedOutputOK := sinkgot.([]string)
-		captureJSON := "["
 		if capturedOutputOK {
+			prevJSON = captureJSON
+			captureJSON = "["
+
 			vv("capture = %v lines\n", len(capture))
 			for i, line := range capture {
 				fmt.Printf("line %02d: %v\n", i, line)
@@ -145,7 +151,14 @@ func main() {
 			continue
 		}
 
-		if cmd == "sv()" {
+		switch cmd {
+		case "dv()":
+			if capturedOutputOK && prevJSON != "" {
+
+				hub.broadcast <- prepConsoleMessage(prevJSON, seqno)
+				seqno++
+			}
+		case "sv()":
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
@@ -156,7 +169,7 @@ func main() {
 			//vv("Reloading browser with image path '%v'", path)
 			hub.broadcast <- prepImageMessage(path, pathhash, seqno)
 			seqno++
-		} else {
+		default:
 			hub.broadcast <- prepTextMessage(cmd, seqno)
 			seqno++
 		}
@@ -171,6 +184,16 @@ func prepTextMessage(msg string, seqno int) []byte {
 	}
 	escaped := strings.ReplaceAll(msg, `"`, `\"`)
 	json := fmt.Sprintf(`{"seqno": %v, "text":"%v"}`, seqno, escaped)
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return []byte(lenPrefixedJson)
+}
+
+func prepConsoleMessage(consoleOut string, seqno int) []byte {
+	if consoleOut == "" {
+		return nil
+	}
+	//escaped := strings.ReplaceAll(consoleOut, `"`, `\"`)
+	json := fmt.Sprintf(`{"seqno": %v, "console":%v}`, seqno, consoleOut)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }

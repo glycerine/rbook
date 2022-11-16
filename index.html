@@ -12,6 +12,8 @@
         font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
         font-weight: bold;
         font-size: 20px;
+
+        .RconsoleOutput {background-color: green; }
     }
     </style>
   
@@ -98,16 +100,17 @@ function scrollToBottom() {
 window.onload = stamp;
 //window.onready = scrollToBottom;
 
+      function nextID() {
+          var d  = document.getElementById("log");
+          var n  = d.children.length;
+          var id  = "log_" + n.toString();
+          return id;
+      }
       
-      function appendLog(msg){
-          console.log("msg = ", msg);
-    var d  = document.getElementById("log");
-    var n  = 1 + (d.children.length -1);
-    var n1 = n+1;
-    var id  = "log_" + n.toString();
-    var id1 = "log_" + n1.toString();
+ function appendLog(msg){
+ 
+    console.log("msg = ", msg);
 
-    var didCode = false;
     const update = JSON.parse(msg)
 
     // try to prevent duplicates due to websocket tomfoolery.
@@ -122,92 +125,39 @@ window.onload = stamp;
         }
     }
 
-    var newstuff = ''; // '<br /> ';
     if (update.text) {
-        //newstuff += '['+ n +'] <div id="' + id + '">' + update.text; //  + '<br />';
-        newstuff += '<div id="' + id + '">' + update.text; //  + '<br />';
-        didCode = true;
+        var newstuff = '<div id="' + nextID() + '">' + update.text + '</div>';
+        d.innerHTML += newstuff
         console.log("we added text")
     }
+
+    // in theory the command and the output could arrive together, so
+    // print the console output after the text of the command.
+    if (update.console) {
+        var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput"><br/>';
+        for (let i = 0; i < update.console.length; i++) {
+            newstuff += update.console[i] + '<br/>';
+        }
+        d.innerHTML += newstuff
+        console.log("we added console output")
+    }
+
     if (update.image) {
         var hash = "";
         if (update.pathhash) {
            hash = update.pathhash;
         }
-        if (didCode) {
-            n = n1;
-            id = id1;
-            console.log("id is now id1: ", id1)
-        } else {
-            console.log("id is still id: ", id)
-        }
-        // newstuff += ' ['+ n +'] <div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '?pathhash=' + hash + '" style="max-width:100%;"/></div>';
-        newstuff += '<div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '?pathhash=' + hash + '" style="max-width:100%;"/></div>';
+        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '?pathhash=' + hash + '" style="max-width:100%;"/></div>';
+        d.innerHTML += newstuff        
     }
-    //newstuff += '</div>'
-    //d.innerHTML += newstuff // refuses to stay at the bottom.
-    //d.innerHTML = newstuff + d.innerHTML // hmm. now it stays at the bottom when we scrool to the bottom.
-    d.innerHTML = d.innerHTML + newstuff
-
-    //var element = document.getElementById("END_OF_PAGE");
-    //element.scrollIntoView(true);
-
-    //window.scroll(0,0);  // works to keep at top
-    //window.scroll(0,99999);
-
-    //window.scroll(0,99999);
-    //scrollToBottom();
-    // try to avoid the bounce in the scrollbar: didn't work
-    //disableScroll();
-    //setTimeout(function() { console.log("called back!"); enableScroll()}, 20);
     
-    // 2 msec isn't long enough to win the fight for
-    // the scrollbar position, usually. but 20 msec seems to win it
-    // consistently.
-    // works!
-    //setTimeout(function() { console.log("called back!"); window.scroll(0,99999)}, 20);
-    // works too:
+
+    // scroll to the bottom to show the latest output.
+    // 
+    // 2 msec isn't long enough to win the fight for the scrollbar
+    // position, usually. but 20 msec seems to win it consistently.
+    //
     setTimeout(function() { console.log("called back!"); scrollToBottom()}, 20);
-/*
-    // none of this worked. Well maybe it worked and then the scrollbar instantly bounces back up.
-    
-    //window.scroll(0,99999);
-    var element = document.getElementById("END_OF_PAGE");
-    element.scrollIntoView(true);
-    //element.focus()
-    
-    
-    //var element = document.getElementById(id);
-    //element.scrollIntoView();
-    //element.scrollIntoView(false);
-    //element.scrollIntoView({block: "end", inline:"end"});
-    //window.scrollTo(0, document.body.scrollHeight);
-    //const scrollingElement = (document.scrollingElement || document.body);
-    //scrollingElement.scrollTop = scrollingElement.scrollHeight;
-    //scrollToBottom();
-
-    // try simulating an End key press
-
-    var keyboardEvent = document.createEvent("KeyboardEvent");
-    var initMethod = typeof keyboardEvent.initKeyboardEvent !== 'undefined' ?
-        "initKeyboardEvent" : "initKeyEvent";
-
-
-    keyboardEvent[initMethod](
-        "keydown", // event type : keydown, keyup, keypress
-        true, // bubbles
-        true, // cancelable
-        window, // viewArg: should be window
-        false, // ctrlKeyArg
-        false, // altKeyArg
-        false, // shiftKeyArg
-        false, // metaKeyArg
-        35, // keyCodeArg : unsigned long the virtual key code, else 0
-        0 // charCodeArgs : unsigned long the Unicode character associated with the depressed key, else 0
-    );
-    document.dispatchEvent(keyboardEvent);
-    
-*/    
 }
 
 try {
