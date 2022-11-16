@@ -56,20 +56,12 @@ func main() {
 
 	var history *HasherBook
 
-	var err error
-	var appendFD *os.File
-	if FileExists(bookpath) {
-		history, appendFD, err = ReadBook(bookpath)
-
-		vv("see history:")
-		for _, e := range history.Elems {
-			fmt.Printf("%v\n", e)
-		}
-	} else {
-		appendFD, err = os.Create(bookpath)
-		history = NewHasherBook()
-	}
+	history, appendFD, err := ReadBook(bookpath)
 	panicOn(err)
+	vv("see history len %v:", len(history.Elems))
+	for _, e := range history.Elems {
+		fmt.Printf("%v\n", e)
+	}
 	_ = appendFD
 	_ = history
 

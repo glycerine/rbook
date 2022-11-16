@@ -103,11 +103,22 @@ func NewHasherBook() *HasherBook {
 }
 
 func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
-	appendFD, err = os.Open(path)
+
+	fresh := true
+	if FileExists(path) {
+		fresh = false
+	}
+	appendFD, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
+
 	if err != nil {
 		return
 	}
+
 	h = NewHasherBook()
+	if fresh {
+		// nothing to read
+		return
+	}
 
 	mpr := msgp.NewReader(appendFD)
 
@@ -119,13 +130,11 @@ func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
 			return
 		}
 		panicOn(err)
-		vv("got '%v'", e)
+		//vv("got '%v'", e)
 		h.Elems = append(h.Elems, e)
 	}
 	return
 }
-
-//fd, err := os.OpenFile(bookpath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
 
 type ByteSlice []byte
 
