@@ -114,14 +114,16 @@ type HashRBook struct {
 	mut sync.Mutex
 }
 
-func NewHashRBook() *HashRBook {
+func NewHashRBook(host, path string) *HashRBook {
 	return &HashRBook{
 		CreateTm: time.Now(),
 		BookID:   cryrand.RandomStringWithUp(24),
+		Host:     host,
+		Path:     path,
 	}
 }
 
-func ReadBook(path string) (h *HashRBook, appendFD *os.File, err error) {
+func ReadBook(host, path string) (h *HashRBook, appendFD *os.File, err error) {
 
 	fresh := true
 	if FileExists(path) {
@@ -133,7 +135,7 @@ func ReadBook(path string) (h *HashRBook, appendFD *os.File, err error) {
 		return
 	}
 
-	h = NewHashRBook()
+	h = NewHashRBook(host, path)
 	if fresh {
 		// nothing to read
 		return

@@ -57,7 +57,7 @@ func main() {
 
 	var history *HashRBook
 
-	history, appendFD, err := ReadBook(bookpath)
+	history, appendFD, err := ReadBook(hostname, bookpath)
 	panicOn(err)
 	if true {
 		vv("see history len %v:", len(history.Elems))
@@ -314,8 +314,13 @@ func prepImageMessage(path, pathhash string, seqno int) string {
 	return lenPrefixedJson
 }
 
+// book.mut must be held by caller
 func prepInitMessage(book *HashRBook) string {
-	by, err := json.Marshal(book)
+	// don't want to send the elements
+	book2 := book
+	book2.Elems = nil
+
+	by, err := json.Marshal(&book2)
 	panicOn(err)
 
 	json := fmt.Sprintf(`{"init":true, "book":"%v"}`, string(by))
