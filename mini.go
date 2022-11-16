@@ -135,12 +135,19 @@ func main() {
 		// if that does pop up in the future.
 		embedr.EvalR(`sink(file=NULL)`)
 
-		//if did <= 0 {
-		//	break
-		//}
-		if did < 1 {
-			// error, keep going. also ctrl-d, EOF
-			//embedr.EvalR(`q()`)
+		if did == 0 {
+			// simple error
+			continue
+		}
+		if did < 0 {
+			// ctrl-d
+			//vv("did = %v", did) // -1 on ctrl-d, and empty raw lastexp.
+			//cmd := embedr.Lastexpr()
+			//vv("raw lastexpr = '%v' with len %v", cmd, len(cmd))
+
+			// error, keep going. also ctrl-d, EOF; just keep going.
+			// Use q() at the command line to end session.
+			embedr.EvalR(`q()`)
 			continue
 		}
 		cmd := strings.TrimSpace(embedr.Lastexpr())
