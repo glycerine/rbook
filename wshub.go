@@ -55,7 +55,8 @@ func (h *Hub) run() {
 			h.clients[client] = true
 			cc := client.conn
 			// conn embeds net.Conn
-			vv("registered websocket client: '%v' -> '%v'\n", cc.RemoteAddr().String(), cc.LocalAddr().String())
+			ncli := len(h.clients)
+			vv("registered websocket client (count %v) '%v' -> '%v'\n", ncli, cc.RemoteAddr().String(), cc.LocalAddr().String())
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
