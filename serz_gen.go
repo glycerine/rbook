@@ -126,7 +126,7 @@ func (z *HashRBook) DecodeMsg(dc *msgp.Reader) (err error) {
 
 	var field []byte
 	_ = field
-	const maxFields3zgensym_965f3afadc761adf_4 = 3
+	const maxFields3zgensym_965f3afadc761adf_4 = 5
 
 	// -- templateDecodeMsg starts here--
 	var totalEncodedFields3zgensym_965f3afadc761adf_4 uint32
@@ -187,8 +187,20 @@ doneWithStruct3zgensym_965f3afadc761adf_4:
 			if err != nil {
 				return
 			}
-		case "elems_zid02_slc":
+		case "host_zid02_str":
 			found3zgensym_965f3afadc761adf_4[2] = true
+			z.Host, err = dc.ReadString()
+			if err != nil {
+				return
+			}
+		case "path_zid03_str":
+			found3zgensym_965f3afadc761adf_4[3] = true
+			z.Path, err = dc.ReadString()
+			if err != nil {
+				return
+			}
+		case "elems_zid04_slc":
+			found3zgensym_965f3afadc761adf_4[4] = true
 			var zgensym_965f3afadc761adf_5 uint32
 			zgensym_965f3afadc761adf_5, err = dc.ReadArrayHeader()
 			if err != nil {
@@ -251,16 +263,16 @@ doneWithStruct3zgensym_965f3afadc761adf_4:
 }
 
 // fields of HashRBook
-var decodeMsgFieldOrder3zgensym_965f3afadc761adf_4 = []string{"createTm_zid00_tim", "bookID_zid01_str", "elems_zid02_slc"}
+var decodeMsgFieldOrder3zgensym_965f3afadc761adf_4 = []string{"createTm_zid00_tim", "bookID_zid01_str", "host_zid02_str", "path_zid03_str", "elems_zid04_slc"}
 
-var decodeMsgFieldSkip3zgensym_965f3afadc761adf_4 = []bool{false, false, false}
+var decodeMsgFieldSkip3zgensym_965f3afadc761adf_4 = []bool{false, false, false, false, false}
 
 // fieldsNotEmpty supports omitempty tags
 func (z *HashRBook) fieldsNotEmpty(isempty []bool) uint32 {
 	if len(isempty) == 0 {
-		return 3
+		return 5
 	}
-	var fieldsInUse uint32 = 3
+	var fieldsInUse uint32 = 5
 	isempty[0] = (z.CreateTm.IsZero()) // time.Time, omitempty
 	if isempty[0] {
 		fieldsInUse--
@@ -269,8 +281,16 @@ func (z *HashRBook) fieldsNotEmpty(isempty []bool) uint32 {
 	if isempty[1] {
 		fieldsInUse--
 	}
-	isempty[2] = (len(z.Elems) == 0) // string, omitempty
+	isempty[2] = (len(z.Host) == 0) // string, omitempty
 	if isempty[2] {
+		fieldsInUse--
+	}
+	isempty[3] = (len(z.Path) == 0) // string, omitempty
+	if isempty[3] {
+		fieldsInUse--
+	}
+	isempty[4] = (len(z.Elems) == 0) // string, omitempty
+	if isempty[4] {
 		fieldsInUse--
 	}
 
@@ -284,7 +304,7 @@ func (z *HashRBook) EncodeMsg(en *msgp.Writer) (err error) {
 	}
 
 	// honor the omitempty tags
-	var empty_zgensym_965f3afadc761adf_6 [3]bool
+	var empty_zgensym_965f3afadc761adf_6 [5]bool
 	fieldsInUse_zgensym_965f3afadc761adf_7 := z.fieldsNotEmpty(empty_zgensym_965f3afadc761adf_6[:])
 
 	// map header
@@ -328,8 +348,32 @@ func (z *HashRBook) EncodeMsg(en *msgp.Writer) (err error) {
 	}
 
 	if !empty_zgensym_965f3afadc761adf_6[2] {
-		// write "elems_zid02_slc"
-		err = en.Append(0xaf, 0x65, 0x6c, 0x65, 0x6d, 0x73, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x32, 0x5f, 0x73, 0x6c, 0x63)
+		// write "host_zid02_str"
+		err = en.Append(0xae, 0x68, 0x6f, 0x73, 0x74, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x32, 0x5f, 0x73, 0x74, 0x72)
+		if err != nil {
+			return err
+		}
+		err = en.WriteString(z.Host)
+		if err != nil {
+			return
+		}
+	}
+
+	if !empty_zgensym_965f3afadc761adf_6[3] {
+		// write "path_zid03_str"
+		err = en.Append(0xae, 0x70, 0x61, 0x74, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x33, 0x5f, 0x73, 0x74, 0x72)
+		if err != nil {
+			return err
+		}
+		err = en.WriteString(z.Path)
+		if err != nil {
+			return
+		}
+	}
+
+	if !empty_zgensym_965f3afadc761adf_6[4] {
+		// write "elems_zid04_slc"
+		err = en.Append(0xaf, 0x65, 0x6c, 0x65, 0x6d, 0x73, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x34, 0x5f, 0x73, 0x6c, 0x63)
 		if err != nil {
 			return err
 		}
@@ -376,7 +420,7 @@ func (z *HashRBook) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
 
 	// honor the omitempty tags
-	var empty [3]bool
+	var empty [5]bool
 	fieldsInUse := z.fieldsNotEmpty(empty[:])
 	o = msgp.AppendMapHeader(o, fieldsInUse)
 
@@ -393,8 +437,20 @@ func (z *HashRBook) MarshalMsg(b []byte) (o []byte, err error) {
 	}
 
 	if !empty[2] {
-		// string "elems_zid02_slc"
-		o = append(o, 0xaf, 0x65, 0x6c, 0x65, 0x6d, 0x73, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x32, 0x5f, 0x73, 0x6c, 0x63)
+		// string "host_zid02_str"
+		o = append(o, 0xae, 0x68, 0x6f, 0x73, 0x74, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x32, 0x5f, 0x73, 0x74, 0x72)
+		o = msgp.AppendString(o, z.Host)
+	}
+
+	if !empty[3] {
+		// string "path_zid03_str"
+		o = append(o, 0xae, 0x70, 0x61, 0x74, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x33, 0x5f, 0x73, 0x74, 0x72)
+		o = msgp.AppendString(o, z.Path)
+	}
+
+	if !empty[4] {
+		// string "elems_zid04_slc"
+		o = append(o, 0xaf, 0x65, 0x6c, 0x65, 0x6d, 0x73, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x34, 0x5f, 0x73, 0x6c, 0x63)
 		o = msgp.AppendArrayHeader(o, uint32(len(z.Elems)))
 		for zgensym_965f3afadc761adf_2 := range z.Elems {
 			// marshalGen.gPtr()
@@ -430,7 +486,7 @@ func (z *HashRBook) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o 
 
 	var field []byte
 	_ = field
-	const maxFields8zgensym_965f3afadc761adf_9 = 3
+	const maxFields8zgensym_965f3afadc761adf_9 = 5
 
 	// -- templateUnmarshalMsg starts here--
 	var totalEncodedFields8zgensym_965f3afadc761adf_9 uint32
@@ -494,8 +550,22 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 			if err != nil {
 				return
 			}
-		case "elems_zid02_slc":
+		case "host_zid02_str":
 			found8zgensym_965f3afadc761adf_9[2] = true
+			z.Host, bts, err = nbs.ReadStringBytes(bts)
+
+			if err != nil {
+				return
+			}
+		case "path_zid03_str":
+			found8zgensym_965f3afadc761adf_9[3] = true
+			z.Path, bts, err = nbs.ReadStringBytes(bts)
+
+			if err != nil {
+				return
+			}
+		case "elems_zid04_slc":
+			found8zgensym_965f3afadc761adf_9[4] = true
 			if nbs.AlwaysNil {
 				(z.Elems) = (z.Elems)[:0]
 			} else {
@@ -564,13 +634,13 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 }
 
 // fields of HashRBook
-var unmarshalMsgFieldOrder8zgensym_965f3afadc761adf_9 = []string{"createTm_zid00_tim", "bookID_zid01_str", "elems_zid02_slc"}
+var unmarshalMsgFieldOrder8zgensym_965f3afadc761adf_9 = []string{"createTm_zid00_tim", "bookID_zid01_str", "host_zid02_str", "path_zid03_str", "elems_zid04_slc"}
 
-var unmarshalMsgFieldSkip8zgensym_965f3afadc761adf_9 = []bool{false, false, false}
+var unmarshalMsgFieldSkip8zgensym_965f3afadc761adf_9 = []bool{false, false, false, false, false}
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *HashRBook) Msgsize() (s int) {
-	s = 1 + 19 + msgp.TimeSize + 17 + msgp.StringPrefixSize + len(z.BookID) + 16 + msgp.ArrayHeaderSize
+	s = 1 + 19 + msgp.TimeSize + 17 + msgp.StringPrefixSize + len(z.BookID) + 15 + msgp.StringPrefixSize + len(z.Host) + 15 + msgp.StringPrefixSize + len(z.Path) + 16 + msgp.ArrayHeaderSize
 	for zgensym_965f3afadc761adf_2 := range z.Elems {
 		if z.Elems[zgensym_965f3afadc761adf_2] == nil {
 			s += msgp.NilSize

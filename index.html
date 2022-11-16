@@ -127,7 +127,11 @@ window.onload = stamp;
     const update = JSON.parse(msg)
 
     var d  = document.getElementById("log");
-    
+
+     if (update.init) {
+         console.log("we just saw init message: ", update.init);
+     }
+     
     // try to prevent duplicates due to websocket tomfoolery.
      if (update.seqno) {
          // recognize a refresh from the start
@@ -203,6 +207,7 @@ try {
 </head>
 
 <body>
+  <p>BookID <span id="bookID"></span></p>
   <p>#R minibook started: <span id="datetime"></span></p>
   <hr>
   <div id="log"> </div>

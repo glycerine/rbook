@@ -72,8 +72,14 @@ func (h *Hub) run() {
 			//vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
 			//embedr.SetCustomPrompt(fmt.Sprintf("[wsclient: %v] >", ncli))
 
-			// give the new client all the history
+			// give the new client all the history, starting with the init message
 			h.history.mut.Lock()
+			select {
+			case client.send <- []byte(prepInitMessage(h.history)):
+			default:
+				close(client.send)
+				delete(h.clients, client)
+			}
 			for _, e := range h.history.Elems {
 				select {
 				case client.send <- e.msg:

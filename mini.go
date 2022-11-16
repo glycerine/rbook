@@ -313,3 +313,12 @@ func prepImageMessage(path, pathhash string, seqno int) string {
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return lenPrefixedJson
 }
+
+func prepInitMessage(book *HashRBook) string {
+	by, err := json.Marshal(book)
+	panicOn(err)
+
+	json := fmt.Sprintf(`{"init":true, "book":"%v"}`, string(by))
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return lenPrefixedJson
+}

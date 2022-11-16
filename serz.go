@@ -106,7 +106,10 @@ type HashRBook struct {
 	// when switching notebooks; like UUID but not.
 	BookID string `msg:"bookID" json:"bookID" zid:"1"`
 
-	Elems []*HashRElem `msg:"elems" json:"elems" zid:"2"`
+	Host string `msg:"host" json:"host" zid:"2"`
+	Path string `msg:"path" json:"path" zid:"3"`
+
+	Elems []*HashRElem `msg:"elems" json:"elems" zid:"4"`
 
 	mut sync.Mutex
 }
