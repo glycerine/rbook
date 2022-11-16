@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"hash"
 	"io/ioutil"
@@ -105,6 +106,7 @@ func main() {
 		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
 		panicOn(err)
 		capture, capturedOutputOK := sinkgot.([]string)
+
 		if capturedOutputOK {
 			prevJSON = captureJSON
 			captureJSON = "["
@@ -170,7 +172,7 @@ func main() {
 			hub.broadcast <- prepImageMessage(path, pathhash, seqno)
 			seqno++
 		default:
-			hub.broadcast <- prepTextMessage(cmd, seqno)
+			hub.broadcast <- prepCommandMessage(cmd, seqno)
 			seqno++
 		}
 	}
@@ -178,16 +180,33 @@ func main() {
 }
 
 func escape(s string) string {
-	return strings.ReplaceAll(s, `"`, `\"`)
+	if len(s) == 0 {
+		return s
+	}
+	//dq := strings.ReplaceAll(s, `"`, `\"`)
+
+	// coerce any control characters to be valid JSON
+	by, err := json.Marshal(s)
+	panicOn(err)
+
+	// remove the double quotes added at begin/end, since
+	// we prepend some `"## ` stuff
+	if by[0] == '"' {
+		by = by[1:]
+	}
+	n := len(by)
+	if by[n-1] == '"' {
+		by = by[:n-1]
+	}
+	return string(by)
 }
 
 // add length: as prefix, so we can parse 2 messages that get piggy backed.
-func prepTextMessage(msg string, seqno int) []byte {
+func prepCommandMessage(msg string, seqno int) []byte {
 	if msg == "" {
 		return nil
 	}
-	escaped := strings.ReplaceAll(msg, `"`, `\"`)
-	json := fmt.Sprintf(`{"seqno": %v, "text":"%v"}`, seqno, escaped)
+	json := fmt.Sprintf(`{"seqno": %v, "text":"%v"}`, seqno, escape(msg))
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }
@@ -197,6 +216,9 @@ func prepConsoleMessage(consoleOut string, seqno int) []byte {
 		return nil
 	}
 	json := fmt.Sprintf(`{"seqno": %v, "console":%v}`, seqno, consoleOut)
+	if len(json) > 629 {
+		vv("json at 628 is: '%v'", json[628:])
+	}
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }
