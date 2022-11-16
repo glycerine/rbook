@@ -59,8 +59,9 @@ Still TODO
    browsers can reload history; even after R or
    the browser has been restarted.
    
-2) Automate the startup of the Xvgb, window manager, and
-   x11vnc server.
+2) Automate the startup of the Xvfb, the window manager, and
+   x11vnc server. Mini should start them if they are
+   not already running.
 
 3) authentiation:
 
