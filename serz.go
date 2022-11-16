@@ -96,17 +96,19 @@ HashRElem{
 }
 
 type HashRBook struct {
+	CreateTm time.Time `msg:"createTm" json:"createTm" zid:"0"`
 
 	// unique ID for notebook; so we don't confuse clients
 	// when switching notebooks; like UUID but not.
-	BookID string `msg:"bookID" json:"bookID" zid:"0"`
+	BookID string `msg:"bookID" json:"bookID" zid:"1"`
 
-	Elems []*HashRElem `msg:"elems" json:"elems" zid:"1"`
+	Elems []*HashRElem `msg:"elems" json:"elems" zid:"2"`
 }
 
 func NewHashRBook() *HashRBook {
 	return &HashRBook{
-		BookID: cryrand.RandomStringWithUp(24),
+		CreateTm: time.Now(),
+		BookID:   cryrand.RandomStringWithUp(24),
 	}
 }
 
