@@ -109,13 +109,13 @@ func main() {
 			prevJSON = captureJSON
 			captureJSON = "["
 
-			vv("capture = %v lines\n", len(capture))
+			//vv("capture = %v lines\n", len(capture))
 			for i, line := range capture {
-				fmt.Printf("line %02d: %v\n", i, line)
+				//fmt.Printf("line %02d: %v\n", i, line)
 				if i == 0 {
-					captureJSON += fmt.Sprintf(`"%v"`, line)
+					captureJSON += fmt.Sprintf(`"## %v"`, line)
 				} else {
-					captureJSON += fmt.Sprintf(`,"%v"`, line)
+					captureJSON += fmt.Sprintf(`,"## %v"`, line)
 				}
 			}
 			captureJSON += `]`
@@ -192,7 +192,6 @@ func prepConsoleMessage(consoleOut string, seqno int) []byte {
 	if consoleOut == "" {
 		return nil
 	}
-	//escaped := strings.ReplaceAll(consoleOut, `"`, `\"`)
 	json := fmt.Sprintf(`{"seqno": %v, "console":%v}`, seqno, consoleOut)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
