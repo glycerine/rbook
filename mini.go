@@ -163,6 +163,11 @@ func main() {
 		case "sv()":
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+			if err != nil {
+				// possibly "no plot on device to save";
+				// don't bother to send to browser. And don't crash.
+				continue
+			}
 			panicOn(err)
 			pathhash := PathHash(path)
 			//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
