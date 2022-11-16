@@ -67,7 +67,7 @@ func main() {
 	// our repl
 	embedr.ReplDLLinit()
 	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
-	prevCmd := ""
+
 	seqno := 0
 	for {
 		path := ""
@@ -88,20 +88,9 @@ func main() {
 		cmd := strings.TrimSpace(embedr.Lastexpr())
 		//vv("cmd = '%v'", cmd)
 
-		// reject duplicates, we were strangely getting?
-		// Would like to be able see multple "i = i + 1"
-		// commands if we issue them, but small price for now.
-		// Maybe we can figure out why we were getting
-		// spurious callbacks... embedr.Lastexpr() should
-		// be clearing the global char* each time, so
-		// I'm not sure why... maybe its a websocket
-		// thing? hmm... maybe put a timestamp/sequence number in the
-		// websocket message and have the browser dedup.
-		if cmd == prevCmd {
-			vv("we see a duplicated cmd: '%v'", cmd)
-			//continue
+		if cmd == "" {
+			continue
 		}
-		prevCmd = cmd
 
 		// weed out the ess crap
 		if strings.HasPrefix(cmd, ".ess") {

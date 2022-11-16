@@ -110,14 +110,17 @@ window.onload = stamp;
     const update = JSON.parse(msg)
 
     // try to prevent duplicates due to websocket tomfoolery.
-    if (update.seqno > globalLastSeqno) {
-        // good keep it
-        globalLastSeqno = update.seqno;
-    } else {
-        // drop duplicates
-        return;
+    if (update.seqno) {      
+        if (update.seqno > globalLastSeqno) {
+            // good keep it
+            globalLastSeqno = update.seqno;
+        } else {
+           // drop duplicates
+           console.log("dropping stale message update.seqno" + update.seqno + " vs. last " + globalLastSeqno);
+           return;
+        }
     }
-          
+
     var newstuff = ''; // '<br /> ';
     if (update.text) {
         //newstuff += '['+ n +'] <div id="' + id + '">' + update.text; //  + '<br />';
