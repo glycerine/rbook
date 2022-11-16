@@ -67,7 +67,7 @@ func main() {
 
 	history, appendFD, err := ReadBook(username, hostname, bookpath)
 	panicOn(err)
-	if true {
+	if false {
 		vv("see history len %v:", len(history.Elems))
 		for _, e := range history.Elems {
 			fmt.Printf("%v\n", e)
