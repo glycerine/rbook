@@ -88,8 +88,8 @@ func main() {
 	seqno := 0
 	for {
 
-		embedr.EvalR(`if(exists("tout")) { rm("tout") }`)
-		embedr.EvalR(`sink(textConnection("tout", open="w"), split=T);`)
+		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
+		embedr.EvalR(`sink(textConnection("zrecord_mini_console", open="w"), split=T);`)
 
 		path := ""
 		did := embedr.ReplDLLdo1()
@@ -98,15 +98,30 @@ func main() {
 		// did == 0 => error evaluating
 		// did == -1 => ctrl-d (end of file).
 
-		sinkgot, err := embedr.EvalR_fullback(`tout`)
+		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
 		panicOn(err)
-		vv("sinkgot = \n") // , sinkgot)
-		svec, ok := sinkgot.([]string)
-		if ok {
-			for _, line := range svec {
-				fmt.Printf("%v\n", line)
+		capture, capturedOutputOK := sinkgot.([]string)
+		captureJSON := "["
+		if capturedOutputOK {
+			vv("capture = %v lines\n", len(capture))
+			for i, line := range capture {
+				fmt.Printf("line %02d: %v\n", i, line)
+				if i == 0 {
+					captureJSON += fmt.Sprintf(`"%v"`, line)
+				} else {
+					captureJSON += fmt.Sprintf(`,"%v"`, line)
+				}
 			}
+			captureJSON += `]`
 		}
+		vv("captureJSON = '%v'", captureJSON)
+
+		// Fortunately this does not appear to disturb Lastexpr().
+		// Likewise, errors do not make it to Lastexpr() on purpose,
+		// because our C code only sets Lastexpr() on successful evaluation.
+		//
+		// We could always move it later, after the did error check,
+		// if that does pop up in the future.
 		embedr.EvalR(`sink(file=NULL)`)
 
 		//if did <= 0 {
@@ -118,7 +133,7 @@ func main() {
 			continue
 		}
 		cmd := strings.TrimSpace(embedr.Lastexpr())
-		//vv("cmd = '%v'", cmd)
+		vv("cmd = '%v'", cmd)
 
 		if cmd == "" {
 			continue
