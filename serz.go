@@ -146,6 +146,11 @@ func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err err
 	if fresh {
 		// nothing to read
 		h = NewHashRBook(user, host, path)
+
+		var by []byte
+		by, err = h.SaveToSlice()
+		panicOn(err)
+		_, err = appendFD.Write(by)
 		return
 	}
 
@@ -235,7 +240,7 @@ func LoadElem(r *msgp.Reader) (e *HashRElem, err error) {
 	return &ue, nil
 }
 
-// Save tk as a framed msgpack message (where first few bytes are a []byte encoded
+// Save HashRElem as a framed msgpack message (where first few bytes are a []byte encoded
 // to tell us the size of the rest of the bytes that follow. Those following
 // bytes consist themselves of a msgpack serialized Tk.
 func (e *HashRElem) SaveToSlice() ([]byte, error) {
@@ -243,6 +248,18 @@ func (e *HashRElem) SaveToSlice() ([]byte, error) {
 	b, err := e.MarshalMsg(nil)
 	if err != nil {
 		return nil, fmt.Errorf("HashRElem.SaveToSlice() error on MarshalMsg: '%s'", err)
+	}
+	return ByteSlice(b).MarshalMsg(nil)
+}
+
+// Save HashRBook as a framed msgpack message (where first few bytes are a []byte encoded
+// to tell us the size of the rest of the bytes that follow. Those following
+// bytes consist themselves of a msgpack serialized Tk.
+func (book *HashRBook) SaveToSlice() ([]byte, error) {
+
+	b, err := book.MarshalMsg(nil)
+	if err != nil {
+		return nil, fmt.Errorf("HashRBook.SaveToSlice() error on MarshalMsg: '%s'", err)
 	}
 	return ByteSlice(b).MarshalMsg(nil)
 }
