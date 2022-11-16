@@ -16,8 +16,13 @@ However, minibook has some of the same goals:
 design
 ------
 
-* goal: enable saving and pushing R plots to the minibook for
-  display
+* goal: 
+
+We want to enable saving and recording of an R session, including
+plots, commands, and command output to the minibook. The
+minibook is displayed in a web browser and updated
+as the user's R session progresses. Should be usable
+under an ESS/emacs environment.
 
 * approach: 
 
@@ -63,7 +68,7 @@ Still TODO
    x11vnc server. Mini should start them if they are
    not already running.
 
-3) authentiation:
+3) authentiation: deferred.
 
 The login.go contains a simple cookie based login example
 that would need to be made persistent to disk with
