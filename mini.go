@@ -4,12 +4,15 @@ import (
 	//"bufio"
 	//"bytes"
 	"fmt"
+	"hash"
 	//"log"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
 	//"time"
 
+	"github.com/glycerine/blake2b-simd"
 	"github.com/glycerine/embedr"
 	//"github.com/glycerine/rmq"
 )
@@ -17,6 +20,23 @@ import (
 func init() {
 	// Arrange that main.main runs on main thread. Hopefully this helps R startup.
 	runtime.LockOSThread()
+	var err error
+	hasher, err = blake2b.New(nil)
+	panicOn(err)
+	hostname, err = os.Hostname()
+	panicOn(err)
+}
+
+var hostname string
+var hasher hash.Hash
+
+func PathHash(path string) (hash string) {
+	hasher.Reset()
+	hasher.Write([]byte(hostname + ":" + path + ":"))
+	by, err := ioutil.ReadFile(path)
+	panicOn(err)
+	hasher.Write(by)
+	return string(hasher.Sum(nil))
 }
 
 func main() {
@@ -102,11 +122,12 @@ func main() {
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
-			//vv("saved to path = '%v'", path)
+			pathhash := PathHash(path)
+			vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
 			nextSave++
 
 			//vv("Reloading browser with image path '%v'", path)
-			hub.broadcast <- prepImageMessage(path, seqno)
+			hub.broadcast <- prepImageMessage(path, pathhash, seqno)
 			seqno++
 		} else {
 			hub.broadcast <- prepTextMessage(cmd, seqno)
@@ -127,11 +148,11 @@ func prepTextMessage(msg string, seqno int) []byte {
 	return []byte(lenPrefixedJson)
 }
 
-func prepImageMessage(path string, seqno int) []byte {
+func prepImageMessage(path, pathhash string, seqno int) []byte {
 	if path == "" {
 		return nil
 	}
-	json := fmt.Sprintf(`{"seqno":%v, "image":"%v"}`, seqno, path)
+	json := fmt.Sprintf(`{"seqno":%v, "image":"%v", "pathhash":"%v"}`, seqno, path, pathhash)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }

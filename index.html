@@ -130,6 +130,10 @@ window.onload = stamp;
         console.log("we added text")
     }
     if (update.image) {
+        var hash = "";
+        if (update.pathhash) {
+           hash = update.pathhash;
+        }
         if (didCode) {
             n = n1;
             id = id1;
@@ -137,7 +141,7 @@ window.onload = stamp;
         } else {
             console.log("id is still id: ", id)
         }
-        // newstuff += ' ['+ n +'] <div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
+        // newstuff += ' ['+ n +'] <div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '?pathhash=' + hash + '" style="max-width:100%;"/></div>';
         newstuff += '<div id="'+ id +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '" style="max-width:100%;"/></div>';
     }
     //newstuff += '</div>'
