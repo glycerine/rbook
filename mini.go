@@ -26,11 +26,14 @@ func init() {
 	hostname, err = os.Hostname()
 	panicOn(err)
 	username = os.Getenv("USER")
+
+	sep = string(os.PathSeparator)
 }
 
 var username string
 var hostname string
 var hasher hash.Hash
+var sep string
 
 // PathHash gets attached to all image requests
 // as a ?pathhash=0248... query parameter. It includes the
@@ -55,7 +58,10 @@ func PathHash(path string) (hash string, imageBy []byte) {
 
 func main() {
 
-	bookpath := "my.hashr.book"
+	fn := "my.hashr.book"
+	cwd, err := os.Getwd()
+	panicOn(err)
+	bookpath := cwd + sep + fn
 
 	var history *HashRBook
 
