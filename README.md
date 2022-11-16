@@ -37,18 +37,9 @@ current graph to the browser.
 
 Interactive graph development is followed
 in by running a vnc client attached to Xvfb session.
-There are even web-based vnc clients like
-https://guacamole.apache.org/ is one wishes; but
-it appears to need a Java support proxy.
-
-See also https://9to5answer.com/web-based-vnc-client
-for non-Java pure websocket options.
-They suggest https://github.com/InstantWebP2P/peer-vnc,
-and mention PocketVNC but do not provide a link. Also,
-mentioned are https://tightVNC.com, and
-https://github.com/InstantWebP2P/peer-vnc .
-
-These are minor things; running a native vnc client is simple
+There are even web-based vnc clients, but
+that seems like extra work when 
+running a native vnc client is simple
 and effective. https://www.realvnc.com/en/ is free,
 as are multiple alternatives.
 
@@ -101,7 +92,9 @@ Still TODO
 
 _ pick the websocket port dynamically, embed into index.html before sending.
  to avoid collisions with multiples running at once.
- 
+
+_ add configuration command line options for setting options.
+
 _ we *could* auto-replay to re-obtain state as well... but might rather
 step through it. But could be a nice option.
 
