@@ -66,7 +66,8 @@ func main() {
 
 	// our repl
 	embedr.ReplDLLinit()
-	embedr.EvalR(`sv=function(){}`)
+	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
+	prevCmd := ""
 	for {
 		path := ""
 		did := embedr.ReplDLLdo1()
@@ -79,12 +80,33 @@ func main() {
 		//	break
 		//}
 		if did < 1 {
-			// ctrl-d, EOF
-			embedr.EvalR(`q()`)
+			// error, keep going. also ctrl-d, EOF
+			//embedr.EvalR(`q()`)
 			continue
 		}
 		cmd := strings.TrimSpace(embedr.Lastexpr())
 		//vv("cmd = '%v'", cmd)
+
+		// reject duplicates, we were strangely getting?
+		// Would like to be able see multple "i = i + 1"
+		// commands if we issue them, but small price for now.
+		// Maybe we can figure out why we were getting
+		// spurious callbacks... embedr.Lastexpr() should
+		// be clearing the global char* each time, so
+		// I'm not sure why... maybe its a websocket
+		// thing? hmm... maybe put a timestamp/sequence number in the
+		// websocket message and have the browser dedup.
+		if cmd == prevCmd {
+			vv("we see a duplicated cmd: '%v'", cmd)
+			//continue
+		}
+		prevCmd = cmd
+
+		// weed out the ess crap
+		if strings.HasPrefix(cmd, ".ess") {
+			// ignore the garbage .ess_funargs stuff
+			continue
+		}
 
 		if cmd == "sv()" {
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
