@@ -5,6 +5,9 @@ import (
 	"github.com/glycerine/embedr"
 )
 
+var _ = fmt.Printf
+var _ = embedr.SetCustomPrompt
+
 /*
 MIT License
 
@@ -62,8 +65,9 @@ func (h *Hub) run() {
 			_ = cc
 			// conn embeds net.Conn
 			ncli := len(h.clients)
+			_ = ncli
 			//vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
-			embedr.SetCustomPrompt(fmt.Sprintf("[wsclient: %v] >", ncli))
+			//embedr.SetCustomPrompt(fmt.Sprintf("[wsclient: %v] >", ncli))
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)

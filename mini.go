@@ -96,8 +96,10 @@ func main() {
 
 	// our repl
 	embedr.ReplDLLinit()
-	embedr.EvalR(`sv=function(){invisible(T)}`) // easy to type. cmd == "sv()" tells us to save the current graph.
-	embedr.EvalR(`dv=function(){invisible(T)}`) // easy to type. cmd == "dv()" tells us to save the last value.
+	// cannot do invisible(TRUE) inside here; as that will
+	// hide the previous command output!
+	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
+	embedr.EvalR(`dv=function(){}`) // easy to type. cmd == "dv()" tells us to save the last value.
 
 	seqno := 0
 
