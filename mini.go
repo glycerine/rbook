@@ -102,6 +102,7 @@ func main() {
 			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
+			vv("saved to path = '%v'", path)
 			nextSave++
 
 			//vv("Reloading browser with image path '%v'", path)
@@ -130,7 +131,7 @@ func prepImageMessage(path string, seqno int) []byte {
 	if path == "" {
 		return nil
 	}
-	json := fmt.Sprintf(`{"seqno":%v, "image":"%v"}`, path, seqno)
+	json := fmt.Sprintf(`{"seqno":%v, "image":"%v"}`, seqno, path)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }

@@ -58,6 +58,7 @@ function tryConnectToReload(address) {
   var conn = new WebSocket(address);
 
   conn.onclose = function() {
+    globalLastSeqno = -1;
     setTimeout(function() {
       tryConnectToReload(address);
     }, 2000);
