@@ -25,8 +25,10 @@ func init() {
 	panicOn(err)
 	hostname, err = os.Hostname()
 	panicOn(err)
+	username = os.Getenv("USER")
 }
 
+var username string
 var hostname string
 var hasher hash.Hash
 
@@ -57,7 +59,7 @@ func main() {
 
 	var history *HashRBook
 
-	history, appendFD, err := ReadBook(hostname, bookpath)
+	history, appendFD, err := ReadBook(username, hostname, bookpath)
 	panicOn(err)
 	if true {
 		vv("see history len %v:", len(history.Elems))

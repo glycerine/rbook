@@ -106,24 +106,26 @@ type HashRBook struct {
 	// when switching notebooks; like UUID but not.
 	BookID string `msg:"bookID" json:"bookID" zid:"1"`
 
-	Host string `msg:"host" json:"host" zid:"2"`
-	Path string `msg:"path" json:"path" zid:"3"`
+	User string `msg:"user" json:"user" zid:"2"`
+	Host string `msg:"host" json:"host" zid:"3"`
+	Path string `msg:"path" json:"path" zid:"4"`
 
-	Elems []*HashRElem `msg:"elems" json:"elems" zid:"4"`
+	Elems []*HashRElem `msg:"elems" json:"elems" zid:"5"`
 
 	mut sync.Mutex
 }
 
-func NewHashRBook(host, path string) *HashRBook {
+func NewHashRBook(user, host, path string) *HashRBook {
 	return &HashRBook{
 		CreateTm: time.Now(),
 		BookID:   cryrand.RandomStringWithUp(24),
+		User:     user,
 		Host:     host,
 		Path:     path,
 	}
 }
 
-func ReadBook(host, path string) (h *HashRBook, appendFD *os.File, err error) {
+func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err error) {
 
 	fresh := true
 	if FileExists(path) {
@@ -135,7 +137,7 @@ func ReadBook(host, path string) (h *HashRBook, appendFD *os.File, err error) {
 		return
 	}
 
-	h = NewHashRBook(host, path)
+	h = NewHashRBook(user, host, path)
 	if fresh {
 		// nothing to read
 		return
