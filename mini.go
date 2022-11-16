@@ -68,6 +68,7 @@ func main() {
 	embedr.ReplDLLinit()
 	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
 	prevCmd := ""
+	seqno := 0
 	for {
 		path := ""
 		did := embedr.ReplDLLdo1()
@@ -115,30 +116,32 @@ func main() {
 			nextSave++
 
 			//vv("Reloading browser with image path '%v'", path)
-			hub.broadcast <- prepImageMessage(path)
+			hub.broadcast <- prepImageMessage(path, seqno)
+			seqno++
 		} else {
-			hub.broadcast <- prepTextMessage(cmd)
+			hub.broadcast <- prepTextMessage(cmd, seqno)
+			seqno++
 		}
 	}
 	select {}
 }
 
 // add length: as prefix, so we can parse 2 messages that get piggy backed.
-func prepTextMessage(msg string) []byte {
+func prepTextMessage(msg string, seqno int) []byte {
 	if msg == "" {
 		return nil
 	}
 	escaped := strings.ReplaceAll(msg, `"`, `\"`)
-	json := fmt.Sprintf(`{"text":"%v"}`, escaped)
+	json := fmt.Sprintf(`{"seqno": %v, "text":"%v"}`, seqno, escaped)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }
 
-func prepImageMessage(path string) []byte {
+func prepImageMessage(path string, seqno int) []byte {
 	if path == "" {
 		return nil
 	}
-	json := fmt.Sprintf(`{"image":"%v"}`, path)
+	json := fmt.Sprintf(`{"seqno":%v, "image":"%v"}`, path, seqno)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }
