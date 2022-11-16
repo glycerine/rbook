@@ -3,7 +3,6 @@
 *.a
 *.so
 *~
-minibook
-.hashrbook
-mini
-*.hashr.book
+rbook
+.rbook
+*rbook
