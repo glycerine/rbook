@@ -122,7 +122,7 @@ function scrollToBottom() {
       
  function appendLog(msg){
  
-    console.log("msg = ", msg);
+    //console.log("msg = ", msg);
     
     const update = JSON.parse(msg)
 
@@ -188,7 +188,7 @@ function scrollToBottom() {
     // 2 msec isn't long enough to win the fight for the scrollbar
     // position, usually. but 20 msec seems to win it consistently.
     //
-    setTimeout(function() { console.log("called back!"); scrollToBottom()}, 20);
+    setTimeout(function() { /*console.log("called back!");*/ scrollToBottom()}, 20);
 }
 
 try {

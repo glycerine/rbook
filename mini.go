@@ -124,9 +124,9 @@ func main() {
 	seqno := len(history.elems)
 
 	StartShowme() // serve the initial html and the png files to the web browsers
-	//log.Println("Showme http server started. Starting reload websocket server.")
+	vv("Showme http server started. Starting reload websocket server.")
 	startReloadServer(history) // websockets to tell browsers what to show when there's an update.
-	//log.Println("Reload server started.")
+	vv("Reload server started.")
 
 	// number the saved png files.
 	nextSave := 0

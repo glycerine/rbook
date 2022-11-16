@@ -25,7 +25,6 @@ SOFTWARE.
 */
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -77,7 +76,12 @@ func (c *Client) readPump() {
 		_, _, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.Printf("An error happened when reading from the Websocket client: %v", err)
+				// 2022/11/16 12:42:27 An error happened when reading from the
+				// Websocket client: websocket: close 1006 (abnormal closure): unexpected EOF
+				//
+				// may not be worth complaining about, but leave on to see
+				// if its anything fixable.
+				vv("An error happened when reading from the Websocket client: %v", err)
 			}
 			break
 		}
@@ -134,7 +138,7 @@ func (c *Client) writePump() {
 func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
+		vv("error trying upgrader.Upgrade(): '%v'", err)
 		return
 	}
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}

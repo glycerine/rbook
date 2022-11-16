@@ -199,3 +199,29 @@ https://rstudio.github.io/r-manuals/r-exts/Linking-GUIs-and-other-front-ends-to-
 
 
 
+notes 
+-----
+there is `max.deparse.length` as a limit, as an option to `source()` and a way to raise it
+
+https://stackoverflow.com/questions/54872060/what-does-truncated-mean-in-the-tinn-r-console/55292384#55292384
+
+https://emacs.stackexchange.com/questions/69220/ess-turn-off-truncated-in-ess-r-session
+
+quoting a comment there:
+~~~
+It looks like I want to set max.depare.lengt = echo() rather than an integer. The relevant code seems to be in: ess/etc/ESSR/R/.basic.R: Specifically, 
+
+.ess.eval <- function(string, visibly = TRUE, output = FALSE,              
+                      max.deparse.length = 300,
+                      file = tempfile("ESS"), local = NULL) { ...
+
+and 
+
+.ess.source <- function(file, visibly = TRUE, output = FALSE,
+                        max.deparse.length = 300, local = NULL,
+                        fake.source = FALSE, keep.source = TRUE,
+                        message.prefix = "") { ...
+
+mikemtnbikes
+2022 Oct 25 
+~~~
