@@ -119,7 +119,7 @@ func main() {
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			panicOn(err)
 			pathhash := PathHash(path)
-			vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
+			//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
 			nextSave++
 
 			//vv("Reloading browser with image path '%v'", path)
