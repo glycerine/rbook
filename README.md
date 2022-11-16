@@ -1,15 +1,16 @@
-![minibooklogo](https://github.com/glycerine/minibook/blob/master/logomini.png)
+![rbooklogo](https://github.com/glycerine/rbook/blob/master/logomini.png)
 
-minibook
+rbook
 ========
 
-A miniature or mini-version of a notebook server, 
-written in Go, for use with R.
+Project `rbook` provides an R notebook. `rbook` is 
+written in Go, and a little C, for use with R. It works well
+with emacs and ESS.
 
-A minibook is similar to a Jupyter/ipython notebook, but 
+An rbook is similar to a Jupyter/ipython notebook, but 
 is not built on them.
 
-However, minibook has some of the same goals:
+However, rbook has some of the same goals:
 
 * show code and then graphs together on a web page
 
@@ -21,8 +22,8 @@ design
 * goal: 
 
 We want to enable saving and recording of an R session, including
-plots, commands, and command output to the minibook. The
-minibook is displayed in a web browser and updated
+plots, commands, and command output to the rbook. The
+rbook is displayed in a web browser and updated
 as the user's R session progresses. Should be usable
 under an ESS/emacs environment.
 
@@ -139,9 +140,9 @@ savePlot() # writes current plot to Rplot.png or filename=
 ~~~
 
 We can invoke savePlot() to assign a filename,
-and then send the filename to minibook.
+and then send the filename to rbook.
 
-Our minibook may then wish to copy the file
+Our rbook may then wish to copy the file
 version of plots for safe keeping into the archive.
 
 Since sometimes plots are built up interactively, we
