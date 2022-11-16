@@ -112,7 +112,10 @@ func main() {
 		path := ""
 		did := embedr.ReplDLLdo1()
 		_ = did
-		//vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
+		if did > 1 {
+			// did == 2: this seems to mean that the call is incomplete;
+			vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
+		}
 		// did == 0 => error evaluating
 		// did == -1 => ctrl-d (end of file).
 

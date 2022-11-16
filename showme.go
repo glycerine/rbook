@@ -178,7 +178,12 @@ func StartShowme() {
 
 	http.HandleFunc("/view/", viewHandler)
 
-	vv("visit http://rog:%v/images  to watch the minibook R updates.", cfg.Port)
+	host := cfg.Host
+	if host == "" {
+		host = hostname
+	}
+	fmt.Printf("\nUse http://%v:%v        -- for the minibook R session.\n", host, cfg.Port)
+	fmt.Printf("\nUse http://%v:%v/view   -- to view all .png images in initial directory.\n\n", host, cfg.Port)
 	go func() {
 		err = http.ListenAndServe(fmt.Sprintf("%v:%v", cfg.Host, cfg.Port), nil)
 		panicOn(err)
