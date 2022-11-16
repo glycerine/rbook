@@ -19,23 +19,55 @@ design
 * goal: enable saving and pushing R plots to the minibook for
   display
 
-* approach: mini embeds R to capture commands and notice
-   when plots are made so they can be saved to disk, saved in the archive,
-   and their paths sent to the web client.
+* approach: to capture graphs, we run under Xvfb and
+            use the R savePlot() call. This only
+            happens on user demand. The user
+            calls sv() at the R prompt to save the 
+            current graph to the browser.
+            
+* approach to show history in the browser:
+
+            All top level commands are captured by using
+            R's addTaskCallback mechanism. Our C
+            code then deparses each command, passes
+            it to Go, and Go conveys it to the
+            listening browser over a websocket.
+            
+* approach to showing command output (prints, etc):
+
+            To capture the output of commands, we use
+            the R sink() facility. Like graphs, they
+            are written to the browser on demand. The
+            user types dv() to "display the value" in
+            the browser. We use the R sink() facility
+            to capture the last value seen at the R
+            top level.
+
+* Push communication with listening browsers:
+
+   Mini runs a web server to serve images to the browsers.
    Simultanieously, mini also runs a websocket interface 
    that it uses to push to subscribed web browsers 
    each new code/plot addition for display.
+
+* Still TODO
+
+1) make history (the notebook) persistent so that
+   browsers can reload history; even after R or
+   the browser has been restarted.
    
-The websocket code for browser clients already in the repo
-from the golang-reload-browser example.
+2) Automate the startup of the Xvgb, window manager, and
+   x11vnc server.
+
+3) authentiation:
 
 The login.go contains a simple cookie based login example
 that would need to be made persistent to disk with
 greenpack or other means. But we'll defer login until needed.
 
-Capturing graphs in R and sending them to minibook:
 
-By starting R under Xvfb using
+howto
+=====
 
 ~~~
 xvfb-run R
@@ -53,6 +85,9 @@ x11vnc -display :99 -forever -nopw -quiet -xkb
 
 Now a vnc client connecting to port 5900 will
 show the xvfb frame buffer.
+
+earlier notes; may be out of date
+---------------------------------
 
 In R
 ~~~
@@ -97,7 +132,8 @@ with the code.
 I'm liking this wrapper idea, simple single
 process idea.
 
-We have embedr already working.
+We have embedr already working and it provides
+an API into executing arbitrary R code from Go.
 
 ~~~
 import (
