@@ -31,6 +31,19 @@ use the R savePlot() call. This only
 happens on user demand. The user
 calls sv() at the R prompt to save the 
 current graph to the browser.
+
+Interactive graph development is followed
+in by running a vnc client attached to Xvfb session.
+There are even web-based vnc clients like
+https://guacamole.apache.org/ is one wishes; but
+it appears to need a Java support proxy.
+
+See also https://9to5answer.com/web-based-vnc-client
+
+These are minor things; running a native vnc client is simple
+and effective. https://www.realvnc.com/en/ is free,
+as are multiple alternatives.
+
             
 * approach to show history in the browser:
 
