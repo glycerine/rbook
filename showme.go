@@ -50,6 +50,7 @@ func StartShowme() {
 	}
 	cwd, err := os.Getwd()
 	panicOn(err)
+	_ = cwd
 	//fmt.Printf("showme running in '%s' with %v png files\n", cwd, len(pngs))
 
 	/*
