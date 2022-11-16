@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -71,26 +70,18 @@ func startReloadServer() {
 
 	go startServer()
 	go startServerTLS()
-	log.Println("Reload server listening at", reloadAddress)
+	//vv("Reload server listening at '%v'", reloadAddress)
 }
 
 func startServer() {
 	err := http.ListenAndServe(reloadAddress, nil)
-
-	if err != nil {
-		log.Println("Failed to start up the Reload server: ", err)
-		return
-	}
+	panicOn(err)
 }
 
 func startServerTLS() {
 	cert, key := createCertFiles()
 	err := http.ListenAndServeTLS(reloadAddressTLS, cert, key, nil)
-
-	if err != nil {
-		log.Println("Failed to start up the Reload server with TLS: ", err)
-		return
-	}
+	panicOn(err)
 }
 
 var next int
