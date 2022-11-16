@@ -1,20 +1,16 @@
 package main
 
 import (
-	//"bufio"
-	//"bytes"
+	"encoding/base64"
 	"fmt"
 	"hash"
-	//"log"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
-	//"time"
 
 	"github.com/glycerine/blake2b-simd"
 	"github.com/glycerine/embedr"
-	//"github.com/glycerine/rmq"
 )
 
 func init() {
@@ -36,7 +32,7 @@ func PathHash(path string) (hash string) {
 	by, err := ioutil.ReadFile(path)
 	panicOn(err)
 	hasher.Write(by)
-	return string(hasher.Sum(nil))
+	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil))
 }
 
 func main() {
