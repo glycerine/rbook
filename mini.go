@@ -96,8 +96,8 @@ func main() {
 
 	// our repl
 	embedr.ReplDLLinit()
-	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
-	embedr.EvalR(`dv=function(){}`) // easy to type. cmd == "dv()" tells us to save the last value.
+	embedr.EvalR(`sv=function(){invisible(T)}`) // easy to type. cmd == "sv()" tells us to save the current graph.
+	embedr.EvalR(`dv=function(){invisible(T)}`) // easy to type. cmd == "dv()" tells us to save the last value.
 
 	seqno := 0
 
@@ -114,7 +114,7 @@ func main() {
 		_ = did
 		if did > 1 {
 			// did == 2: this seems to mean that the call is incomplete;
-			vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
+			//vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
 		}
 		// did == 0 => error evaluating
 		// did == -1 => ctrl-d (end of file).
