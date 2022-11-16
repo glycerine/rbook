@@ -115,6 +115,7 @@ func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
 	for {
 		e, err = LoadElem(mpr)
 		if err == io.EOF {
+			err = nil
 			return
 		}
 		panicOn(err)
