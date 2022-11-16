@@ -87,12 +87,27 @@ func main() {
 
 	seqno := 0
 	for {
+
+		embedr.EvalR(`if(exists("tout")) { rm("tout") }`)
+		embedr.EvalR(`sink(textConnection("tout", open="w"), split=T);`)
+
 		path := ""
 		did := embedr.ReplDLLdo1()
 		_ = did
 		//vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
 		// did == 0 => error evaluating
 		// did == -1 => ctrl-d (end of file).
+
+		sinkgot, err := embedr.EvalR_fullback(`tout`)
+		panicOn(err)
+		vv("sinkgot = \n") // , sinkgot)
+		svec, ok := sinkgot.([]string)
+		if ok {
+			for _, line := range svec {
+				fmt.Printf("%v\n", line)
+			}
+		}
+		embedr.EvalR(`sink(file=NULL)`)
 
 		//if did <= 0 {
 		//	break
