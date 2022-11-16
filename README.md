@@ -1,4 +1,4 @@
-![rbooklogo](https://github.com/glycerine/rbook/blob/master/logomini.png)
+![rbooklogo](https://github.com/glycerine/rbook/blob/master/logo_rbook.png)
 
 rbook
 ========
