@@ -22,6 +22,18 @@ const (
 	Image   HasherTyp = 4
 )
 
+func (ty HasherTyp) String() string {
+	switch ty {
+	case Command:
+		return "Command"
+	case Console:
+		return "Console"
+	case Image:
+		return "Image"
+	}
+	panic(fmt.Sprintf("unrecognized HasherTyp = %v", int(ty)))
+}
+
 // HasherElem are the "cells" of a notebook; in this
 // case the elements of the HasherBook.Elems
 type HasherElem struct {
@@ -63,6 +75,23 @@ type HasherElem struct {
 
 	// ImagePathHash = hash(ImageHost + ImagePath + ImageBy)
 	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"9"`
+}
+
+func (e *HasherElem) String() (s string) {
+	return fmt.Sprintf(`
+HasherElem{
+	Typ: %v,
+	Tm: %v,
+	Seqno: %v,
+	CmdJSON: %v,
+	ConsoleJSON: %v,
+	ImageJSON: %v,
+	ImageHost: %v,
+	ImagePath: %v,
+	ImageBy: (len: %v),
+	ImagePathHash: %v,
+}
+`, e.Typ, e.Tm, e.Seqno, e.CmdJSON, e.ConsoleJSON, e.ImageJSON, e.ImageHost, e.ImagePath, len(e.ImageBy), e.ImagePathHash)
 }
 
 type HasherBook struct {

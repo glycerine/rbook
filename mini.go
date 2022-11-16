@@ -60,6 +60,11 @@ func main() {
 	var appendFD *os.File
 	if FileExists(bookpath) {
 		history, appendFD, err = ReadBook(bookpath)
+
+		vv("see history:")
+		for _, e := range history.Elems {
+			fmt.Printf("%v\n", e)
+		}
 	} else {
 		appendFD, err = os.Create(bookpath)
 		history = NewHasherBook()
