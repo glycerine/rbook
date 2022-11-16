@@ -129,7 +129,14 @@ window.onload = stamp;
     var d  = document.getElementById("log");
     
     // try to prevent duplicates due to websocket tomfoolery.
-    if (update.seqno) {      
+     if (update.seqno) {
+         // recognize a refresh from the start
+         if (update.seqno == 0) {
+             globalLastSeqno = -1;
+             // this clears all previous log entries/cells.
+             d.innerHTML = "";
+         }
+         
         if (update.seqno > globalLastSeqno) {
             // good keep it
             globalLastSeqno = update.seqno;
