@@ -154,8 +154,9 @@ func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err err
 		return
 	}
 
-	h = &HashRBook{}
 	mpr := msgp.NewReader(appendFD)
+	h, err = LoadBook(mpr)
+	panicOn(err)
 
 	var e *HashRElem
 	for {
@@ -250,6 +251,63 @@ func (e *HashRElem) SaveToSlice() ([]byte, error) {
 		return nil, fmt.Errorf("HashRElem.SaveToSlice() error on MarshalMsg: '%s'", err)
 	}
 	return ByteSlice(b).MarshalMsg(nil)
+}
+
+// read a HashRBook into book from r.
+func LoadBook(r *msgp.Reader) (book *HashRBook, err error) {
+
+	// peek ahead first, so we can avoid
+	// moving the read point ahead if there
+	// are insufficient bytes
+
+	// try to get at least 5 bytes, but
+	// settle for 2 since that is possible.
+	var by []byte
+
+	var i int
+	for i = 5; i >= 2; i-- {
+		by, err = r.R.Peek(i)
+		if err == nil {
+			break
+		}
+		if err == io.EOF {
+			// try shorter
+			continue
+		}
+		return nil, err
+	}
+	if err == io.EOF {
+		return nil, err
+	}
+	if err != nil {
+		return nil, fmt.Errorf("LoadElem() error trying to r.R.Peek() for bytes: '%s'", err)
+	}
+
+	//ninside, ntotal, nheader, err := UnframeBinMsgpack(by)
+	ntotal, _, _, err := UnframeBinMsgpack(by)
+
+	if err != nil {
+		return nil, fmt.Errorf("LoadElem() error on UnframeBinMsgPack(): '%s'", err)
+	}
+
+	_, err = r.R.Peek(ntotal)
+	if err != nil {
+		return nil, fmt.Errorf("LoadElem() error on Peek() call for ntotal bytes: '%s'", err)
+	}
+
+	var bs2 ByteSlice
+	err = bs2.DecodeMsg(r)
+	if err != nil {
+		return nil, fmt.Errorf("LoadElem() error on ByteSlice(by).DecodeMsg(): '%s'", err)
+	}
+
+	var ue HashRBook
+	_, err = ue.UnmarshalMsg(bs2)
+	if err != nil {
+		return nil, fmt.Errorf("LoadElem() error on tk.UnmarshalMsg(): '%s'", err)
+	}
+
+	return &ue, nil
 }
 
 // Save HashRBook as a framed msgpack message (where first few bytes are a []byte encoded
