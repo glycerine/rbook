@@ -46,13 +46,16 @@ type HasherElem struct {
 	// 3rd type: image
 	ImageJSON string `msg:"imageJSON" json:"imageJSON" zid:"5"`
 
-	// png formatted graphic, referred to by ImageJSON and ImagePath;
-	// checksummed by ImagePathHash.
-	ImageBy []byte `msg:"imageBy" json:"imageBy" zid:"6"`
+	// where it was on disk;
+	ImageHost string `msg:"imageHost" json:"imageHost" zid:"6"`
+	ImagePath string `msg:"imagePath" json:"imagePath" zid:"7"`
 
-	// where it was on disk
-	ImagePath     string `msg:"imagePath" json:"imagePath" zid:"7"`
-	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"8"`
+	// ImageBy has png formatted graphic, referred to by ImageJSON and ImagePath;
+	// checksummed by ImagePathHash.
+	ImageBy []byte `msg:"imageBy" json:"imageBy" zid:"8"`
+
+	// ImagePathHash = hash(ImageHost + ImagePath + ImageBy)
+	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"9"`
 }
 
 type HasherBook struct {
