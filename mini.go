@@ -15,7 +15,8 @@ import (
 )
 
 func init() {
-	// Arrange that main.main runs on main thread. Hopefully this helps R startup.
+	// Arrange that main.main runs on main thread. This lets R startup
+	// without crashing when run on a non-main thread.
 	runtime.LockOSThread()
 	var err error
 	hasher, err = blake2b.New(nil)
@@ -38,7 +39,7 @@ func PathHash(path string) (hash string) {
 
 func main() {
 
-	// start R first so maybe it gets the main thread.
+	// start R first so it gets the main thread.
 
 	// TODO: start up Xvfb on a free DISPLAY like :99
 	// Xvfb :99 -screen 0 3000x2000x16
@@ -54,15 +55,17 @@ func main() {
 	embedr.InitR(true)
 	defer embedr.EndR()
 	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
-	embedr.EvalR("require(R.utils)") // for captureOutput()
+	//embedr.EvalR("require(R.utils)") // for captureOutput()
 	embedr.EvalR("x11()")
 
 	embedr.EvalR("hist(rnorm(1000))")             // worked.
 	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 	// nice to have a starting .png so showme does not crash :)
 
-	// https://lapsedgeographer.london/2020-11/custom-r-prompt/
-	//The prompt is a simple character string, stored in .Options, meaning we
+	// If you want a custom prompt...
+	// https://lapsedgeographer.london/2020-11/custom-r-prompt/  says:
+	//
+	// The prompt is a simple character string, stored in .Options, meaning we
 	// can easily inspect it and modify it.  You can even use emoji, though
 	// I’d recommend using a base emoji rather than a composite emoji...
 	//
