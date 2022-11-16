@@ -38,9 +38,9 @@ listening browser over a websocket.
 * approach to showing command output (prints, etc):
 
 To capture the output of commands, we use
-the R sink() facility. Like graphs, they
-are written to the browser on demand. The
-user types dv() to "display the value" in
+the R sink() facility. Like graphs, printed command
+output is only written to the browser on demand. The
+user types dv() to "display the last value" in
 the browser. We use the R sink() facility
 to capture the last value seen at the R
 top level.
