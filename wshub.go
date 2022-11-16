@@ -61,8 +61,8 @@ func (h *Hub) run() {
 			cc := client.conn
 			// conn embeds net.Conn
 			ncli := len(h.clients)
-			vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
-			embedr.SetCustomPrompt(fmt.Sprintf("%v ws client >", ncli))
+			//vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
+			embedr.SetCustomPrompt(fmt.Sprintf("[wsclient: %v] >", ncli))
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
