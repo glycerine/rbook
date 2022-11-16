@@ -53,16 +53,20 @@ func main() {
 
 	bookpath := "my.hashr.book"
 
+	var history *HasherBook
+
 	var err error
-	var fd *os.File
+	var appendFD *os.File
 	if FileExists(bookpath) {
-		fd, err = os.Open(bookpath)
-		//fd, err := os.OpenFile(bookpath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
+		history, appendFD, err = ReadBook(bookpath)
+
 	} else {
-		fd, err = os.Create(bookpath)
+		appendFD, err = os.Create(bookpath)
+		history = NewHasherBook()
 	}
 	panicOn(err)
-	_ = fd
+	_ = appendFD
+	_ = history
 
 	// start R first so it gets the main thread.
 

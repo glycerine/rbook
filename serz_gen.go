@@ -185,12 +185,35 @@ doneWithStruct3zgensym_965f3afadc761adf_4:
 			if cap(z.Elems) >= int(zgensym_965f3afadc761adf_5) {
 				z.Elems = (z.Elems)[:zgensym_965f3afadc761adf_5]
 			} else {
-				z.Elems = make([]HasherElem, zgensym_965f3afadc761adf_5)
+				z.Elems = make([]*HasherElem, zgensym_965f3afadc761adf_5)
 			}
 			for zgensym_965f3afadc761adf_2 := range z.Elems {
-				err = z.Elems[zgensym_965f3afadc761adf_2].DecodeMsg(dc)
-				if err != nil {
-					return
+				if dc.IsNil() {
+					err = dc.ReadNil()
+					if err != nil {
+						return
+					}
+
+					if z.Elems[zgensym_965f3afadc761adf_2] != nil {
+						dc.PushAlwaysNil()
+						err = z.Elems[zgensym_965f3afadc761adf_2].DecodeMsg(dc)
+						if err != nil {
+							return
+						}
+						dc.PopAlwaysNil()
+					}
+				} else {
+					// not Nil, we have something to read
+
+					if z.Elems[zgensym_965f3afadc761adf_2] == nil {
+						z.Elems[zgensym_965f3afadc761adf_2] = new(HasherElem)
+					}
+					dc.DedupIndexEachPtr(z.Elems[zgensym_965f3afadc761adf_2])
+
+					err = z.Elems[zgensym_965f3afadc761adf_2].DecodeMsg(dc)
+					if err != nil {
+						return
+					}
 				}
 			}
 		default:
@@ -271,18 +294,27 @@ func (z *HasherBook) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 		for zgensym_965f3afadc761adf_2 := range z.Elems {
-			// encodeGen.gBase IDENT
+			// gPtr.encodeGen():
 
-			// record the interface for deduplication
-			var dup bool
-			dup, err = en.DedupWriteIsDup(z.Elems[zgensym_965f3afadc761adf_2])
-			if err != nil {
-				return
-			}
-			if !dup {
-				err = z.Elems[zgensym_965f3afadc761adf_2].EncodeMsg(en)
+			if z.Elems[zgensym_965f3afadc761adf_2] == nil {
+				err = en.WriteNil()
 				if err != nil {
 					return
+				}
+			} else {
+				// encodeGen.gBase IDENT
+
+				// record the interface for deduplication
+				var dup bool
+				dup, err = en.DedupWriteIsDup(z.Elems[zgensym_965f3afadc761adf_2])
+				if err != nil {
+					return
+				}
+				if !dup {
+					err = z.Elems[zgensym_965f3afadc761adf_2].EncodeMsg(en)
+					if err != nil {
+						return
+					}
 				}
 			}
 		}
@@ -309,9 +341,17 @@ func (z *HasherBook) MarshalMsg(b []byte) (o []byte, err error) {
 		o = append(o, 0xaf, 0x65, 0x6c, 0x65, 0x6d, 0x73, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x30, 0x5f, 0x73, 0x6c, 0x63)
 		o = msgp.AppendArrayHeader(o, uint32(len(z.Elems)))
 		for zgensym_965f3afadc761adf_2 := range z.Elems {
-			o, err = z.Elems[zgensym_965f3afadc761adf_2].MarshalMsg(o) // not is.iface, gen/marshal.go:243
-			if err != nil {
-				return
+			// marshalGen.gPtr()
+
+			if z.Elems[zgensym_965f3afadc761adf_2] == nil {
+				o = msgp.AppendNil(o)
+			} else {
+				// hmm.. no en, no place to check en.DedupWriteIsDup(z)
+
+				o, err = z.Elems[zgensym_965f3afadc761adf_2].MarshalMsg(o) // not is.iface, gen/marshal.go:243
+				if err != nil {
+					return
+				}
 			}
 		}
 	}
@@ -398,12 +438,36 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 				if cap(z.Elems) >= int(zgensym_965f3afadc761adf_10) {
 					z.Elems = (z.Elems)[:zgensym_965f3afadc761adf_10]
 				} else {
-					z.Elems = make([]HasherElem, zgensym_965f3afadc761adf_10)
+					z.Elems = make([]*HasherElem, zgensym_965f3afadc761adf_10)
 				}
 				for zgensym_965f3afadc761adf_2 := range z.Elems {
-					bts, err = z.Elems[zgensym_965f3afadc761adf_2].UnmarshalMsg(bts)
-					if err != nil {
-						return
+					// unmarshalGen.gPtr(): we have a BaseElem: &gen.BaseElem{Common:gen.Common{vname:"z.Elems[zgensym_965f3afadc761adf_2]", alias:"HasherElem", hmp:gen.HasMethodPrefix(nil), zid:0}, ShimToBase:"", ShimFromBase:"", Value:0x16, Convert:false, mustinline:false, needsref:false, isIface:false, isInIfaceSlice:false}
+
+					// unmarshalGen.gPtr(): we have an IDENT:
+
+					if nbs.AlwaysNil {
+						if z.Elems[zgensym_965f3afadc761adf_2] != nil {
+							z.Elems[zgensym_965f3afadc761adf_2].UnmarshalMsg(msgp.OnlyNilSlice)
+						}
+					} else {
+						// not nbs.AlwaysNil
+						if msgp.IsNil(bts) {
+							bts = bts[1:]
+							if nil != z.Elems[zgensym_965f3afadc761adf_2] {
+								z.Elems[zgensym_965f3afadc761adf_2].UnmarshalMsg(msgp.OnlyNilSlice)
+							}
+						} else {
+							// not nbs.AlwaysNil and not IsNil(bts): have something to read
+
+							if z.Elems[zgensym_965f3afadc761adf_2] == nil {
+								z.Elems[zgensym_965f3afadc761adf_2] = new(HasherElem)
+							}
+
+							bts, err = z.Elems[zgensym_965f3afadc761adf_2].UnmarshalMsg(bts)
+							if err != nil {
+								return
+							}
+						}
 					}
 				}
 			}
@@ -438,7 +502,11 @@ var unmarshalMsgFieldSkip8zgensym_965f3afadc761adf_9 = []bool{false}
 func (z *HasherBook) Msgsize() (s int) {
 	s = 1 + 16 + msgp.ArrayHeaderSize
 	for zgensym_965f3afadc761adf_2 := range z.Elems {
-		s += z.Elems[zgensym_965f3afadc761adf_2].Msgsize()
+		if z.Elems[zgensym_965f3afadc761adf_2] == nil {
+			s += msgp.NilSize
+		} else {
+			s += z.Elems[zgensym_965f3afadc761adf_2].Msgsize()
+		}
 	}
 	return
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"os"
 	"time"
 
 	//snappy "github.com/glycerine/go-unsnap-stream"
@@ -65,8 +66,32 @@ type HasherElem struct {
 }
 
 type HasherBook struct {
-	Elems []HasherElem `msg:"elems" json:"elems" zid:"0"`
+	Elems []*HasherElem `msg:"elems" json:"elems" zid:"0"`
 }
+
+func NewHasherBook() *HasherBook {
+	return &HasherBook{}
+}
+
+func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
+	appendFD, err = os.Open(path)
+	if err != nil {
+		return
+	}
+	h = NewHasherBook()
+
+	mpr := msgp.NewReader(appendFD)
+
+	var e *HasherElem
+	for {
+		e, err = LoadElem(mpr)
+		panicOn(err)
+		h.Elems = append(h.Elems, e)
+	}
+	return
+}
+
+//fd, err := os.OpenFile(bookpath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
 
 type ByteSlice []byte
 
