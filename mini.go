@@ -323,7 +323,7 @@ func prepInitMessage(book *HashRBook) string {
 	by, err := json.Marshal(&book2)
 	panicOn(err)
 
-	json := fmt.Sprintf(`{"init":true, "book":"%v"}`, string(by))
+	json := fmt.Sprintf(`{"init":true, "book":%v}`, string(by))
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return lenPrefixedJson
 }
