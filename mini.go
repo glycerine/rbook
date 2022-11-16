@@ -122,7 +122,7 @@ func main() {
 			}
 			captureJSON += `]`
 		}
-		vv("captureJSON = '%v'", captureJSON)
+		//vv("captureJSON = '%v'", captureJSON)
 
 		// Fortunately this does not appear to disturb Lastexpr().
 		// Likewise, errors do not make it to Lastexpr() on purpose,
@@ -141,7 +141,7 @@ func main() {
 			continue
 		}
 		cmd := strings.TrimSpace(embedr.Lastexpr())
-		vv("cmd = '%v'", cmd)
+		//vv("cmd = '%v'", cmd)
 
 		if cmd == "" {
 			continue
@@ -183,14 +183,13 @@ func escape(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-	//dq := strings.ReplaceAll(s, `"`, `\"`)
 
 	// coerce any control characters to be valid JSON
 	by, err := json.Marshal(s)
 	panicOn(err)
 
 	// remove the double quotes added at begin/end, since
-	// we prepend some `"## ` stuff
+	// we prepend some `"## ` stuff and manually add the double quotes.
 	if by[0] == '"' {
 		by = by[1:]
 	}
@@ -206,7 +205,7 @@ func prepCommandMessage(msg string, seqno int) []byte {
 	if msg == "" {
 		return nil
 	}
-	json := fmt.Sprintf(`{"seqno": %v, "text":"%v"}`, seqno, escape(msg))
+	json := fmt.Sprintf(`{"seqno": %v, "command":"%v"}`, seqno, escape(msg))
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }
@@ -216,9 +215,6 @@ func prepConsoleMessage(consoleOut string, seqno int) []byte {
 		return nil
 	}
 	json := fmt.Sprintf(`{"seqno": %v, "console":%v}`, seqno, consoleOut)
-	if len(json) > 629 {
-		vv("json at 628 is: '%v'", json[628:])
-	}
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return []byte(lenPrefixedJson)
 }

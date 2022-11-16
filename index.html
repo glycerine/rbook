@@ -140,10 +140,10 @@ window.onload = stamp;
         }
     }
 
-    if (update.text) {
-        var newstuff = '<div id="' + nextID() + '">' + update.text + '</div>';
+    if (update.command) {
+        var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
         d.innerHTML += newstuff
-        console.log("we added text")
+        console.log("we added command text")
     }
 
     // in theory the command and the output could arrive together, so
