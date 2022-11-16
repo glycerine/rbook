@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"time"
 )
 
 //go:generate greenpack
