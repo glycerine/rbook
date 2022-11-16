@@ -9,6 +9,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/glycerine/blake2b-simd"
 	"github.com/glycerine/embedr"
@@ -40,13 +41,13 @@ var hasher hash.Hash
 // origin must be identical and the browser cache
 // is working as designed.
 //
-func PathHash(path string) (hash string) {
+func PathHash(path string) (hash string, imageBy []byte) {
 	hasher.Reset()
 	hasher.Write([]byte(hostname + ":" + path + ":"))
 	by, err := ioutil.ReadFile(path)
 	panicOn(err)
 	hasher.Write(by)
-	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil))
+	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil)), by
 }
 
 func main() {
@@ -59,7 +60,6 @@ func main() {
 	var appendFD *os.File
 	if FileExists(bookpath) {
 		history, appendFD, err = ReadBook(bookpath)
-
 	} else {
 		appendFD, err = os.Create(bookpath)
 		history = NewHasherBook()
@@ -67,6 +67,13 @@ func main() {
 	panicOn(err)
 	_ = appendFD
 	_ = history
+
+	// for each new websocket client, as they
+	// arrive, replay the history for them.
+
+	// As we enter new commands, create new console output,
+	// and generate images, save each to the history struct
+	// and to the file.
 
 	// start R first so it gets the main thread.
 
@@ -190,11 +197,18 @@ func main() {
 			continue
 		}
 
+		var e = &HasherElem{
+			Tm:    time.Now(),
+			Seqno: seqno,
+		}
 		switch cmd {
 		case "dv()":
 			if capturedOutputOK && prevJSON != "" {
 
-				hub.broadcast <- prepConsoleMessage(prevJSON, seqno)
+				msg := prepConsoleMessage(prevJSON, seqno)
+				e.Typ = Console
+				e.ConsoleJSON = msg
+				hub.broadcast <- []byte(msg)
 				seqno++
 			}
 		case "sv()":
@@ -206,15 +220,27 @@ func main() {
 				continue
 			}
 			panicOn(err)
-			pathhash := PathHash(path)
+			pathhash, imageby := PathHash(path)
 			//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
 			nextSave++
 
 			//vv("Reloading browser with image path '%v'", path)
-			hub.broadcast <- prepImageMessage(path, pathhash, seqno)
+			msg := prepImageMessage(path, pathhash, seqno)
+
+			e.Typ = Image
+			e.ImageJSON = msg
+			e.ImageHost = hostname
+			e.ImagePath = path
+			e.ImageBy = imageby
+			e.ImagePathHash = pathhash
+
+			hub.broadcast <- []byte(msg)
 			seqno++
 		default:
-			hub.broadcast <- prepCommandMessage(cmd, seqno)
+			msg := prepCommandMessage(cmd, seqno)
+			e.Typ = Command
+			e.CmdJSON = msg
+			hub.broadcast <- []byte(msg)
 			seqno++
 		}
 	}
@@ -244,29 +270,29 @@ func escape(s string) string {
 
 // add length: as prefix, so we can parse 2 messages that get piggy backed,
 // as occassionally happens on the websockets.
-func prepCommandMessage(msg string, seqno int) []byte {
+func prepCommandMessage(msg string, seqno int) string {
 	if msg == "" {
-		return nil
+		return ""
 	}
 	json := fmt.Sprintf(`{"seqno": %v, "command":"%v"}`, seqno, escape(msg))
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
-	return []byte(lenPrefixedJson)
+	return lenPrefixedJson
 }
 
-func prepConsoleMessage(consoleOut string, seqno int) []byte {
+func prepConsoleMessage(consoleOut string, seqno int) string {
 	if consoleOut == "" {
-		return nil
+		return ""
 	}
 	json := fmt.Sprintf(`{"seqno": %v, "console":%v}`, seqno, consoleOut)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
-	return []byte(lenPrefixedJson)
+	return lenPrefixedJson
 }
 
-func prepImageMessage(path, pathhash string, seqno int) []byte {
+func prepImageMessage(path, pathhash string, seqno int) string {
 	if path == "" {
-		return nil
+		return ""
 	}
 	json := fmt.Sprintf(`{"seqno":%v, "image":"%v", "pathhash":"%v"}`, seqno, path, pathhash)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
-	return []byte(lenPrefixedJson)
+	return lenPrefixedJson
 }
