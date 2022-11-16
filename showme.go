@@ -172,7 +172,10 @@ func StartShowme() {
 		fmt.Fprintf(w, "</body></html>")
 	}
 
-	http.HandleFunc("/", viewHandler)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
+
 	http.HandleFunc("/view/", viewHandler)
 
 	vv("visit http://rog:%v/images  to watch the minibook R updates.", cfg.Port)
