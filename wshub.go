@@ -46,12 +46,12 @@ type Hub struct {
 	// Unregister requests from clients.
 	unregister chan *Client
 
-	history *HashRBook
+	book *HashRBook
 }
 
-func newHub(history *HashRBook) *Hub {
+func newHub(book *HashRBook) *Hub {
 	return &Hub{
-		history:    history,
+		book:       book,
 		broadcast:  make(chan *HashRElem),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
@@ -72,15 +72,17 @@ func (h *Hub) run() {
 			//vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
 			//embedr.SetCustomPrompt(fmt.Sprintf("[wsclient: %v] >", ncli))
 
-			// give the new client all the history, starting with the init message
-			h.history.mut.Lock()
+			// give the new client all the book, starting with the init message
+			h.book.mut.Lock()
 			select {
-			case client.send <- []byte(prepInitMessage(h.history)):
+			case client.send <- []byte(prepInitMessage(h.book)):
+				vv("sent init msg to new client, have %v updates to follow", len(h.book.Elems))
 			default:
 				close(client.send)
 				delete(h.clients, client)
 			}
-			for _, e := range h.history.Elems {
+			for _, e := range h.book.Elems {
+				vv("updating new client with seqno %v", e.Seqno)
 				select {
 				case client.send <- e.msg:
 				default:
@@ -88,7 +90,7 @@ func (h *Hub) run() {
 					delete(h.clients, client)
 				}
 			}
-			h.history.mut.Unlock()
+			h.book.mut.Unlock()
 
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {

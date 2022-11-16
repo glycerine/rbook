@@ -317,7 +317,7 @@ func prepImageMessage(path, pathhash string, seqno int) string {
 // book.mut must be held by caller
 func prepInitMessage(book *HashRBook) string {
 	// don't want to send the elements
-	book2 := book
+	book2 := *book
 	book2.Elems = nil
 
 	by, err := json.Marshal(&book2)
