@@ -73,15 +73,15 @@ top level.
 
 * Push communication with listening browsers:
 
-Mini runs a web server to serve images to the browsers.
-Simultanieously, mini also runs a websocket interface 
+Rbook runs a web server to serve images to the browsers.
+Simultanieously, rbook also runs a websocket interface 
 that it uses to push to subscribed web browsers 
 each new code/plot addition for display.
 
-Still TODO
-----------
+finished sub-tasks
+------------------
 
-1) make history (the notebook) persistent so that
+[x] done. make history (the notebook) persistent so that
    browsers can reload history; even after R or
    the browser has been restarted.
 
@@ -90,18 +90,23 @@ Still TODO
       for new bookID, discard old log.
       for same bookID, just extend from log.
 
-[x] done: might just be simpler to have browser always discard all and then to
+[x] done: it was simpler to have browser always discard all and then to
 read all the history instead of trying to coordinate the log
 number that the browser knows against the log / bookID current.
+
+
+Still TODO
+----------
+
 
 _ pick the websocket port dynamically, embed into index.html before sending.
  to avoid collisions with multiples running at once.
  
 _ we *could* auto-replay to re-obtain state as well... but might rather
-step through it.
+step through it. But could be a nice option.
 
 2) Automate the startup of the Xvfb, the window manager, and
-   x11vnc server. Mini should start them if they are
+   x11vnc server. Rbook should start them if they are
    not already running.
 
 3) authentiation: deferred.
@@ -111,7 +116,7 @@ that would need to be made persistent to disk with
 greenpack or other means. But we'll defer login until needed.
 
 
-howto
+howto - notes on figuring out what worked.
 =====
 
 ~~~
@@ -144,15 +149,17 @@ and then send the filename to rbook.
 
 Our rbook may then wish to copy the file
 version of plots for safe keeping into the archive.
+Update: yes, it copies them into a directory, .rbook,
+in the current directory.
 
 Since sometimes plots are built up interactively, we
 may want to have a final() command added to R to tell
-mini to consolidate into just the nice finished plot.
+rbook to consolidate into just the nice finished plot.
 
 how to get the code snippets
 ----------------------------
 
-We'll try embedding R in our Go program 'mini',
+We'll try embedding R in our Go program 'rbook',
 and have it all in one process, so that we get a chance to
 see each command that comes through before
 it is passed to R. 
@@ -160,9 +167,9 @@ it is passed to R.
 This seems vastly better than hacking ESS and
 trying to hook the code evaluation from there.
 
-Since mini should be saving everything to disk,
+Since rbook should be saving everything to disk,
 so if we have to restart that shouldn't be
-a problem. Plus we'll know that mini is
+a problem. Plus we'll know that rbook is
 always up if the wrapped R is running. And
 it is simple that it is all in the place; and
 we cannot miss any commands that way.

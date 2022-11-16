@@ -225,7 +225,7 @@ func main() {
 				seqno++
 			}
 		case "sv()":
-			odir := ".hashrbook"
+			odir := ".rbook"
 			panicOn(os.MkdirAll(odir, 0777))
 			rnd20 := cryrand.RandomStringWithUp(20)
 			path = fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
