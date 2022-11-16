@@ -130,10 +130,11 @@ function scrollToBottom() {
 
      if (update.init) {
          console.log("we just saw init message: ", update.init);
-         document.getElementById("bookID").innerHTML = update.book.user + "@" + update.book.host + ": " + update.book.path + "  BookID:" + update.book.bookID;
+         document.getElementById("bookID").innerHTML = update.book.user + "@" + update.book.host + ":" + update.book.path + "  BookID:" + update.book.bookID;
          document.getElementById("datetime").innerHTML = update.book.createTm;
-         //var dt = update.book.createTm;
-         //document.getElementById("datetime").innerHTML = dt.toTimeString() + "   " + dt.toISOString();
+         globalLastSeqno = -1;
+         // this clears all previous log entries/cells.
+         d.innerHTML = "";         
      }
      
     // try to prevent duplicates due to websocket tomfoolery.
