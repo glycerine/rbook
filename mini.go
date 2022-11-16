@@ -28,6 +28,18 @@ func init() {
 var hostname string
 var hasher hash.Hash
 
+// PathHash gets attached to all image requests
+// as a ?pathhash=0248... query parameter. It includes the
+// hostname and path to the file on the host. This is
+// passed to the browser so it can request the most
+// recent file; so we don't view stale cached graphics
+// by mistake when the browser sees the same .png file
+// name. And if the file actually is the same, from
+// the same host and the same path, well then let
+// the browser skip fetching, since the content and
+// origin must be identical and the browser cache
+// is working as designed.
+//
 func PathHash(path string) (hash string) {
 	hasher.Reset()
 	hasher.Write([]byte(hostname + ":" + path + ":"))
@@ -65,7 +77,7 @@ func main() {
 	// If you want a custom prompt...
 	// https://lapsedgeographer.london/2020-11/custom-r-prompt/  says:
 	//
-	// The prompt is a simple character string, stored in .Options, meaning we
+	// "The prompt is a simple character string, stored in .Options, meaning we
 	// can easily inspect it and modify it.  You can even use emoji, though
 	// I’d recommend using a base emoji rather than a composite emoji...
 	//
@@ -73,8 +85,6 @@ func main() {
 	// [1] "> "
 	//	> options("prompt" = "! ")
 	//	!
-
-	//vv("done with eval")
 
 	StartShowme() // serve the initial html and the png files to the web browsers
 	//log.Println("Showme http server started. Starting reload websocket server.")
@@ -140,13 +150,8 @@ func main() {
 			continue
 		}
 		if did < 0 {
-			// ctrl-d
-			//vv("did = %v", did) // -1 on ctrl-d, and empty raw lastexp.
-			//cmd := embedr.Lastexpr()
-			//vv("raw lastexpr = '%v' with len %v", cmd, len(cmd))
-
-			// error, keep going. also ctrl-d, EOF; just keep going.
-			// Use q() at the command line to end session.
+			// ctrl-d (EOF or end-of-file).
+			// Ask the user if they want to quit, just as usual.
 			embedr.EvalR(`q()`)
 			continue
 		}
@@ -215,7 +220,8 @@ func escape(s string) string {
 	return string(by)
 }
 
-// add length: as prefix, so we can parse 2 messages that get piggy backed.
+// add length: as prefix, so we can parse 2 messages that get piggy backed,
+// as occassionally happens on the websockets.
 func prepCommandMessage(msg string, seqno int) []byte {
 	if msg == "" {
 		return nil
