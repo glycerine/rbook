@@ -115,6 +115,18 @@ The login.go contains a simple cookie based login example
 that would need to be made persistent to disk with
 greenpack or other means. But we'll defer login until needed.
 
+install notes
+=============
+
+How to get ESS to run rbook instead of default R:
+
+~~~
+(defun rbook ()
+  (interactive)
+  (let ((inferior-R-program-name "~/go/bin/rbook"))
+  (R)))
+~~~
+
 
 howto - notes on figuring out what worked.
 =====
