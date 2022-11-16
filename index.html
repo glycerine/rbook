@@ -110,9 +110,11 @@ window.onload = stamp;
  function appendLog(msg){
  
     console.log("msg = ", msg);
-
+    
     const update = JSON.parse(msg)
 
+    var d  = document.getElementById("log");
+    
     // try to prevent duplicates due to websocket tomfoolery.
     if (update.seqno) {      
         if (update.seqno > globalLastSeqno) {
