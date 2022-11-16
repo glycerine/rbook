@@ -83,7 +83,19 @@ Still TODO
 1) make history (the notebook) persistent so that
    browsers can reload history; even after R or
    the browser has been restarted.
-   
+
+ _. have browser get the BookID and CreateTm from the server.
+ _. If the browser's log already has length:
+      for new bookID, discard old log.
+      for same bookID, just extend from log.
+
+might just be simpler to have browser always discard all and then to
+read all the history instead of trying to coordinate the log
+number that the browser knows against the log / bookID current.
+
+_ pick the websocket port dynamically, embed into index.html before sending.
+ to avoid collisions with multiples running at once.
+
 2) Automate the startup of the Xvfb, the window manager, and
    x11vnc server. Mini should start them if they are
    not already running.

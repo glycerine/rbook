@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+var _ bytes.Buffer
+
 var (
 	hub *Hub
 	// The port on which we are hosting the reload server has to be hardcoded on the client-side too.
@@ -61,8 +63,8 @@ func createCertFiles() (cert string, key string) {
 	return cert, key
 }
 
-func startReloadServer() {
-	hub = newHub()
+func startReloadServer(book *HashRBook) {
+	hub = newHub(book)
 	go hub.run()
 	http.HandleFunc("/reload", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
@@ -84,6 +86,7 @@ func startServerTLS() {
 	panicOn(err)
 }
 
+/* test func really
 var next int
 
 func sendReload() {
@@ -101,3 +104,4 @@ func sendReload() {
 	next++
 	hub.broadcast <- message
 }
+*/

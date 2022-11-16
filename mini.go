@@ -94,9 +94,10 @@ func main() {
 	//embedr.EvalR("require(R.utils)") // for captureOutput()
 	embedr.EvalR("x11()")
 
-	embedr.EvalR("hist(rnorm(1000))")             // worked.
-	embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
+	//embedr.EvalR("hist(rnorm(1000))")             // worked.
+	//embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
 	// nice to have a starting .png so showme does not crash :)
+	// not to worry now. We have logo and 2 favicons always.
 
 	// If you want a custom prompt...
 	// https://lapsedgeographer.london/2020-11/custom-r-prompt/  says:
@@ -110,9 +111,11 @@ func main() {
 	//	> options("prompt" = "! ")
 	//	!
 
+	seqno := len(history.Elems)
+
 	StartShowme() // serve the initial html and the png files to the web browsers
 	//log.Println("Showme http server started. Starting reload websocket server.")
-	startReloadServer() // websockets to tell browsers what to show when there's an update.
+	startReloadServer(history) // websockets to tell browsers what to show when there's an update.
 	//log.Println("Reload server started.")
 
 	// number the saved png files.
@@ -124,8 +127,6 @@ func main() {
 	// hide the previous command output!
 	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
 	embedr.EvalR(`dv=function(){}`) // easy to type. cmd == "dv()" tells us to save the last value.
-
-	seqno := len(history.Elems)
 
 	// need to save one console capture back for dv() recording of output
 	captureJSON := ""
@@ -208,7 +209,9 @@ func main() {
 				msg := prepConsoleMessage(prevJSON, seqno)
 				e.Typ = Console
 				e.ConsoleJSON = msg
-				hub.broadcast <- []byte(msg)
+				e.msg = []byte(msg)
+
+				hub.broadcast <- e
 				seqno++
 			}
 		case "sv()":
@@ -236,17 +239,23 @@ func main() {
 			e.ImagePath = path
 			e.ImageBy = imageby
 			e.ImagePathHash = pathhash
+			e.msg = []byte(msg)
 
-			hub.broadcast <- []byte(msg)
+			hub.broadcast <- e
 			seqno++
 		default:
 			msg := prepCommandMessage(cmd, seqno)
 			e.Typ = Command
 			e.CmdJSON = msg
-			hub.broadcast <- []byte(msg)
+			e.msg = []byte(msg)
+			hub.broadcast <- e
 			seqno++
 		}
+
+		history.mut.Lock()
 		history.Elems = append(history.Elems, e)
+		history.mut.Unlock()
+
 		by, err := e.SaveToSlice()
 		panicOn(err)
 		_, err = appendFD.Write(by)

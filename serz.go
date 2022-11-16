@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/glycerine/cryrand"
@@ -76,6 +77,9 @@ type HashRElem struct {
 
 	// ImagePathHash = hash(ImageHost + ImagePath + ImageBy)
 	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"9"`
+
+	// convenience, not on disk.
+	msg []byte
 }
 
 func (e *HashRElem) String() (s string) {
@@ -103,6 +107,8 @@ type HashRBook struct {
 	BookID string `msg:"bookID" json:"bookID" zid:"1"`
 
 	Elems []*HashRElem `msg:"elems" json:"elems" zid:"2"`
+
+	mut sync.Mutex
 }
 
 func NewHashRBook() *HashRBook {
@@ -200,6 +206,16 @@ func LoadElem(r *msgp.Reader) (e *HashRElem, err error) {
 	_, err = ue.UnmarshalMsg(bs2)
 	if err != nil {
 		return nil, fmt.Errorf("LoadElem() error on tk.UnmarshalMsg(): '%s'", err)
+	}
+
+	// fill the msg convenience for refreshing new clients with history
+	switch ue.Typ {
+	case Command:
+		ue.msg = []byte(ue.CmdJSON)
+	case Console:
+		ue.msg = []byte(ue.ConsoleJSON)
+	case Image:
+		ue.msg = []byte(ue.ImageJSON)
 	}
 
 	return &ue, nil

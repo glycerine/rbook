@@ -38,18 +38,21 @@ type Hub struct {
 	clients map[*Client]bool
 
 	// Inbound messages from the clients.
-	broadcast chan []byte
+	broadcast chan *HashRElem
 
 	// Register requests from the clients.
 	register chan *Client
 
 	// Unregister requests from clients.
 	unregister chan *Client
+
+	history *HashRBook
 }
 
-func newHub() *Hub {
+func newHub(history *HashRBook) *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
+		history:    history,
+		broadcast:  make(chan *HashRElem),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
@@ -68,6 +71,19 @@ func (h *Hub) run() {
 			_ = ncli
 			//vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
 			//embedr.SetCustomPrompt(fmt.Sprintf("[wsclient: %v] >", ncli))
+
+			// give the new client all the history
+			h.history.mut.Lock()
+			for _, e := range h.history.Elems {
+				select {
+				case client.send <- e.msg:
+				default:
+					close(client.send)
+					delete(h.clients, client)
+				}
+			}
+			h.history.mut.Unlock()
+
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
@@ -76,7 +92,7 @@ func (h *Hub) run() {
 		case message := <-h.broadcast:
 			for client := range h.clients {
 				select {
-				case client.send <- message:
+				case client.send <- message.msg:
 				default:
 					close(client.send)
 					delete(h.clients, client)
