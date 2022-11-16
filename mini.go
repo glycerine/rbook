@@ -55,7 +55,7 @@ func main() {
 
 	bookpath := "my.hashr.book"
 
-	var history *HasherBook
+	var history *HashRBook
 
 	history, appendFD, err := ReadBook(bookpath)
 	panicOn(err)
@@ -195,7 +195,7 @@ func main() {
 			continue
 		}
 
-		var e = &HasherElem{
+		var e = &HashRElem{
 			Tm:    time.Now(),
 			Seqno: seqno,
 		}
@@ -210,9 +210,10 @@ func main() {
 				seqno++
 			}
 		case "sv()":
-
+			odir := ".hashrbook"
+			panicOn(os.MkdirAll(odir, 0777))
 			rnd20 := cryrand.RandomStringWithUp(20)
-			path = fmt.Sprintf("plotmini_%03d_%v.png", nextSave, rnd20)
+			path = fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			if err != nil {
 				// possibly "no plot on device to save";

@@ -9,8 +9,8 @@ import (
 	"github.com/glycerine/greenpack/msgp"
 )
 
-func TestMarshalUnmarshalHasherBook(t *testing.T) {
-	v := HasherBook{}
+func TestMarshalUnmarshalHashRBook(t *testing.T) {
+	v := HashRBook{}
 	bts, err := v.MarshalMsg(nil)
 	if err != nil {
 		t.Fatal(err)
@@ -32,8 +32,8 @@ func TestMarshalUnmarshalHasherBook(t *testing.T) {
 	}
 }
 
-func BenchmarkMarshalMsgHasherBook(b *testing.B) {
-	v := HasherBook{}
+func BenchmarkMarshalMsgHashRBook(b *testing.B) {
+	v := HashRBook{}
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -41,8 +41,8 @@ func BenchmarkMarshalMsgHasherBook(b *testing.B) {
 	}
 }
 
-func BenchmarkAppendMsgHasherBook(b *testing.B) {
-	v := HasherBook{}
+func BenchmarkAppendMsgHashRBook(b *testing.B) {
+	v := HashRBook{}
 	bts := make([]byte, 0, v.Msgsize())
 	bts, _ = v.MarshalMsg(bts[0:0])
 	b.SetBytes(int64(len(bts)))
@@ -53,8 +53,8 @@ func BenchmarkAppendMsgHasherBook(b *testing.B) {
 	}
 }
 
-func BenchmarkUnmarshalHasherBook(b *testing.B) {
-	v := HasherBook{}
+func BenchmarkUnmarshalHashRBook(b *testing.B) {
+	v := HashRBook{}
 	bts, _ := v.MarshalMsg(nil)
 	b.ReportAllocs()
 	b.SetBytes(int64(len(bts)))
@@ -67,8 +67,8 @@ func BenchmarkUnmarshalHasherBook(b *testing.B) {
 	}
 }
 
-func TestEncodeDecodeHasherBook(t *testing.T) {
-	v := HasherBook{}
+func TestEncodeDecodeHashRBook(t *testing.T) {
+	v := HashRBook{}
 	var buf bytes.Buffer
 	msgp.Encode(&buf, &v)
 
@@ -77,7 +77,7 @@ func TestEncodeDecodeHasherBook(t *testing.T) {
 		t.Logf("WARNING: Msgsize() for %v is inaccurate", v)
 	}
 
-	vn := HasherBook{}
+	vn := HashRBook{}
 	err := msgp.Decode(&buf, &vn)
 	if err != nil {
 		t.Error(err)
@@ -91,8 +91,8 @@ func TestEncodeDecodeHasherBook(t *testing.T) {
 	}
 }
 
-func BenchmarkEncodeHasherBook(b *testing.B) {
-	v := HasherBook{}
+func BenchmarkEncodeHashRBook(b *testing.B) {
+	v := HashRBook{}
 	var buf bytes.Buffer
 	msgp.Encode(&buf, &v)
 	b.SetBytes(int64(buf.Len()))
@@ -105,8 +105,8 @@ func BenchmarkEncodeHasherBook(b *testing.B) {
 	en.Flush()
 }
 
-func BenchmarkDecodeHasherBook(b *testing.B) {
-	v := HasherBook{}
+func BenchmarkDecodeHashRBook(b *testing.B) {
+	v := HashRBook{}
 	var buf bytes.Buffer
 	msgp.Encode(&buf, &v)
 	b.SetBytes(int64(buf.Len()))
@@ -122,8 +122,8 @@ func BenchmarkDecodeHasherBook(b *testing.B) {
 	}
 }
 
-func TestMarshalUnmarshalHasherElem(t *testing.T) {
-	v := HasherElem{}
+func TestMarshalUnmarshalHashRElem(t *testing.T) {
+	v := HashRElem{}
 	bts, err := v.MarshalMsg(nil)
 	if err != nil {
 		t.Fatal(err)
@@ -145,8 +145,8 @@ func TestMarshalUnmarshalHasherElem(t *testing.T) {
 	}
 }
 
-func BenchmarkMarshalMsgHasherElem(b *testing.B) {
-	v := HasherElem{}
+func BenchmarkMarshalMsgHashRElem(b *testing.B) {
+	v := HashRElem{}
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -154,8 +154,8 @@ func BenchmarkMarshalMsgHasherElem(b *testing.B) {
 	}
 }
 
-func BenchmarkAppendMsgHasherElem(b *testing.B) {
-	v := HasherElem{}
+func BenchmarkAppendMsgHashRElem(b *testing.B) {
+	v := HashRElem{}
 	bts := make([]byte, 0, v.Msgsize())
 	bts, _ = v.MarshalMsg(bts[0:0])
 	b.SetBytes(int64(len(bts)))
@@ -166,8 +166,8 @@ func BenchmarkAppendMsgHasherElem(b *testing.B) {
 	}
 }
 
-func BenchmarkUnmarshalHasherElem(b *testing.B) {
-	v := HasherElem{}
+func BenchmarkUnmarshalHashRElem(b *testing.B) {
+	v := HashRElem{}
 	bts, _ := v.MarshalMsg(nil)
 	b.ReportAllocs()
 	b.SetBytes(int64(len(bts)))
@@ -180,8 +180,8 @@ func BenchmarkUnmarshalHasherElem(b *testing.B) {
 	}
 }
 
-func TestEncodeDecodeHasherElem(t *testing.T) {
-	v := HasherElem{}
+func TestEncodeDecodeHashRElem(t *testing.T) {
+	v := HashRElem{}
 	var buf bytes.Buffer
 	msgp.Encode(&buf, &v)
 
@@ -190,7 +190,7 @@ func TestEncodeDecodeHasherElem(t *testing.T) {
 		t.Logf("WARNING: Msgsize() for %v is inaccurate", v)
 	}
 
-	vn := HasherElem{}
+	vn := HashRElem{}
 	err := msgp.Decode(&buf, &vn)
 	if err != nil {
 		t.Error(err)
@@ -204,8 +204,8 @@ func TestEncodeDecodeHasherElem(t *testing.T) {
 	}
 }
 
-func BenchmarkEncodeHasherElem(b *testing.B) {
-	v := HasherElem{}
+func BenchmarkEncodeHashRElem(b *testing.B) {
+	v := HashRElem{}
 	var buf bytes.Buffer
 	msgp.Encode(&buf, &v)
 	b.SetBytes(int64(buf.Len()))
@@ -218,8 +218,8 @@ func BenchmarkEncodeHasherElem(b *testing.B) {
 	en.Flush()
 }
 
-func BenchmarkDecodeHasherElem(b *testing.B) {
-	v := HasherElem{}
+func BenchmarkDecodeHashRElem(b *testing.B) {
+	v := HashRElem{}
 	var buf bytes.Buffer
 	msgp.Encode(&buf, &v)
 	b.SetBytes(int64(buf.Len()))

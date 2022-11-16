@@ -13,16 +13,16 @@ import (
 
 //go:generate greenpack
 
-// HasherTyp tells us the type of a HasherElem.
-type HasherTyp int
+// HashRTyp tells us the type of a HashRElem.
+type HashRTyp int
 
 const (
-	Command HasherTyp = 1
-	Console HasherTyp = 2
-	Image   HasherTyp = 4
+	Command HashRTyp = 1
+	Console HashRTyp = 2
+	Image   HashRTyp = 4
 )
 
-func (ty HasherTyp) String() string {
+func (ty HashRTyp) String() string {
 	switch ty {
 	case Command:
 		return "Command"
@@ -31,12 +31,12 @@ func (ty HasherTyp) String() string {
 	case Image:
 		return "Image"
 	}
-	panic(fmt.Sprintf("unrecognized HasherTyp = %v", int(ty)))
+	panic(fmt.Sprintf("unrecognized HashRTyp = %v", int(ty)))
 }
 
-// HasherElem are the "cells" of a notebook; in this
-// case the elements of the HasherBook.Elems
-type HasherElem struct {
+// HashRElem are the "cells" of a notebook; in this
+// case the elements of the HashRBook.Elems
+type HashRElem struct {
 
 	// Typ tells us which of the 3 types of content do we have.
 	//
@@ -45,7 +45,7 @@ type HasherElem struct {
 	// in each Elem to unambiguously preserve the sequence order
 	// in which they occur, so that replay is idempotent.
 	//
-	Typ HasherTyp `msg:"type" json:"type" zid:"0"`
+	Typ HashRTyp `msg:"type" json:"type" zid:"0"`
 
 	// timestamp when written.
 	Tm time.Time `msg:"tm" json:"tm" zid:"1"`
@@ -77,9 +77,9 @@ type HasherElem struct {
 	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"9"`
 }
 
-func (e *HasherElem) String() (s string) {
+func (e *HashRElem) String() (s string) {
 	return fmt.Sprintf(`
-HasherElem{
+HashRElem{
 	Typ: %v,
 	Tm: %v,
 	Seqno: %v,
@@ -94,15 +94,15 @@ HasherElem{
 `, e.Typ, e.Tm, e.Seqno, e.CmdJSON, e.ConsoleJSON, e.ImageJSON, e.ImageHost, e.ImagePath, len(e.ImageBy), e.ImagePathHash)
 }
 
-type HasherBook struct {
-	Elems []*HasherElem `msg:"elems" json:"elems" zid:"0"`
+type HashRBook struct {
+	Elems []*HashRElem `msg:"elems" json:"elems" zid:"0"`
 }
 
-func NewHasherBook() *HasherBook {
-	return &HasherBook{}
+func NewHashRBook() *HashRBook {
+	return &HashRBook{}
 }
 
-func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
+func ReadBook(path string) (h *HashRBook, appendFD *os.File, err error) {
 
 	fresh := true
 	if FileExists(path) {
@@ -114,7 +114,7 @@ func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
 		return
 	}
 
-	h = NewHasherBook()
+	h = NewHashRBook()
 	if fresh {
 		// nothing to read
 		return
@@ -122,7 +122,7 @@ func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
 
 	mpr := msgp.NewReader(appendFD)
 
-	var e *HasherElem
+	var e *HashRElem
 	for {
 		e, err = LoadElem(mpr)
 		if err == io.EOF {
@@ -138,8 +138,8 @@ func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
 
 type ByteSlice []byte
 
-// read a HasherElem into e from r.
-func LoadElem(r *msgp.Reader) (e *HasherElem, err error) {
+// read a HashRElem into e from r.
+func LoadElem(r *msgp.Reader) (e *HashRElem, err error) {
 
 	// peek ahead first, so we can avoid
 	// moving the read point ahead if there
@@ -186,7 +186,7 @@ func LoadElem(r *msgp.Reader) (e *HasherElem, err error) {
 		return nil, fmt.Errorf("LoadElem() error on ByteSlice(by).DecodeMsg(): '%s'", err)
 	}
 
-	var ue HasherElem
+	var ue HashRElem
 	_, err = ue.UnmarshalMsg(bs2)
 	if err != nil {
 		return nil, fmt.Errorf("LoadElem() error on tk.UnmarshalMsg(): '%s'", err)
@@ -198,11 +198,11 @@ func LoadElem(r *msgp.Reader) (e *HasherElem, err error) {
 // Save tk as a framed msgpack message (where first few bytes are a []byte encoded
 // to tell us the size of the rest of the bytes that follow. Those following
 // bytes consist themselves of a msgpack serialized Tk.
-func (e *HasherElem) SaveToSlice() ([]byte, error) {
+func (e *HashRElem) SaveToSlice() ([]byte, error) {
 
 	b, err := e.MarshalMsg(nil)
 	if err != nil {
-		return nil, fmt.Errorf("HasherElem.SaveToSlice() error on MarshalMsg: '%s'", err)
+		return nil, fmt.Errorf("HashRElem.SaveToSlice() error on MarshalMsg: '%s'", err)
 	}
 	return ByteSlice(b).MarshalMsg(nil)
 }

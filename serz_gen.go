@@ -113,7 +113,7 @@ func (z ByteSlice) Msgsize() (s int) {
 
 // DecodeMsg implements msgp.Decodable
 // We treat empty fields as if we read a Nil from the wire.
-func (z *HasherBook) DecodeMsg(dc *msgp.Reader) (err error) {
+func (z *HashRBook) DecodeMsg(dc *msgp.Reader) (err error) {
 	var sawTopNil bool
 	if dc.IsNil() {
 		sawTopNil = true
@@ -185,7 +185,7 @@ doneWithStruct3zgensym_965f3afadc761adf_4:
 			if cap(z.Elems) >= int(zgensym_965f3afadc761adf_5) {
 				z.Elems = (z.Elems)[:zgensym_965f3afadc761adf_5]
 			} else {
-				z.Elems = make([]*HasherElem, zgensym_965f3afadc761adf_5)
+				z.Elems = make([]*HashRElem, zgensym_965f3afadc761adf_5)
 			}
 			for zgensym_965f3afadc761adf_2 := range z.Elems {
 				if dc.IsNil() {
@@ -206,7 +206,7 @@ doneWithStruct3zgensym_965f3afadc761adf_4:
 					// not Nil, we have something to read
 
 					if z.Elems[zgensym_965f3afadc761adf_2] == nil {
-						z.Elems[zgensym_965f3afadc761adf_2] = new(HasherElem)
+						z.Elems[zgensym_965f3afadc761adf_2] = new(HashRElem)
 					}
 					dc.DedupIndexEachPtr(z.Elems[zgensym_965f3afadc761adf_2])
 
@@ -238,13 +238,13 @@ doneWithStruct3zgensym_965f3afadc761adf_4:
 	return
 }
 
-// fields of HasherBook
+// fields of HashRBook
 var decodeMsgFieldOrder3zgensym_965f3afadc761adf_4 = []string{"elems_zid00_slc"}
 
 var decodeMsgFieldSkip3zgensym_965f3afadc761adf_4 = []bool{false}
 
 // fieldsNotEmpty supports omitempty tags
-func (z *HasherBook) fieldsNotEmpty(isempty []bool) uint32 {
+func (z *HashRBook) fieldsNotEmpty(isempty []bool) uint32 {
 	if len(isempty) == 0 {
 		return 1
 	}
@@ -258,7 +258,7 @@ func (z *HasherBook) fieldsNotEmpty(isempty []bool) uint32 {
 }
 
 // EncodeMsg implements msgp.Encodable
-func (z *HasherBook) EncodeMsg(en *msgp.Writer) (err error) {
+func (z *HashRBook) EncodeMsg(en *msgp.Writer) (err error) {
 	if p, ok := interface{}(z).(msgp.PreSave); ok {
 		p.PreSaveHook()
 	}
@@ -273,12 +273,12 @@ func (z *HasherBook) EncodeMsg(en *msgp.Writer) (err error) {
 		return err
 	}
 
-	// runtime struct type identification for 'HasherBook'
+	// runtime struct type identification for 'HashRBook'
 	err = en.Append(0xa1, 0x40)
 	if err != nil {
 		return err
 	}
-	err = en.WriteStringFromBytes([]byte{0x48, 0x61, 0x73, 0x68, 0x65, 0x72, 0x42, 0x6f, 0x6f, 0x6b})
+	err = en.WriteStringFromBytes([]byte{0x48, 0x61, 0x73, 0x68, 0x52, 0x42, 0x6f, 0x6f, 0x6b})
 	if err != nil {
 		return err
 	}
@@ -324,7 +324,7 @@ func (z *HasherBook) EncodeMsg(en *msgp.Writer) (err error) {
 }
 
 // MarshalMsg implements msgp.Marshaler
-func (z *HasherBook) MarshalMsg(b []byte) (o []byte, err error) {
+func (z *HashRBook) MarshalMsg(b []byte) (o []byte, err error) {
 	if p, ok := interface{}(z).(msgp.PreSave); ok {
 		p.PreSaveHook()
 	}
@@ -360,10 +360,10 @@ func (z *HasherBook) MarshalMsg(b []byte) (o []byte, err error) {
 }
 
 // UnmarshalMsg implements msgp.Unmarshaler
-func (z *HasherBook) UnmarshalMsg(bts []byte) (o []byte, err error) {
+func (z *HashRBook) UnmarshalMsg(bts []byte) (o []byte, err error) {
 	return z.UnmarshalMsgWithCfg(bts, nil)
 }
-func (z *HasherBook) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o []byte, err error) {
+func (z *HashRBook) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o []byte, err error) {
 	var nbs msgp.NilBitsStack
 	nbs.Init(cfg)
 	var sawTopNil bool
@@ -438,10 +438,10 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 				if cap(z.Elems) >= int(zgensym_965f3afadc761adf_10) {
 					z.Elems = (z.Elems)[:zgensym_965f3afadc761adf_10]
 				} else {
-					z.Elems = make([]*HasherElem, zgensym_965f3afadc761adf_10)
+					z.Elems = make([]*HashRElem, zgensym_965f3afadc761adf_10)
 				}
 				for zgensym_965f3afadc761adf_2 := range z.Elems {
-					// unmarshalGen.gPtr(): we have a BaseElem: &gen.BaseElem{Common:gen.Common{vname:"z.Elems[zgensym_965f3afadc761adf_2]", alias:"HasherElem", hmp:gen.HasMethodPrefix(nil), zid:0}, ShimToBase:"", ShimFromBase:"", Value:0x16, Convert:false, mustinline:false, needsref:false, isIface:false, isInIfaceSlice:false}
+					// unmarshalGen.gPtr(): we have a BaseElem: &gen.BaseElem{Common:gen.Common{vname:"z.Elems[zgensym_965f3afadc761adf_2]", alias:"HashRElem", hmp:gen.HasMethodPrefix(nil), zid:0}, ShimToBase:"", ShimFromBase:"", Value:0x16, Convert:false, mustinline:false, needsref:false, isIface:false, isInIfaceSlice:false}
 
 					// unmarshalGen.gPtr(): we have an IDENT:
 
@@ -460,7 +460,7 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 							// not nbs.AlwaysNil and not IsNil(bts): have something to read
 
 							if z.Elems[zgensym_965f3afadc761adf_2] == nil {
-								z.Elems[zgensym_965f3afadc761adf_2] = new(HasherElem)
+								z.Elems[zgensym_965f3afadc761adf_2] = new(HashRElem)
 							}
 
 							bts, err = z.Elems[zgensym_965f3afadc761adf_2].UnmarshalMsg(bts)
@@ -493,13 +493,13 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 	return
 }
 
-// fields of HasherBook
+// fields of HashRBook
 var unmarshalMsgFieldOrder8zgensym_965f3afadc761adf_9 = []string{"elems_zid00_slc"}
 
 var unmarshalMsgFieldSkip8zgensym_965f3afadc761adf_9 = []bool{false}
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
-func (z *HasherBook) Msgsize() (s int) {
+func (z *HashRBook) Msgsize() (s int) {
 	s = 1 + 16 + msgp.ArrayHeaderSize
 	for zgensym_965f3afadc761adf_2 := range z.Elems {
 		if z.Elems[zgensym_965f3afadc761adf_2] == nil {
@@ -513,7 +513,7 @@ func (z *HasherBook) Msgsize() (s int) {
 
 // DecodeMsg implements msgp.Decodable
 // We treat empty fields as if we read a Nil from the wire.
-func (z *HasherElem) DecodeMsg(dc *msgp.Reader) (err error) {
+func (z *HashRElem) DecodeMsg(dc *msgp.Reader) (err error) {
 	var sawTopNil bool
 	if dc.IsNil() {
 		sawTopNil = true
@@ -580,7 +580,7 @@ doneWithStruct11zgensym_965f3afadc761adf_12:
 			{
 				var zgensym_965f3afadc761adf_13 int
 				zgensym_965f3afadc761adf_13, err = dc.ReadInt()
-				z.Typ = HasherTyp(zgensym_965f3afadc761adf_13)
+				z.Typ = HashRTyp(zgensym_965f3afadc761adf_13)
 			}
 			if err != nil {
 				return
@@ -661,13 +661,13 @@ doneWithStruct11zgensym_965f3afadc761adf_12:
 	return
 }
 
-// fields of HasherElem
+// fields of HashRElem
 var decodeMsgFieldOrder11zgensym_965f3afadc761adf_12 = []string{"type_zid00_rct", "tm_zid01_tim", "seqno_zid02_int", "cmdJSON_zid03_str", "consoleJSON_zid04_str", "imageJSON_zid05_str", "imageHost_zid06_str", "imagePath_zid07_str", "imageBy_zid08_bin", "imagePathHash_zid09_str"}
 
 var decodeMsgFieldSkip11zgensym_965f3afadc761adf_12 = []bool{false, false, false, false, false, false, false, false, false, false}
 
 // fieldsNotEmpty supports omitempty tags
-func (z *HasherElem) fieldsNotEmpty(isempty []bool) uint32 {
+func (z *HashRElem) fieldsNotEmpty(isempty []bool) uint32 {
 	if len(isempty) == 0 {
 		return 10
 	}
@@ -717,7 +717,7 @@ func (z *HasherElem) fieldsNotEmpty(isempty []bool) uint32 {
 }
 
 // EncodeMsg implements msgp.Encodable
-func (z *HasherElem) EncodeMsg(en *msgp.Writer) (err error) {
+func (z *HashRElem) EncodeMsg(en *msgp.Writer) (err error) {
 	if p, ok := interface{}(z).(msgp.PreSave); ok {
 		p.PreSaveHook()
 	}
@@ -732,12 +732,12 @@ func (z *HasherElem) EncodeMsg(en *msgp.Writer) (err error) {
 		return err
 	}
 
-	// runtime struct type identification for 'HasherElem'
+	// runtime struct type identification for 'HashRElem'
 	err = en.Append(0xa1, 0x40)
 	if err != nil {
 		return err
 	}
-	err = en.WriteStringFromBytes([]byte{0x48, 0x61, 0x73, 0x68, 0x65, 0x72, 0x45, 0x6c, 0x65, 0x6d})
+	err = en.WriteStringFromBytes([]byte{0x48, 0x61, 0x73, 0x68, 0x52, 0x45, 0x6c, 0x65, 0x6d})
 	if err != nil {
 		return err
 	}
@@ -866,7 +866,7 @@ func (z *HasherElem) EncodeMsg(en *msgp.Writer) (err error) {
 }
 
 // MarshalMsg implements msgp.Marshaler
-func (z *HasherElem) MarshalMsg(b []byte) (o []byte, err error) {
+func (z *HashRElem) MarshalMsg(b []byte) (o []byte, err error) {
 	if p, ok := interface{}(z).(msgp.PreSave); ok {
 		p.PreSaveHook()
 	}
@@ -942,10 +942,10 @@ func (z *HasherElem) MarshalMsg(b []byte) (o []byte, err error) {
 }
 
 // UnmarshalMsg implements msgp.Unmarshaler
-func (z *HasherElem) UnmarshalMsg(bts []byte) (o []byte, err error) {
+func (z *HashRElem) UnmarshalMsg(bts []byte) (o []byte, err error) {
 	return z.UnmarshalMsgWithCfg(bts, nil)
 }
-func (z *HasherElem) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o []byte, err error) {
+func (z *HashRElem) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o []byte, err error) {
 	var nbs msgp.NilBitsStack
 	nbs.Init(cfg)
 	var sawTopNil bool
@@ -1015,7 +1015,7 @@ doneWithStruct16zgensym_965f3afadc761adf_17:
 				if err != nil {
 					return
 				}
-				z.Typ = HasherTyp(zgensym_965f3afadc761adf_18)
+				z.Typ = HashRTyp(zgensym_965f3afadc761adf_18)
 			}
 		case "tm_zid01_tim":
 			found16zgensym_965f3afadc761adf_17[1] = true
@@ -1112,20 +1112,20 @@ doneWithStruct16zgensym_965f3afadc761adf_17:
 	return
 }
 
-// fields of HasherElem
+// fields of HashRElem
 var unmarshalMsgFieldOrder16zgensym_965f3afadc761adf_17 = []string{"type_zid00_rct", "tm_zid01_tim", "seqno_zid02_int", "cmdJSON_zid03_str", "consoleJSON_zid04_str", "imageJSON_zid05_str", "imageHost_zid06_str", "imagePath_zid07_str", "imageBy_zid08_bin", "imagePathHash_zid09_str"}
 
 var unmarshalMsgFieldSkip16zgensym_965f3afadc761adf_17 = []bool{false, false, false, false, false, false, false, false, false, false}
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
-func (z *HasherElem) Msgsize() (s int) {
+func (z *HashRElem) Msgsize() (s int) {
 	s = 1 + 15 + msgp.IntSize + 13 + msgp.TimeSize + 16 + msgp.IntSize + 18 + msgp.StringPrefixSize + len(z.CmdJSON) + 22 + msgp.StringPrefixSize + len(z.ConsoleJSON) + 20 + msgp.StringPrefixSize + len(z.ImageJSON) + 20 + msgp.StringPrefixSize + len(z.ImageHost) + 20 + msgp.StringPrefixSize + len(z.ImagePath) + 18 + msgp.BytesPrefixSize + len(z.ImageBy) + 24 + msgp.StringPrefixSize + len(z.ImagePathHash)
 	return
 }
 
 // DecodeMsg implements msgp.Decodable
 // We treat empty fields as if we read a Nil from the wire.
-func (z *HasherTyp) DecodeMsg(dc *msgp.Reader) (err error) {
+func (z *HashRTyp) DecodeMsg(dc *msgp.Reader) (err error) {
 	var sawTopNil bool
 	if dc.IsNil() {
 		sawTopNil = true
@@ -1139,7 +1139,7 @@ func (z *HasherTyp) DecodeMsg(dc *msgp.Reader) (err error) {
 	{
 		var zgensym_965f3afadc761adf_19 int
 		zgensym_965f3afadc761adf_19, err = dc.ReadInt()
-		(*z) = HasherTyp(zgensym_965f3afadc761adf_19)
+		(*z) = HashRTyp(zgensym_965f3afadc761adf_19)
 	}
 	if err != nil {
 		return
@@ -1156,7 +1156,7 @@ func (z *HasherTyp) DecodeMsg(dc *msgp.Reader) (err error) {
 }
 
 // EncodeMsg implements msgp.Encodable
-func (z HasherTyp) EncodeMsg(en *msgp.Writer) (err error) {
+func (z HashRTyp) EncodeMsg(en *msgp.Writer) (err error) {
 	if p, ok := interface{}(z).(msgp.PreSave); ok {
 		p.PreSaveHook()
 	}
@@ -1169,7 +1169,7 @@ func (z HasherTyp) EncodeMsg(en *msgp.Writer) (err error) {
 }
 
 // MarshalMsg implements msgp.Marshaler
-func (z HasherTyp) MarshalMsg(b []byte) (o []byte, err error) {
+func (z HashRTyp) MarshalMsg(b []byte) (o []byte, err error) {
 	if p, ok := interface{}(z).(msgp.PreSave); ok {
 		p.PreSaveHook()
 	}
@@ -1180,10 +1180,10 @@ func (z HasherTyp) MarshalMsg(b []byte) (o []byte, err error) {
 }
 
 // UnmarshalMsg implements msgp.Unmarshaler
-func (z *HasherTyp) UnmarshalMsg(bts []byte) (o []byte, err error) {
+func (z *HashRTyp) UnmarshalMsg(bts []byte) (o []byte, err error) {
 	return z.UnmarshalMsgWithCfg(bts, nil)
 }
-func (z *HasherTyp) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o []byte, err error) {
+func (z *HashRTyp) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o []byte, err error) {
 	var nbs msgp.NilBitsStack
 	nbs.Init(cfg)
 	var sawTopNil bool
@@ -1199,7 +1199,7 @@ func (z *HasherTyp) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o 
 		if err != nil {
 			return
 		}
-		(*z) = HasherTyp(zgensym_965f3afadc761adf_20)
+		(*z) = HashRTyp(zgensym_965f3afadc761adf_20)
 	}
 	if sawTopNil {
 		bts = nbs.PopAlwaysNil()
@@ -1213,7 +1213,7 @@ func (z *HasherTyp) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o 
 }
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
-func (z HasherTyp) Msgsize() (s int) {
+func (z HashRTyp) Msgsize() (s int) {
 	s = msgp.IntSize
 	return
 }
