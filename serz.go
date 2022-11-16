@@ -114,7 +114,11 @@ func ReadBook(path string) (h *HasherBook, appendFD *os.File, err error) {
 	var e *HasherElem
 	for {
 		e, err = LoadElem(mpr)
+		if err == io.EOF {
+			return
+		}
 		panicOn(err)
+		vv("got '%v'", e)
 		h.Elems = append(h.Elems, e)
 	}
 	return
