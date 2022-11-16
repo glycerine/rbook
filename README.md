@@ -1,3 +1,5 @@
+![minibooklogo](https://github.com/glycerine/minibook/blob/master/mini.png)
+
 minibook
 ========
 
