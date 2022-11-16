@@ -137,12 +137,13 @@ func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err err
 		return
 	}
 
-	h = NewHashRBook(user, host, path)
 	if fresh {
 		// nothing to read
+		h = NewHashRBook(user, host, path)
 		return
 	}
 
+	h = &HashRBook{}
 	mpr := msgp.NewReader(appendFD)
 
 	var e *HashRElem
