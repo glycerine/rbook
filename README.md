@@ -19,38 +19,41 @@ design
 * goal: enable saving and pushing R plots to the minibook for
   display
 
-* approach: to capture graphs, we run under Xvfb and
-            use the R savePlot() call. This only
-            happens on user demand. The user
-            calls sv() at the R prompt to save the 
-            current graph to the browser.
+* approach: 
+
+To capture graphs, we run under Xvfb and
+use the R savePlot() call. This only
+happens on user demand. The user
+calls sv() at the R prompt to save the 
+current graph to the browser.
             
 * approach to show history in the browser:
 
-            All top level commands are captured by using
-            R's addTaskCallback mechanism. Our C
-            code then deparses each command, passes
-            it to Go, and Go conveys it to the
-            listening browser over a websocket.
+All top level commands are captured by using
+R's addTaskCallback mechanism. Our C
+code then deparses each command, passes
+it to Go, and Go conveys it to the
+listening browser over a websocket.
             
 * approach to showing command output (prints, etc):
 
-            To capture the output of commands, we use
-            the R sink() facility. Like graphs, they
-            are written to the browser on demand. The
-            user types dv() to "display the value" in
-            the browser. We use the R sink() facility
-            to capture the last value seen at the R
-            top level.
+To capture the output of commands, we use
+the R sink() facility. Like graphs, they
+are written to the browser on demand. The
+user types dv() to "display the value" in
+the browser. We use the R sink() facility
+to capture the last value seen at the R
+top level.
 
 * Push communication with listening browsers:
 
-   Mini runs a web server to serve images to the browsers.
-   Simultanieously, mini also runs a websocket interface 
-   that it uses to push to subscribed web browsers 
-   each new code/plot addition for display.
+Mini runs a web server to serve images to the browsers.
+Simultanieously, mini also runs a websocket interface 
+that it uses to push to subscribed web browsers 
+each new code/plot addition for display.
 
-* Still TODO
+Still TODO
+----------
 
 1) make history (the notebook) persistent so that
    browsers can reload history; even after R or
