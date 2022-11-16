@@ -110,7 +110,7 @@ function scrollToBottom() {
    window.scrollTo(0, document.body.scrollHeight);
 }
 //history.scrollRestoration = "manual";
-window.onload = stamp;
+//window.onload = stamp;
 //window.onready = scrollToBottom;
 
       function nextID() {
@@ -130,6 +130,10 @@ window.onload = stamp;
 
      if (update.init) {
          console.log("we just saw init message: ", update.init);
+         document.getElementById("bookID").innerHTML = update.book.user + "@" + update.book.host + ": " + update.book.path + "  BookID:" + update.book.bookID;
+         document.getElementById("datetime").innerHTML = update.book.createTm;
+         //var dt = update.book.createTm;
+         //document.getElementById("datetime").innerHTML = dt.toTimeString() + "   " + dt.toISOString();
      }
      
     // try to prevent duplicates due to websocket tomfoolery.
@@ -207,7 +211,7 @@ try {
 </head>
 
 <body>
-  <p>BookID <span id="bookID"></span></p>
+  <p><span id="bookID"></span></p>
   <p>#R minibook started: <span id="datetime"></span></p>
   <hr>
   <div id="log"> </div>

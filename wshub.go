@@ -76,13 +76,13 @@ func (h *Hub) run() {
 			h.book.mut.Lock()
 			select {
 			case client.send <- []byte(prepInitMessage(h.book)):
-				vv("sent init msg to new client, have %v updates to follow", len(h.book.Elems))
+				//vv("sent init msg to new client, have %v updates to follow", len(h.book.Elems))
 			default:
 				close(client.send)
 				delete(h.clients, client)
 			}
 			for _, e := range h.book.Elems {
-				vv("updating new client with seqno %v", e.Seqno)
+				//vv("updating new client with seqno %v", e.Seqno)
 				select {
 				case client.send <- e.msg:
 				default:
