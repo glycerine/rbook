@@ -68,8 +68,9 @@ func main() {
 	history, appendFD, err := ReadBook(username, hostname, bookpath)
 	panicOn(err)
 	if false {
-		vv("see history len %v:", len(history.Elems))
-		for _, e := range history.Elems {
+		// don't need to hold mut b/c reload server not started yet
+		vv("see history len %v:", len(history.elems))
+		for _, e := range history.elems {
 			fmt.Printf("%v\n", e)
 		}
 	}
@@ -119,7 +120,8 @@ func main() {
 	//	> options("prompt" = "! ")
 	//	!
 
-	seqno := len(history.Elems)
+	// don't need to hold mut b/c reload server not started yet
+	seqno := len(history.elems)
 
 	StartShowme() // serve the initial html and the png files to the web browsers
 	//log.Println("Showme http server started. Starting reload websocket server.")
@@ -261,7 +263,7 @@ func main() {
 		}
 
 		history.mut.Lock()
-		history.Elems = append(history.Elems, e)
+		history.elems = append(history.elems, e)
 		history.mut.Unlock()
 
 		by, err := e.SaveToSlice()
@@ -325,10 +327,8 @@ func prepImageMessage(path, pathhash string, seqno int) string {
 // book.mut must be held by caller
 func prepInitMessage(book *HashRBook) string {
 	// don't want to send the elements
-	book2 := *book
-	book2.Elems = nil
 
-	by, err := json.Marshal(&book2)
+	by, err := json.Marshal(book)
 	panicOn(err)
 
 	json := fmt.Sprintf(`{"init":true, "book":%v}`, string(by))

@@ -99,6 +99,7 @@ HashRElem{
 `, e.Typ, e.Tm, e.Seqno, e.CmdJSON, e.ConsoleJSON, e.ImageJSON, e.ImageHost, e.ImagePath, len(e.ImageBy), e.ImagePathHash)
 }
 
+// The header, aka init message.
 type HashRBook struct {
 	CreateTm time.Time `msg:"createTm" json:"createTm" zid:"0"`
 
@@ -110,8 +111,12 @@ type HashRBook struct {
 	Host string `msg:"host" json:"host" zid:"3"`
 	Path string `msg:"path" json:"path" zid:"4"`
 
-	Elems []*HashRElem `msg:"elems" json:"elems" zid:"5"`
+	// held for convenience here, but serialized
+	// separately afterwards on disk and individually
+	// on the wire, so lower case elems.
+	elems []*HashRElem `msg:"elems" json:"elems" zid:"5"`
 
+	// must hold when reading/writing elems
 	mut sync.Mutex
 }
 
@@ -156,7 +161,7 @@ func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err err
 		}
 		panicOn(err)
 		//vv("got '%v'", e)
-		h.Elems = append(h.Elems, e)
+		h.elems = append(h.elems, e)
 	}
 	return
 }
