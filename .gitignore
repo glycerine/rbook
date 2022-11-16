@@ -4,3 +4,6 @@
 *.so
 *~
 minibook
+.hashrbook
+mini
+*.hashr.book
