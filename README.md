@@ -39,6 +39,11 @@ https://guacamole.apache.org/ is one wishes; but
 it appears to need a Java support proxy.
 
 See also https://9to5answer.com/web-based-vnc-client
+for non-Java pure websocket options.
+They suggest https://github.com/InstantWebP2P/peer-vnc,
+and mention PocketVNC but do not provide a link. Also,
+mentioned are https://tightVNC.com, and
+https://github.com/InstantWebP2P/peer-vnc .
 
 These are minor things; running a native vnc client is simple
 and effective. https://www.realvnc.com/en/ is free,
