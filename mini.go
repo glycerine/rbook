@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/glycerine/blake2b-simd"
+	"github.com/glycerine/cryrand"
 	"github.com/glycerine/embedr"
 )
 
@@ -209,7 +210,9 @@ func main() {
 				seqno++
 			}
 		case "sv()":
-			path = fmt.Sprintf("plotmini_%03d.png", nextSave)
+
+			rnd20 := cryrand.RandomStringWithUp(20)
+			path = fmt.Sprintf("plotmini_%03d_%v.png", nextSave, rnd20)
 			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
 			if err != nil {
 				// possibly "no plot on device to save";
