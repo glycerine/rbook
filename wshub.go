@@ -59,6 +59,7 @@ func (h *Hub) run() {
 		case client := <-h.register:
 			h.clients[client] = true
 			cc := client.conn
+			_ = cc
 			// conn embeds net.Conn
 			ncli := len(h.clients)
 			//vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
