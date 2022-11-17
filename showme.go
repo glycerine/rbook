@@ -40,7 +40,7 @@ func StartShowme(cfg *RbookConfig) {
 	err = tmpl.Execute(&readyIndexHtmlBuf, cfg)
 	panicOn(err)
 
-	vv("readyIndexHtmlBuf = '%v'\n", readyIndexHtmlBuf.String())
+	//vv("readyIndexHtmlBuf = '%v'\n", readyIndexHtmlBuf.String())
 
 	pngs, err := filepath.Glob("*.png")
 	panicOn(err)
@@ -186,13 +186,9 @@ func StartShowme(cfg *RbookConfig) {
 		w.Write(readyIndexHtmlBuf.Bytes())
 	})
 
-	host := cfg.Host
-	if host == "" {
-		host = hostname // for nice presentation to the user.
-	}
-	fmt.Printf("\nUse http://%v:%v        -- for the rbook R session.\n", host, cfg.Port)
+	fmt.Printf("\nUse http://%v:%v        -- for the rbook R session.\n", cfg.Host, cfg.Port)
 	if !viewOff {
-		fmt.Printf("\nUse http://%v:%v/view   -- to view all .png images in initial directory.\n\n", host, cfg.Port)
+		fmt.Printf("\nUse http://%v:%v/view   -- to view all .png images in initial directory.\n\n", cfg.Host, cfg.Port)
 	}
 	go func() {
 		err = http.ListenAndServe(fmt.Sprintf("%v:%v", cfg.Host, cfg.Port), nil)
