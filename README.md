@@ -102,20 +102,9 @@ literals and display them nicely as left-aligned
 `###` blocks, as is the convention for comments
 in some places such as ESS.
 
-From the ESS manual [1]:
+From the ESS manual [1][2]:
 
 > Comments are also handled specially by ESS, using an idea borrowed from the Emacs-Lisp indentation style. By default, comments beginning with ‘###’ are aligned to the beginning of the line. Comments beginning with ‘##’ are aligned to the current level of indentation for the block containing the comment. Finally, comments beginning with ‘#’ are aligned to a column on the right (the 40th column by default, but this value is controlled by the variable comment-column,) or just after the expression on the line containing the comment if it extends beyond the indentation column. You turn off the default behavior by adding the line (setq ess-indent-with-fancy-comments nil) to your .emacs file.
-
-Apparently the tradition derives from lisp, per
-this stackoverflow comment.
-
-> This convention may seem odd if you do not use Emacs much. 
-> However, this convention comes from lisp and emacs-lisp, 
-> where the number of semi-colons denotes the type of comment, 
-> and hence how it should be indented. – 
-> Stephen Eglen
->  Aug 15, 2014 at 16:34 [2]
-
 
 
 references
