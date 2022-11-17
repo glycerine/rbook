@@ -254,12 +254,29 @@ func main() {
 			hub.broadcast <- e
 			seqno++
 		default:
-			msg := prepCommandMessage(cmd, seqno)
-			e.Typ = Command
-			e.CmdJSON = msg
-			e.msg = []byte(msg)
-			hub.broadcast <- e
-			seqno++
+
+			// special handling for strings literal values
+			// that start with `"#`. We present them
+			// as comments in the rbook browser view.
+			if strings.HasPrefix(cmd, `"#`) {
+
+				msg := prepCommentMessage(cmd, seqno)
+				e.Typ = Comment
+				e.CommentJSON = msg
+				e.msg = []byte(msg)
+
+				hub.broadcast <- e
+				seqno++
+
+			} else {
+
+				msg := prepCommandMessage(cmd, seqno)
+				e.Typ = Command
+				e.CmdJSON = msg
+				e.msg = []byte(msg)
+				hub.broadcast <- e
+				seqno++
+			}
 		}
 
 		history.mut.Lock()
@@ -302,6 +319,15 @@ func prepCommandMessage(msg string, seqno int) string {
 		return ""
 	}
 	json := fmt.Sprintf(`{"seqno": %v, "command":"%v"}`, seqno, escape(msg))
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return lenPrefixedJson
+}
+
+func prepCommentMessage(msg string, seqno int) string {
+	if msg == "" {
+		return ""
+	}
+	json := fmt.Sprintf(`{"seqno": %v, "comment":"%v"}`, seqno, escape(msg))
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return lenPrefixedJson
 }

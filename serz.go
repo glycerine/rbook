@@ -22,12 +22,15 @@ const (
 	Command HashRTyp = 1
 	Console HashRTyp = 2
 	Image   HashRTyp = 4
+	Comment HashRTyp = 8
 )
 
 func (ty HashRTyp) String() string {
 	switch ty {
 	case Command:
 		return "Command"
+	case Comment:
+		return "Comment"
 	case Console:
 		return "Console"
 	case Image:
@@ -67,16 +70,19 @@ type HashRElem struct {
 	// 3rd type: image
 	ImageJSON string `msg:"imageJSON" json:"imageJSON" zid:"5"`
 
+	// 4th type: comment
+	CommentJSON string `msg:"commentJSON" json:"commentJSON" zid:"6"`
+
 	// where it was on disk;
-	ImageHost string `msg:"imageHost" json:"imageHost" zid:"6"`
-	ImagePath string `msg:"imagePath" json:"imagePath" zid:"7"`
+	ImageHost string `msg:"imageHost" json:"imageHost" zid:"7"`
+	ImagePath string `msg:"imagePath" json:"imagePath" zid:"8"`
 
 	// ImageBy has png formatted graphic, referred to by ImageJSON and ImagePath;
 	// checksummed by ImagePathHash.
-	ImageBy []byte `msg:"imageBy" json:"imageBy" zid:"8"`
+	ImageBy []byte `msg:"imageBy" json:"imageBy" zid:"9"`
 
 	// ImagePathHash = hash(ImageHost + ImagePath + ImageBy)
-	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"9"`
+	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"10"`
 
 	// convenience, not on disk.
 	msg []byte
@@ -90,13 +96,14 @@ HashRElem{
 	Seqno: %v,
 	CmdJSON: %v,
 	ConsoleJSON: %v,
+	CommentJSON: %v,
 	ImageJSON: %v,
 	ImageHost: %v,
 	ImagePath: %v,
 	ImageBy: (len: %v),
 	ImagePathHash: %v,
 }
-`, e.Typ, e.Tm, e.Seqno, e.CmdJSON, e.ConsoleJSON, e.ImageJSON, e.ImageHost, e.ImagePath, len(e.ImageBy), e.ImagePathHash)
+`, e.Typ, e.Tm, e.Seqno, e.CmdJSON, e.ConsoleJSON, e.CommentJSON, e.ImageJSON, e.ImageHost, e.ImagePath, len(e.ImageBy), e.ImagePathHash)
 }
 
 // The header, aka init message.
@@ -236,6 +243,8 @@ func LoadElem(r *msgp.Reader) (e *HashRElem, err error) {
 		ue.msg = []byte(ue.ConsoleJSON)
 	case Image:
 		ue.msg = []byte(ue.ImageJSON)
+	case Comment:
+		ue.msg = []byte(ue.CommentJSON)
 	}
 
 	return &ue, nil

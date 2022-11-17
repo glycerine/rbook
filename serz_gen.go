@@ -545,7 +545,7 @@ func (z *HashRElem) DecodeMsg(dc *msgp.Reader) (err error) {
 
 	var field []byte
 	_ = field
-	const maxFields8zgensym_965f3afadc761adf_9 = 10
+	const maxFields8zgensym_965f3afadc761adf_9 = 11
 
 	// -- templateDecodeMsg starts here--
 	var totalEncodedFields8zgensym_965f3afadc761adf_9 uint32
@@ -634,26 +634,32 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 			if err != nil {
 				return
 			}
-		case "imageHost_zid06_str":
+		case "commentJSON_zid06_str":
 			found8zgensym_965f3afadc761adf_9[6] = true
+			z.CommentJSON, err = dc.ReadString()
+			if err != nil {
+				return
+			}
+		case "imageHost_zid07_str":
+			found8zgensym_965f3afadc761adf_9[7] = true
 			z.ImageHost, err = dc.ReadString()
 			if err != nil {
 				return
 			}
-		case "imagePath_zid07_str":
-			found8zgensym_965f3afadc761adf_9[7] = true
+		case "imagePath_zid08_str":
+			found8zgensym_965f3afadc761adf_9[8] = true
 			z.ImagePath, err = dc.ReadString()
 			if err != nil {
 				return
 			}
-		case "imageBy_zid08_bin":
-			found8zgensym_965f3afadc761adf_9[8] = true
+		case "imageBy_zid09_bin":
+			found8zgensym_965f3afadc761adf_9[9] = true
 			z.ImageBy, err = dc.ReadBytes(z.ImageBy)
 			if err != nil {
 				return
 			}
-		case "imagePathHash_zid09_str":
-			found8zgensym_965f3afadc761adf_9[9] = true
+		case "imagePathHash_zid10_str":
+			found8zgensym_965f3afadc761adf_9[10] = true
 			z.ImagePathHash, err = dc.ReadString()
 			if err != nil {
 				return
@@ -681,16 +687,16 @@ doneWithStruct8zgensym_965f3afadc761adf_9:
 }
 
 // fields of HashRElem
-var decodeMsgFieldOrder8zgensym_965f3afadc761adf_9 = []string{"type_zid00_rct", "tm_zid01_tim", "seqno_zid02_int", "cmdJSON_zid03_str", "consoleJSON_zid04_str", "imageJSON_zid05_str", "imageHost_zid06_str", "imagePath_zid07_str", "imageBy_zid08_bin", "imagePathHash_zid09_str"}
+var decodeMsgFieldOrder8zgensym_965f3afadc761adf_9 = []string{"type_zid00_rct", "tm_zid01_tim", "seqno_zid02_int", "cmdJSON_zid03_str", "consoleJSON_zid04_str", "imageJSON_zid05_str", "commentJSON_zid06_str", "imageHost_zid07_str", "imagePath_zid08_str", "imageBy_zid09_bin", "imagePathHash_zid10_str"}
 
-var decodeMsgFieldSkip8zgensym_965f3afadc761adf_9 = []bool{false, false, false, false, false, false, false, false, false, false}
+var decodeMsgFieldSkip8zgensym_965f3afadc761adf_9 = []bool{false, false, false, false, false, false, false, false, false, false, false}
 
 // fieldsNotEmpty supports omitempty tags
 func (z *HashRElem) fieldsNotEmpty(isempty []bool) uint32 {
 	if len(isempty) == 0 {
-		return 10
+		return 11
 	}
-	var fieldsInUse uint32 = 10
+	var fieldsInUse uint32 = 11
 	isempty[0] = (z.Typ == 0) // number, omitempty
 	if isempty[0] {
 		fieldsInUse--
@@ -715,20 +721,24 @@ func (z *HashRElem) fieldsNotEmpty(isempty []bool) uint32 {
 	if isempty[5] {
 		fieldsInUse--
 	}
-	isempty[6] = (len(z.ImageHost) == 0) // string, omitempty
+	isempty[6] = (len(z.CommentJSON) == 0) // string, omitempty
 	if isempty[6] {
 		fieldsInUse--
 	}
-	isempty[7] = (len(z.ImagePath) == 0) // string, omitempty
+	isempty[7] = (len(z.ImageHost) == 0) // string, omitempty
 	if isempty[7] {
 		fieldsInUse--
 	}
-	isempty[8] = (len(z.ImageBy) == 0) // string, omitempty
+	isempty[8] = (len(z.ImagePath) == 0) // string, omitempty
 	if isempty[8] {
 		fieldsInUse--
 	}
-	isempty[9] = (len(z.ImagePathHash) == 0) // string, omitempty
+	isempty[9] = (len(z.ImageBy) == 0) // string, omitempty
 	if isempty[9] {
+		fieldsInUse--
+	}
+	isempty[10] = (len(z.ImagePathHash) == 0) // string, omitempty
+	if isempty[10] {
 		fieldsInUse--
 	}
 
@@ -742,7 +752,7 @@ func (z *HashRElem) EncodeMsg(en *msgp.Writer) (err error) {
 	}
 
 	// honor the omitempty tags
-	var empty_zgensym_965f3afadc761adf_11 [10]bool
+	var empty_zgensym_965f3afadc761adf_11 [11]bool
 	fieldsInUse_zgensym_965f3afadc761adf_12 := z.fieldsNotEmpty(empty_zgensym_965f3afadc761adf_11[:])
 
 	// map header
@@ -834,8 +844,20 @@ func (z *HashRElem) EncodeMsg(en *msgp.Writer) (err error) {
 	}
 
 	if !empty_zgensym_965f3afadc761adf_11[6] {
-		// write "imageHost_zid06_str"
-		err = en.Append(0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x6f, 0x73, 0x74, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x36, 0x5f, 0x73, 0x74, 0x72)
+		// write "commentJSON_zid06_str"
+		err = en.Append(0xb5, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x4a, 0x53, 0x4f, 0x4e, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x36, 0x5f, 0x73, 0x74, 0x72)
+		if err != nil {
+			return err
+		}
+		err = en.WriteString(z.CommentJSON)
+		if err != nil {
+			return
+		}
+	}
+
+	if !empty_zgensym_965f3afadc761adf_11[7] {
+		// write "imageHost_zid07_str"
+		err = en.Append(0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x6f, 0x73, 0x74, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x37, 0x5f, 0x73, 0x74, 0x72)
 		if err != nil {
 			return err
 		}
@@ -845,9 +867,9 @@ func (z *HashRElem) EncodeMsg(en *msgp.Writer) (err error) {
 		}
 	}
 
-	if !empty_zgensym_965f3afadc761adf_11[7] {
-		// write "imagePath_zid07_str"
-		err = en.Append(0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x37, 0x5f, 0x73, 0x74, 0x72)
+	if !empty_zgensym_965f3afadc761adf_11[8] {
+		// write "imagePath_zid08_str"
+		err = en.Append(0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x38, 0x5f, 0x73, 0x74, 0x72)
 		if err != nil {
 			return err
 		}
@@ -857,9 +879,9 @@ func (z *HashRElem) EncodeMsg(en *msgp.Writer) (err error) {
 		}
 	}
 
-	if !empty_zgensym_965f3afadc761adf_11[8] {
-		// write "imageBy_zid08_bin"
-		err = en.Append(0xb1, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x42, 0x79, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x38, 0x5f, 0x62, 0x69, 0x6e)
+	if !empty_zgensym_965f3afadc761adf_11[9] {
+		// write "imageBy_zid09_bin"
+		err = en.Append(0xb1, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x42, 0x79, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x39, 0x5f, 0x62, 0x69, 0x6e)
 		if err != nil {
 			return err
 		}
@@ -869,9 +891,9 @@ func (z *HashRElem) EncodeMsg(en *msgp.Writer) (err error) {
 		}
 	}
 
-	if !empty_zgensym_965f3afadc761adf_11[9] {
-		// write "imagePathHash_zid09_str"
-		err = en.Append(0xb7, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x48, 0x61, 0x73, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x39, 0x5f, 0x73, 0x74, 0x72)
+	if !empty_zgensym_965f3afadc761adf_11[10] {
+		// write "imagePathHash_zid10_str"
+		err = en.Append(0xb7, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x48, 0x61, 0x73, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x31, 0x30, 0x5f, 0x73, 0x74, 0x72)
 		if err != nil {
 			return err
 		}
@@ -893,7 +915,7 @@ func (z *HashRElem) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
 
 	// honor the omitempty tags
-	var empty [10]bool
+	var empty [11]bool
 	fieldsInUse := z.fieldsNotEmpty(empty[:])
 	o = msgp.AppendMapHeader(o, fieldsInUse)
 
@@ -934,26 +956,32 @@ func (z *HashRElem) MarshalMsg(b []byte) (o []byte, err error) {
 	}
 
 	if !empty[6] {
-		// string "imageHost_zid06_str"
-		o = append(o, 0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x6f, 0x73, 0x74, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x36, 0x5f, 0x73, 0x74, 0x72)
-		o = msgp.AppendString(o, z.ImageHost)
+		// string "commentJSON_zid06_str"
+		o = append(o, 0xb5, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x4a, 0x53, 0x4f, 0x4e, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x36, 0x5f, 0x73, 0x74, 0x72)
+		o = msgp.AppendString(o, z.CommentJSON)
 	}
 
 	if !empty[7] {
-		// string "imagePath_zid07_str"
-		o = append(o, 0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x37, 0x5f, 0x73, 0x74, 0x72)
-		o = msgp.AppendString(o, z.ImagePath)
+		// string "imageHost_zid07_str"
+		o = append(o, 0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x6f, 0x73, 0x74, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x37, 0x5f, 0x73, 0x74, 0x72)
+		o = msgp.AppendString(o, z.ImageHost)
 	}
 
 	if !empty[8] {
-		// string "imageBy_zid08_bin"
-		o = append(o, 0xb1, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x42, 0x79, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x38, 0x5f, 0x62, 0x69, 0x6e)
-		o = msgp.AppendBytes(o, z.ImageBy)
+		// string "imagePath_zid08_str"
+		o = append(o, 0xb3, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x38, 0x5f, 0x73, 0x74, 0x72)
+		o = msgp.AppendString(o, z.ImagePath)
 	}
 
 	if !empty[9] {
-		// string "imagePathHash_zid09_str"
-		o = append(o, 0xb7, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x48, 0x61, 0x73, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x39, 0x5f, 0x73, 0x74, 0x72)
+		// string "imageBy_zid09_bin"
+		o = append(o, 0xb1, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x42, 0x79, 0x5f, 0x7a, 0x69, 0x64, 0x30, 0x39, 0x5f, 0x62, 0x69, 0x6e)
+		o = msgp.AppendBytes(o, z.ImageBy)
+	}
+
+	if !empty[10] {
+		// string "imagePathHash_zid10_str"
+		o = append(o, 0xb7, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x50, 0x61, 0x74, 0x68, 0x48, 0x61, 0x73, 0x68, 0x5f, 0x7a, 0x69, 0x64, 0x31, 0x30, 0x5f, 0x73, 0x74, 0x72)
 		o = msgp.AppendString(o, z.ImagePathHash)
 	}
 
@@ -975,7 +1003,7 @@ func (z *HashRElem) UnmarshalMsgWithCfg(bts []byte, cfg *msgp.RuntimeConfig) (o 
 
 	var field []byte
 	_ = field
-	const maxFields13zgensym_965f3afadc761adf_14 = 10
+	const maxFields13zgensym_965f3afadc761adf_14 = 11
 
 	// -- templateUnmarshalMsg starts here--
 	var totalEncodedFields13zgensym_965f3afadc761adf_14 uint32
@@ -1071,22 +1099,29 @@ doneWithStruct13zgensym_965f3afadc761adf_14:
 			if err != nil {
 				return
 			}
-		case "imageHost_zid06_str":
+		case "commentJSON_zid06_str":
 			found13zgensym_965f3afadc761adf_14[6] = true
+			z.CommentJSON, bts, err = nbs.ReadStringBytes(bts)
+
+			if err != nil {
+				return
+			}
+		case "imageHost_zid07_str":
+			found13zgensym_965f3afadc761adf_14[7] = true
 			z.ImageHost, bts, err = nbs.ReadStringBytes(bts)
 
 			if err != nil {
 				return
 			}
-		case "imagePath_zid07_str":
-			found13zgensym_965f3afadc761adf_14[7] = true
+		case "imagePath_zid08_str":
+			found13zgensym_965f3afadc761adf_14[8] = true
 			z.ImagePath, bts, err = nbs.ReadStringBytes(bts)
 
 			if err != nil {
 				return
 			}
-		case "imageBy_zid08_bin":
-			found13zgensym_965f3afadc761adf_14[8] = true
+		case "imageBy_zid09_bin":
+			found13zgensym_965f3afadc761adf_14[9] = true
 			if nbs.AlwaysNil || msgp.IsNil(bts) {
 				if !nbs.AlwaysNil {
 					bts = bts[1:]
@@ -1102,8 +1137,8 @@ doneWithStruct13zgensym_965f3afadc761adf_14:
 			if err != nil {
 				return
 			}
-		case "imagePathHash_zid09_str":
-			found13zgensym_965f3afadc761adf_14[9] = true
+		case "imagePathHash_zid10_str":
+			found13zgensym_965f3afadc761adf_14[10] = true
 			z.ImagePathHash, bts, err = nbs.ReadStringBytes(bts)
 
 			if err != nil {
@@ -1132,13 +1167,13 @@ doneWithStruct13zgensym_965f3afadc761adf_14:
 }
 
 // fields of HashRElem
-var unmarshalMsgFieldOrder13zgensym_965f3afadc761adf_14 = []string{"type_zid00_rct", "tm_zid01_tim", "seqno_zid02_int", "cmdJSON_zid03_str", "consoleJSON_zid04_str", "imageJSON_zid05_str", "imageHost_zid06_str", "imagePath_zid07_str", "imageBy_zid08_bin", "imagePathHash_zid09_str"}
+var unmarshalMsgFieldOrder13zgensym_965f3afadc761adf_14 = []string{"type_zid00_rct", "tm_zid01_tim", "seqno_zid02_int", "cmdJSON_zid03_str", "consoleJSON_zid04_str", "imageJSON_zid05_str", "commentJSON_zid06_str", "imageHost_zid07_str", "imagePath_zid08_str", "imageBy_zid09_bin", "imagePathHash_zid10_str"}
 
-var unmarshalMsgFieldSkip13zgensym_965f3afadc761adf_14 = []bool{false, false, false, false, false, false, false, false, false, false}
+var unmarshalMsgFieldSkip13zgensym_965f3afadc761adf_14 = []bool{false, false, false, false, false, false, false, false, false, false, false}
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *HashRElem) Msgsize() (s int) {
-	s = 1 + 15 + msgp.IntSize + 13 + msgp.TimeSize + 16 + msgp.IntSize + 18 + msgp.StringPrefixSize + len(z.CmdJSON) + 22 + msgp.StringPrefixSize + len(z.ConsoleJSON) + 20 + msgp.StringPrefixSize + len(z.ImageJSON) + 20 + msgp.StringPrefixSize + len(z.ImageHost) + 20 + msgp.StringPrefixSize + len(z.ImagePath) + 18 + msgp.BytesPrefixSize + len(z.ImageBy) + 24 + msgp.StringPrefixSize + len(z.ImagePathHash)
+	s = 1 + 15 + msgp.IntSize + 13 + msgp.TimeSize + 16 + msgp.IntSize + 18 + msgp.StringPrefixSize + len(z.CmdJSON) + 22 + msgp.StringPrefixSize + len(z.ConsoleJSON) + 20 + msgp.StringPrefixSize + len(z.ImageJSON) + 22 + msgp.StringPrefixSize + len(z.CommentJSON) + 20 + msgp.StringPrefixSize + len(z.ImageHost) + 20 + msgp.StringPrefixSize + len(z.ImagePath) + 18 + msgp.BytesPrefixSize + len(z.ImageBy) + 24 + msgp.StringPrefixSize + len(z.ImagePathHash)
 	return
 }
 
