@@ -182,7 +182,8 @@ func StartShowme(cfg *RbookConfig) {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "index.html")
+		//http.ServeFile(w, r, "index.html")
+		w.Write(readyIndexHtmlBuf.Bytes())
 	})
 
 	host := cfg.Host

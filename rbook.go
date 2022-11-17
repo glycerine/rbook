@@ -139,7 +139,7 @@ func main() {
 
 	StartShowme(cfg) // serve the initial html and the png files to the web browsers
 	//vv("Showme http server started. Starting reload websocket server.")
-	startReloadServer(history) // websockets to tell browsers what to show when there's an update.
+	cfg.startReloadServer(history) // websockets to tell browsers what to show when there's an update.
 	//vv("Reload server started.")
 
 	// number the saved png files.

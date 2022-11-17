@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -11,8 +12,8 @@ var _ bytes.Buffer
 var (
 	hub *Hub
 	// The port on which we are hosting the reload server has to be hardcoded on the client-side too.
-	reloadAddress    = ":12450"
-	reloadAddressTLS = ":12451"
+	//reloadAddress    = ":12450"
+	//reloadAddressTLS = ":12451"
 )
 
 const (
@@ -63,26 +64,26 @@ func createCertFiles() (cert string, key string) {
 	return cert, key
 }
 
-func startReloadServer(book *HashRBook) {
+func (cfg *RbookConfig) startReloadServer(book *HashRBook) {
 	hub = newHub(book)
 	go hub.run()
 	http.HandleFunc("/reload", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
 
-	go startServer()
-	go startServerTLS()
+	go startServer(cfg)
+	go startServerTLS(cfg)
 	//vv("Reload server listening at '%v'", reloadAddress)
 }
 
-func startServer() {
-	err := http.ListenAndServe(reloadAddress, nil)
+func startServer(cfg *RbookConfig) {
+	err := http.ListenAndServe(fmt.Sprintf(":%v", cfg.WsPort), nil)
 	panicOn(err)
 }
 
-func startServerTLS() {
+func startServerTLS(cfg *RbookConfig) {
 	cert, key := createCertFiles()
-	err := http.ListenAndServeTLS(reloadAddressTLS, cert, key, nil)
+	err := http.ListenAndServeTLS(fmt.Sprintf(":%v", cfg.WssPort), cert, key, nil)
 	panicOn(err)
 }
 
