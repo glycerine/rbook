@@ -260,6 +260,8 @@ func main() {
 			// as comments in the rbook browser view.
 			if strings.HasPrefix(cmd, `"#`) {
 
+				vv("see comment: '%v'", cmd)
+
 				msg := prepCommentMessage(cmd, seqno)
 				e.Typ = Comment
 				e.CommentJSON = msg
@@ -327,7 +329,32 @@ func prepCommentMessage(msg string, seqno int) string {
 	if msg == "" {
 		return ""
 	}
-	json := fmt.Sprintf(`{"seqno": %v, "comment":"%v"}`, seqno, escape(msg))
+
+	// we know msg starts with `"#`, and ends with `"`;
+	// strip those off for the moment
+	n := len(msg)
+	msg = msg[2 : n-1]
+
+	// one line into possibly multiple lines
+	lines := strings.Split(msg, "\\n")
+	vv("lines = '%#v'", lines)
+	var comments []string
+	for _, line := range lines {
+		escline := escape(line)
+		vv("line '%v' -> escline '%v'", line, escline)
+
+		comments = append(comments, `## `+escline)
+	}
+
+	// get a json array of string
+	by, err := json.Marshal(comments)
+	panicOn(err)
+
+	commentsJSON := string(by)
+
+	vv("commentsJSON = '%#v'", commentsJSON)
+
+	json := fmt.Sprintf(`{"seqno": %v, "comment":%v}`, seqno, commentsJSON)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return lenPrefixedJson
 }

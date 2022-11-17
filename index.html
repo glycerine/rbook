@@ -27,6 +27,7 @@
 
     .RconsoleOutput {background-color: #e6e5e8; }
     .RconsoleLine   {text-indent: 50px; }
+    .Rcomment       {background-color: #a6a5a8; }
     
     </style>
   
@@ -128,6 +129,17 @@ function scrollToBottom() {
 
     var d  = document.getElementById("log");
 
+     if (update.comment) {
+         console.log("we just saw comment message: ", update.comment);
+         var newstuff = '<div id="' + nextID() + '" class="Rcomment">';
+
+        for (let i = 0; i < update.comment.length; i++) {
+            newstuff += '<div class="RcommentLine">' + update.comment[i] + '</div>';
+        }
+         d.innerHTML += newstuff + '</div>';         
+         console.log("we added a comment block")
+     }
+     
      if (update.init) {
          console.log("we just saw init message: ", update.init);
          document.getElementById("bookID").innerHTML = update.book.user + "@" + update.book.host + ":" + update.book.path + "  BookID:" + update.book.bookID;
