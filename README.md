@@ -82,16 +82,30 @@ is being typed):
 ~~~
 > "# start a comment line
 + that can span multiple lines
-+ and is finished by the ending double quote"
++ and is finished by ending the string literal"
 ~~~
 
 is then rendered in the browser with a beige background
 and `###` in front of each line.
 
+
+The example above could equally have been done
+with single quotes, since those also delimit string
+literals in R. This may be easier to type, since
+it does not involve the shift key typically.
+
+~~~
+'# start a comment line
++ that can span multiple lines
++ and is finished by ending the string literal'
+~~~
+
+In either case, the output is the same:
+
 ~~~
 ### start a comment line
 ### that can span multiple lines
-### and is finished by the ending double quote
+### and is finished by the ending the string literal
 ~~~
 
 R's evaluation engine simply ignores string literals
