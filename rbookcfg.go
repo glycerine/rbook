@@ -5,8 +5,10 @@ import (
 )
 
 type RbookConfig struct {
-	Host          string
-	Port          int
+	Host string
+	Port int
+
+	WsHost        string // must fill something here to tell the client how to find us.
 	WsPort        int
 	WssPort       int
 	RbookFilePath string
@@ -70,6 +72,14 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 	if c.Host == "" {
 		// this means bind all interfaces, important to leave
 		// it alone!
+	}
+
+	if c.WsHost == "" {
+		if hostname != "" {
+			c.WsHost = hostname
+		} else {
+			c.WsHost = GetExternalIP()
+		}
 	}
 
 	vv("end of FinishConfig, c = '%#v'", c)
