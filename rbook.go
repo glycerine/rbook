@@ -218,7 +218,8 @@ func main() {
 
 		// weed out the ess crap
 		if strings.HasPrefix(cmd, ".ess") ||
-			strings.Contains(cmd, "options(STERM") {
+			strings.Contains(cmd, "options(STERM") ||
+			strings.Contains(cmd, ".emacs.d/ESS/etc/ESSR") {
 
 			// ignore the garbage .ess_funargs stuff
 			continue
