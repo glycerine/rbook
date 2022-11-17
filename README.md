@@ -189,6 +189,22 @@ How to get ESS to run rbook instead of default R:
   (R)))
 ~~~
 
+To set manually:
+
+Ctrl-h v inferior-R-program-name -> position cursor over the customize link and press enter.
+
+The emacs variable setting screen is shown:
+~~~
+inferior-R-program-name is a variable defined in ‘ess-custom.el’.
+Its value is "/home/jaten/go/bin/rbook"
+Original value was "R"
+
+Documentation:
+Program name for invoking an inferior ESS with M-x R.
+
+You can customize this variable.
+~~~
+
 
 howto - notes on figuring out what worked.
 =====
