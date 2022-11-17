@@ -60,7 +60,9 @@ func PathHash(path string) (hash string, imageBy []byte) {
 func main() {
 
 	cfg := &RbookConfig{}
-	myflags := flag.NewFlagSet("myflags", flag.ExitOnError)
+	// there will be R arguments we don't recognize, so
+	// ContinueOnError
+	myflags := flag.NewFlagSet("myflags", flag.ContinueOnError)
 	cfg.DefineFlags(myflags)
 
 	err := myflags.Parse(os.Args[1:])
