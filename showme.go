@@ -94,9 +94,9 @@ func StartShowme(cfg *RbookConfig) {
 	// don't crash if no png files; just don't bother with the /view functionality
 	// TODO: in the future, maybe run a watch for .png files, and if they
 	// show up then start the /view handler.
-	viewOff := false
-	if n == 0 {
-		viewOff = true
+	viewOff := true
+	if n > 0 {
+		viewOff = false
 
 		order := make(map[string]int)
 		for i := range pngs {
