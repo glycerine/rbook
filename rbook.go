@@ -154,6 +154,7 @@ func main() {
 
 	// need to save one console capture back for dv() recording of output
 	captureJSON := ""
+	prevJSON2 := ""
 	prevJSON := ""
 	for {
 
@@ -175,6 +176,7 @@ func main() {
 		capture, capturedOutputOK := sinkgot.([]string)
 
 		if capturedOutputOK {
+			prevJSON2 = prevJSON
 			prevJSON = captureJSON
 			captureJSON = "["
 
@@ -189,7 +191,9 @@ func main() {
 			}
 			captureJSON += `]`
 		}
-		//vv("captureJSON = '%v'", captureJSON)
+		vv("prevJSON = '%v'", prevJSON)
+		vv("prevJSON2 = '%v'", prevJSON2)
+		vv("captureJSON = '%v'", captureJSON)
 
 		// Fortunately this does not appear to disturb Lastexpr().
 		// Likewise, errors do not make it to Lastexpr() on purpose,
