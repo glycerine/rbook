@@ -39,6 +39,8 @@ func StartShowme(cfg *RbookConfig) {
 	err = tmpl.Execute(&readyIndexHtmlBuf, cfg)
 	panicOn(err)
 
+	vv("readyIndexHtmlBuf = '%v'\n", readyIndexHtmlBuf.String())
+
 	pngs, err := filepath.Glob("*.png")
 	panicOn(err)
 	if len(pngs) == 0 {

@@ -67,5 +67,14 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		AlwaysPrintf("main web server choosing port %v", c.Port)
 	}
 
+	if c.Host == "" {
+		if hostname != "" {
+			c.Host = hostname
+		} else {
+			c.Host = GetExternalIP()
+		}
+	}
+
+	vv("end of FinishConfig, c = '%#v'", c)
 	return nil
 }
