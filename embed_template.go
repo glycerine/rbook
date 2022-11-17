@@ -1,0 +1,230 @@
+package main
+
+var embedded_index_template = `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>rbook R session</title>
+
+  <!-- embedding the favacon.ico was the only reliable way to get it loaded.  -->
+  <link href="data:image/x-icon;base64,AAABAAMAEBAAAAEAIABoBAAANgAAACAgAAABACAAKBEAAJ4EAAAwMAAAAQAgAGgmAADGFQAAKAAAABAAAAAgAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////g4aJ/7y5tv/9/v//amxv/9fT0P///////////42QlP98eXb///////////+0uLv/Z2dn/8XCv////////////z1DSf9/eXP//////xAWHP+rpZ////////////9AREr/Ih0X////////////PEJI/wQDAv/l4dz///////////9RV13/a2Vg//////8lKjD/mJKM////////////QERK/yIdF///////4ubr/wIDBf9KQz7///////////9zd3v/HB4g/x0bGf9OTk7/DxES/yopJ/98eXT//////0BESv8iHRf//////46Umv8AAAD/p6Gb////////////Ymdr/x0eIP8MCwr/OTk5/xMUFf8WFRT/bWlk//////9AREr/Ih0X/+vt7v8nKy//FREO//b08f////////////////+Nk5n/LSch//////9hZ23/WVRO////////////QERK/wEAAP8EBAT/AAAA/4yGgP//////////////////////oaet/xkUDv////7/dXuB/0ZAOv///////////0BESv8ODAn/ZWVl/yksLv8FBAP/sKum////////////rrO3/zAxM/8DAgH/RkZF/yMlJ/8PDgz/RkZG/+7q5f9AREr/Ih0X///////19/j/Fhke/zkzLf///////////6ywtf81Njf/AAAA/zo5N/8pKyz/BQMC/0BAQP/t6eT/QERK/yIdF////////////ywxOP8dFxH/////////////////3uPp/wAAAP/c19H/sbe8/wsHA//+/Pr//////0BESv8aFhH/vr6+/4mMj/8CAgT/Pjkz//////////////////L3+v8AAQP/yMK8/8XL0f8BAAD/8+7p//////9AREr/AAAA/wAAAP8AAAD/BwYF/7i0r//////////////////+/v//k5SX/+Hf3P/s7vH/kJCQ//Px7///////rK6x/5CQkP+QkJD/n56e/+Hf3f////////////////////////////////////////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAACAAAABAAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////e4OL/z8/P/9XS0v////////////z+///P0dL/z8/P/+jl4////////////////////////////+fq7P/Pz8//z8/P/93b2P///////////////////////////9jb3P/Pz8//z8/P/9LQz//+/f3//////////////////////15qdf8AAAD/IBUN//79+v//////+fz+/woRG/8AAAD/dWle////////////////////////////f4mV/wAAAP8AAAD/RTww///////////////////////v9fn/CxIZ/wAAAP8AAAD/Rzwx///+/v//////////////////////bXmF/wAAAP8MBgH/+fTs///////+/v//FiEt/wAAAP9iV0r///////////////////////////9/iZX/AAAA/wAAAP9FOy///////////////////////6Wwu/8AAAD/AAAA/wAAAP+kmI3///////////////////////////+Ikp7/AAAA/wQAAP/y6t////////////8rNkP/AAAA/0xBNv///////////////////////////3+Jlf8AAAD/AAAA/0U7L///////////////////////TVhk/wAAAP8AAAD/EAwH//Pt5f///////////////////////////5airf8AAAD/AAAA/9/TyP///////////z9KVf8AAAD/PDAl/////v//////////////////////f4mV/wAAAP8AAAD/RTsv/////////////////+3z+P8KDhb/AAAA/wAAAP9lWE7/////////////////////////////////sLvH/wAAAP8AAAD/zcK2////////////VGBr/wAAAP8lGhD///78//////////////////////9/iZX/AAAA/wAAAP9FOy//////////////////nqm1/wAAAP8AAAD/AAAA/8K2qv//////////////////////x8vP/5ycnP9yeID/AAAA/wAAAP9zbGb/nJyc/5ycnP88Q0r/AAAA/w8KBf+bmZf/nJyc/9HNyP///////////3+Jlf8AAAD/AAAA/0U7L/////////////////9JU2D/AAAA/wAAAP8jGRL//Pr2//////////////////////9odYH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/hHxt////////////f4mV/wAAAP8AAAD/RTsv////////////6vH2/wcMEv8AAAD/AAAA/390Z////////////////////////////2h1gf8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP+EfG3///////////9/iZX/AAAA/wAAAP9FOy////////////+Omqb/AAAA/wAAAP8EAgD/3dPJ////////////////////////////rrW7/3Jycv9wcXL/BAgM/wAAAP8yLCf/c3Nz/3Jycv9MUVb/AAAA/wAAAP9ZU0//cnJy/724sf///////////3+Jlf8AAAD/AAAA/0Q7L//6+vv/tLvB/w0SF/8AAAD/AAAA/09EOf///v7///////////////////////////////////////3+//8SHSj/AAAA/2RaTf///////////7rG0f8AAAD/AAAA/7+0qP//////////////////////f4mV/wAAAP8AAAD/AwIC/w4ODv8BAQL/AAAA/wAAAP8SDgv/2NDI/////////////////////////////////////////////////ycyP/8AAAD/UEQ5////////////ytXh/wAAAf8AAAD/ppyP//////////////////////9/iZX/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/19WTv/m49//////////////////////////////////////////////////OkZR/wAAAP8/Mif////+///////j7fX/AQEF/wAAAP+YjIH//////////////////////3+Jlf8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/xQQDf+/uK////////////////////////////////////////////9NWmX/AAAA/ycdE////v3//////+/4+/8CBg7/AAAA/4B0aP//////////////////////f4mV/wAAAP8AAAD/Ny8l/8zMzP/Iycn/jZKW/xkdIf8AAAD/AAAA/xcRDf/r5t////////////////////////////+coab/jY2N/zM5P/8AAAD/DgoF/4uKif+NjY3/iIuM/wYKD/8AAAD/PDcw/42Njf+NjY3/6+Xg//////9/iZX/AAAA/wAAAP9FOy//////////////////1t7k/wkNEv8AAAD/AAAA/5GEef///////////////////////v7//yAtOP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP/PxLb//////3+Jlf8AAAD/AAAA/0U7L///////////////////////Tlll/wAAAP8AAAD/U0g8///////////////////////+/v//IC04/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/8/Etv//////f4mV/wAAAP8AAAD/RTsv//////////////////////9ncH7/AAAA/wAAAP83LSH////+//////////////////////+SmJ7/gYGB/1JYXf8AAAD/AAAA/2ljXf+BgYH/gYGB/yQqL/8AAAD/Ew4J/4GBgP+BgYH/6ePd//////9/iZX/AAAA/wAAAP9FOy///////////////////////0tWYv8AAAD/AAAA/zwxJP//////////////////////////////////////tcDL/wAAAP8AAAD/x7uv////////////W2Zx/wAAAP8eEwr//v78/////////////////3+Jlf8AAAD/AAAA/0U7L//////////////////I0Nf/BwoQ/wAAAP8AAAD/XVFG///////////////////////////////////////F0Nz/AAAA/wAAAP+to5b///////////9sd4P/AAAA/w4IA//79u7/////////////////f4mV/wAAAP8AAAD/Ih0W/35/f/99fX3/Vllc/wgKDP8AAAD/AAAA/wAAAP+dkob//////////////////////////////////////97p8v8AAAP/AAAA/52Rhv///////////4KMmf8AAAD/BAEA//Dn3P////////////////9/iZX/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/IRoU//Tw6v//////////////////////////////////////7PX5/wAEC/8AAAD/hHhs////////////laKt/wAAAP8BAAD/4NXK/////////////////3+Jlf8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/x0YFP/Ox8D////////////////////////////////////////////6/P7/LDM8/yIiIv+HfnP///////////+yvMf/IiIi/yIiIv/Ryb7/////////////////kZqk/yIiIv8iIiL/IiIi/yIiIv8iIiL/LSwr/1JQTv+Wko7/8O3q/////////////////////////////////////////////////////////////v7+///////////////////////+/v7//v7+/////////////////////////////v7+//7+/v/+/v7//v7+//7+/v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAADAAAABgAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f5+v/v7+//7+/v/+/v7//5+Pj//////////////////f7//+/w8f/v7+//7+/v//Lx8f///v7///////////////////////////////////////z8/f/v8PD/7+/v/+/v7//v7+//9/X0///////////////////////////////////////6+/v/8PDw/+/v7//v7+//7+/v/+/v7//49/b//////////////////////////////////////7TCzf9PUFD/UFBQ/1hVU/+/trD////+////////////8vr+/1VbZf9QUFD/UFBQ/3FrZ//48uz//////////////////////////////////////9rh5v9VWmD/UFBQ/1BQUP9PUFD/opWH//////////////////////////////////7///+5wsn/Vllb/1BQUP9QUFD/UFBQ/1lWVP/CubH///7+/////////////////////////////////5+zw/8AAQL/AAAA/woHBP+dkYX///79////////////+Pz+/xYkNf8AAAD/AAAA/yskH//v5tz//////////////////////////////////////8nR2v8IDhf/AAAA/wAAAP8AAAD/c2NO//////////////////////////////////f6/P9seIT/AQMF/wAAAP8AAAD/AAAA/x8aFv/Wy8D//////////////////////////////////////6/Bzv8BAgj/AAAA/wUDAf+Kf3L//fz6/////////////v7//yE0Rv8AAAD/AAAA/yUfG//l28///////////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////////////////////+Tp7f80P0r/AAAA/wAAAP8AAAD/AAAA/1JDOf/7+PL//////////////////////////////////////8TP1/8GDBb/AAAA/wIAAP99cWb//Pr3/////////////v///zJFWv8AAAD/AAAA/x0ZFf/Vyr3//////////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////////////////////7vH0f8LEBb/AAAA/wAAAP8AAAD/AgEA/7WikP////7//////////////////////////////////////9PZ3/8PFyH/AAAA/wEAAP90aF7/+vf0/////////////////1Bidv8AAAD/AAAA/xkVEf/JvrP//////////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////////////////////2d6jf8AAQH/AAAA/wAAAP8AAAD/Kh8T//fy6f///////////////////////////////////////////9je4v8WICr/AAAA/wAAAP9kWE3/9vLu/////////////////2V4i/8AAAD/AAAA/xYSDv/BtKn//////////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO////////////////////////////8vf7/xolNv8AAAD/AAAA/wAAAP8CAQD/i3ho/////////////////////////////////////////////////9/k6P8jLzr/AAAA/wAAAP9VST3/8e3p/////////////////3WKnP8AAAD/AAAA/xAMCP+vopf////+/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO////////////////////////////pbfH/wECBf8AAAD/AAAA/wAAAP8aEwz/08m//////////////////////////////////////////////////+Xp7f8zP0v/AAAA/wAAAP9LQTX/7erm/////////////////5Wnt/8AAQP/AAAA/wsIBP+glon///7+/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO///////////////////////7/f7/S1xv/wAAAP8AAAD/AAAA/wAAAP9SRzv/8Ozn//////////////////////////////////X3+P/c3N3/3Nzc/8jLz/80PEf/AAAA/wAAAP83LSP/ycbD/9zc3P/c3Nz/3Nzc/5Ceqv8AAQX/AAAA/wcFA/+DenD/29va/9zc3P/d3dz/+fj2/////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO///////////////////////X3+n/HyQt/wAAAP8AAAD/AAAA/wcEA/+Pg3n//fz6/////////////////////////////////7rI0v8eIif/Hh4e/xscHP8GCAn/AAAA/wAAAP8FBAP/Gxsa/x4eHv8eHh7/Hh4e/xIUFv8AAAD/AAAA/wEAAP8QDw3/Hh4d/x4eHv8nJCD/186//////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO//////////////////7+//+cp7L/Cw4R/wAAAP8AAAD/AAAA/xwYE//Ow7f//////////////////////////////////////66/y/8AAwn/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8JBgL/0Maz/////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO//////////////////T4+v9jb3v/AQID/wAAAP8AAAD/AAAA/0w/NP/59e7//////////////////////////////////////66/y/8AAwn/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8JBgL/0Maz/////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////9vh5v8oMT3/AAAA/wAAAP8AAAD/AgEA/7Cdjf///////////////////////////////////////////7HBzP8FCQ//BQUF/wUFBf8CAgL/AAAA/wAAAP8AAAD/AwIC/wUFBf8FBQX/BQUF/wQEBP8AAQH/AAAA/wAAAP8BAQH/BQQE/wUFBf8OCwj/0se2/////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO////////////9/r8/29+i/8DBQj/AAAA/wAAAP8AAAD/LiIX//Ts4////////////////////////////////////////////+zv8v+4ubz/uLi4/7e3uP9fZ2//AgQH/wAAAP8CAAD/g3Zp/7m5uf+4uLj/uLi4/6Omqf8eJi7/AAAA/wAAAP80KiP/qqel/7i4uP+8urn/8/Hs/////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/cWJO//j4+P/a3uP/ZG54/wcLDf8AAAD/AAAA/wAAAP8EAQD/oZKB/////v////////////////////////////////////////////////////////////7///+NmqX/BQkN/wAAAP8CAQD/rZ2J/////////////////+fr7/85RU//AAAA/wAAAP9EOCz/6+fj/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/CAcF/xkYGP8LDA7/AAEB/wAAAP8AAAD/AAAA/wIBAf9KPzX/6ubh//////////////////////////////////////////////////////////////////////+ZpLH/CQwR/wAAAP8AAAD/koBr/////////////////+ru8v9BTln/AAAA/wAAAP8zKRz/5eLc/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/zovJ//Kwrr//v38//////////////////////////////////////////////////////////////////////+st8P/DxMX/wAAAP8AAAD/gW5c/////////////////+7y9v9OWWb/AAAA/wAAAP8kGRD/4N3U/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/yEbF/+Gfnb/7Onk//////////////////////////////////////////////////////////////////////+3w8//Excb/wAAAP8AAAD/cFtK//////////////////X4+/9hbHj/AAAB/wAAAP8bEQv/3dbN/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8BAQD/NSoj/8/Hv//9/fv////////////////////////////////////////////////////////////Azdj/Fhoe/wAAAP8AAAD/Uj4t///+/P////////////j7/f9rdoH/AAED/wAAAP8RCQT/1Mq9/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/IRwW/0xMTP9MTEz/RkdI/yAjJv8EBQb/AAAA/wAAAP8AAAD/AAAA/y8nIf/Px77///7+///////////////////////////////////////////////////////R3uf/HCAm/wAAAP8AAAD/PS0c///9+/////////////v9/v91gY3/AQMG/wAAAP8HAgD/xrmo/////////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/a11J/+7u7v/u7u7/7Ozs/9jb3f+GkJj/EBMX/wAAAP8AAAD/AAAA/wMCAf9pXlL/9PLu///////////////////////////////////////v8fP/19jY/9XV1f+5wsn/Gh4l/wAAAP8AAAD/JhoP/9PQzf/V1dX/1dXV/9PU1f9veIH/AwUI/wAAAP8BAAD/mo17/9XV1f/V1dX/1dXV//Lv7P///////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO///////////////////////9/v7/mam2/wYIDP8AAAD/AAAA/wAAAP8iGBD/3NTL//////////////////////////////////////+msr3/Gh4i/xAQEP8NDQ7/AgIC/wAAAP8AAAD/AQEA/w8ODf8QEBD/EBAQ/xAQEP8HCAj/AAAA/wAAAP8AAAD/CQgH/xAQEP8QEBD/EBAQ/7alkf///////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO////////////////////////////+fz+/0RVZ/8AAAD/AAAA/wAAAP8EAQD/r56N//////////////////////////////////////+erLj/Cw8T/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/6+ehv///////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////////////////////5GjtP8AAAL/AAAA/wAAAP8AAAD/gG1a//////////////////////////////////////+erLj/Cw8T/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/6+ehv///////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////////////////////625yP8AAgj/AAAA/wAAAP8AAAD/YE06/////v////////////////////////////////+jsLv/Excb/wgICP8ICAj/AgMD/wAAAP8AAAD/AAAA/wUFBP8ICAj/CAgI/wgICP8GBgf/AQEB/wAAAP8AAAD/AgEB/wgICP8ICAj/CAgI/7Oijf///////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////////////////////5+vv/8AAQX/AAAA/wAAAP8AAAD/WUg1/////v/////////////////////////////////t7/L/zs/Q/8zMzP/MzMz/U2Fw/wAAAP8AAAD/AAAA/459bv/MzMz/zMzM/8zMzP+fqbH/ExcZ/wAAAP8AAAD/MyYX/8zNy//MzMz/zMzM//Hs6f///////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO/////////////////////////////////26Blf8AAAD/AAAA/wAAAP8AAAD/aVdB////////////////////////////////////////////////////////////gJSl/wAAAP8AAAD/AAAA/6eUf//////////////////V3+n/HSIn/wAAAP8AAAD/NiIS//7+/P///////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/c2NO///////////////////////9/v7/2ODm/xQcKv8AAAD/AAAA/wAAAP8AAAD/kX1q////////////////////////////////////////////////////////////jqK1/wAAAP8AAAD/AAAA/417Zv////7////////////k7fb/Iyox/wAAAP8AAAD/JxcL//368v///////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/bl5K//T09P/09PT/8vLz/9/h5P+iqK3/Nz9I/wAAAf8AAAD/AAAA/wAAAP8HBAH/va6e////////////////////////////////////////////////////////////pLbL/wAAAf8AAAD/AAAA/3JfTv////3////////////s9fz/KC85/wAAAP8AAAD/EQoE//Xs2////////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/GBUP/zg4OP84ODj/NTY2/yYoKv8ODxD/AQEB/wAAAP8AAAD/AAAA/wAAAP8tIxn/4tzW////////////////////////////////////////////////////////////xNXl/wAABP8AAAD/AAAA/2FPQf///vr////////////1+/7/MjxO/wAAAP8AAAD/CAMA/+nayf///////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wUEAv99cmb/+ff0////////////////////////////////////////////////////////////1Obx/wABCP8AAAD/AAAA/0w8MP/8+fP////////////9/v//Rlhq/wAAAP8AAAD/BAEA/9zLuv///////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/0A4L//a1Mv/////////////////////////////////////////////////////////////////4/D3/wEJF/8AAAD/AAAA/zYqI//48uj////////////+/v//U2h5/wAAAP8AAAD/AQAA/8Synv///////////////////////////8nR2v8IDhb/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8CAgH/TEI3/97Y0f/+/v3/////////////////////////////////////////////////////////////////9Pr9/xwoOf8MDAz/DAwM/zQuKv/07OH/////////////////bYCV/wwMDP8MDAz/DAwM/7CejP///////////////////////////8vU3P8UGSH/DAwM/wwMDP8MDAz/DAwM/wwMDP8MDAz/DAwM/w4NDf8VFBT/Hx4d/0VBPf+im5P/9vPx/////////////////////////////////////////////////////////////////////////////P7//6mutf+hoaH/oaGh/6+urP/59fH/////////////////zNTb/6Ghof+hoaH/oaGh/9vXzv///////////////////////////+zw8v+lqKv/oaGh/6Ghof+hoaH/oaGh/6Ghof+hoaH/oaGh/6inpv+9u7r/19bU//b08v/+/v7//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" rel="icon" type="image/x-icon" />
+  
+  <!--
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  -->
+  
+  <style>
+    body {
+        font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    /* https://stackoverflow.com/questions/16240684/css-code-highlighter-margin-in-pre-code-tag */
+    pre > code { white-space: pre;
+                 margin-top:  -0.50em;
+                 display: block;
+    }
+
+    .RconsoleOutput {background-color: #e6e5e8; }
+    .RconsoleLine   {text-indent: 50px; }
+    .Rcomment       {background-color: #edf1b5;
+                     margin-top: 0.50em;
+                     display: block;
+                    }
+    
+    </style>
+  
+    <script type="text/javascript">
+
+      var globalLastSeqno = -1;
+
+      function stamp() {
+          var dt = new Date();
+          //document.getElementById("datetime").innerHTML = dt.toLocaleString();
+          document.getElementById("datetime").innerHTML = dt.toTimeString() + "   " + dt.toISOString();
+      }
+      
+      function disableScroll() {
+          // Get the current page scroll position
+          scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+
+          // if any scroll is attempted, set this to the previous value
+          window.onscroll = function() {
+              window.scrollTo(scrollLeft, scrollTop);
+          };
+      }
+
+      function enableScroll() {
+          window.onscroll = function() {};
+      }
+      
+/**
+ * Tries to connect to the reload service and start listening to reload events.
+ *
+ * @function tryConnectToReload
+ * @public
+ */
+function tryConnectToReload(address) {
+  var conn = new WebSocket(address);
+
+  conn.onclose = function() {
+    globalLastSeqno = -1;
+    setTimeout(function() {
+      tryConnectToReload(address);
+    }, 2000);
+  };
+
+    conn.onmessage = function(evt) {
+        console.log("onmessage: ", evt.data);
+
+        // We send length prefixed messages, in case they get concatenated.
+        // Break them up and append them separately here.
+        var remain = evt.data;
+        var colon = remain.indexOf(":")
+        while (colon >= 0) {
+            if (colon > 0) {
+                var len = parseInt(remain.substring(0, colon).trim());
+                var msg = remain.substring(colon+1, colon+1+len);
+                appendLog(msg);
+                remain = remain.substring(colon+2+len);
+                colon = remain.indexOf(":");
+            }
+        }
+      
+        // If we uncomment this line, then the page will refresh every time a message is received.
+        //location.reload()
+        
+        // After we return from this callback,
+        // the scroll position is moved up from the bottom
+        // where we had set it.
+  };
+}
+
+
+function scrollToBottom() {
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+function nextID() {
+    var d  = document.getElementById("log");
+    var n  = d.children.length;
+    var id  = "log_" + n.toString();
+    return id;
+}
+      
+function appendLog(msg){
+ 
+    //console.log("msg = ", msg);
+    
+    const update = JSON.parse(msg)
+
+    var d  = document.getElementById("log");
+
+    if (update.comment) {
+         console.log("we just saw comment message: ", update.comment);
+         var newstuff = '<div id="' + nextID() + '" class="Rcomment">';
+
+        for (let i = 0; i < update.comment.length; i++) {
+            newstuff += '<div class="RcommentLine">' + update.comment[i] + '</div>';
+        }
+         d.innerHTML += newstuff + '</div>';         
+         console.log("we added a comment block")
+    }
+     
+    if (update.init) {
+         console.log("we just saw init message: ", update.init);
+         document.getElementById("bookID").innerHTML = '#' + update.book.user + "@" + update.book.host + ":" + update.book.path + "<br/>#BookID:" + update.book.bookID;
+         document.getElementById("datetime").innerHTML = update.book.createTm;
+         globalLastSeqno = -1;
+         // this clears all previous log entries/cells.
+         d.innerHTML = "";         
+    }
+     
+    // try to prevent duplicates due to websocket tomfoolery.
+     if (update.seqno) {
+         // recognize a refresh from the start
+         if (update.seqno == 0) {
+             globalLastSeqno = -1;
+             // this clears all previous log entries/cells.
+             d.innerHTML = "";
+         }
+         
+        if (update.seqno > globalLastSeqno) {
+            // good keep it
+            globalLastSeqno = update.seqno;
+        } else {
+           // drop duplicates
+           console.log("dropping stale message update.seqno" + update.seqno + " vs. last " + globalLastSeqno);
+           return;
+        }
+    }
+
+    if (update.command) {
+        var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
+        d.innerHTML += newstuff
+        console.log("we added command text")
+    }
+
+    // in theory the command and the output could arrive together, so
+    // print the console output after the text of the command.
+    if (update.console) {
+        var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput"><pre><code>';
+        for (let i = 0; i < update.console.length; i++) {
+            newstuff += '<div class="RconsoleLine">' + update.console[i] + '</div>';
+        }
+        d.innerHTML += newstuff + '</code></pre></div>';
+        console.log("we added console output")
+    }
+
+    if (update.image) {
+        var hash = "";
+        if (update.pathhash) {
+           hash = update.pathhash;
+        }
+        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://rog:8080/images/' + update.image + '?pathhash=' + hash + '" style="max-width:100%;"/></div>';
+        d.innerHTML += newstuff        
+    }
+    
+
+    // scroll to the bottom to show the latest output.
+    // 
+    // 2 msec isn't long enough to win the fight for the scrollbar
+    // position, usually. but 20 msec seems to win it consistently.
+    //
+    setTimeout(function() { /*console.log("called back!");*/ scrollToBottom()}, 20);
+    
+} // end appendLog()
+
+try {
+  if (window["WebSocket"]) {
+    // The reload endpoint is hosted on a statically defined port.
+    try {
+      tryConnectToReload("ws://{{.WsHost}}:{{.WsPort}}/reload");
+    }
+    catch (ex) {
+      // If an exception is thrown, that means that we couldn't connect to to WebSockets because of mixed content
+      // security restrictions, so we try to connect using wss.
+      tryConnectToReload("wss://{{.WsHost}}:{{.WssPort}}/reload");
+    }
+  } else {
+    console.log("Your browser does not support WebSockets, cannot connect to the Reload service.");
+  }
+} catch (ex) {
+  console.error('Exception during connecting to Reload:', ex);
+}
+</script>
+</head>
+
+<body>
+  <p><span id="bookID"></span><br/>
+    #R rbook created: <span id="datetime"></span></p>
+  <br/>
+  <div id="log"> </div>
+</body>
+
+</html>
+`
