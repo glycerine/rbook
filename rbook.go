@@ -217,7 +217,9 @@ func main() {
 		}
 
 		// weed out the ess crap
-		if strings.HasPrefix(cmd, ".ess") {
+		if strings.HasPrefix(cmd, ".ess") ||
+			strings.Contains(cmd, "options(STERM") {
+
 			// ignore the garbage .ess_funargs stuff
 			continue
 		}
