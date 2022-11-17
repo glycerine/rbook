@@ -33,9 +33,10 @@ func StartShowme(cfg *RbookConfig) {
 	// instantiate index.template -> index.html
 	// with our websocket ports.
 	var readyIndexHtmlBuf bytes.Buffer
-	tmpl, err := html_template.New("index").ParseFiles("index.template")
+	tmpl, err := html_template.ParseFiles("index.template")
 	panicOn(err)
 
+	vv("cfg = '%#v'", cfg)
 	err = tmpl.Execute(&readyIndexHtmlBuf, cfg)
 	panicOn(err)
 

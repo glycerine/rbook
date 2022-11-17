@@ -200,7 +200,7 @@ try {
     catch (ex) {
       // If an exception is thrown, that means that we couldn't connect to to WebSockets because of mixed content
       // security restrictions, so we try to connect using wss.
-      tryConnectToReload("wss://{{.Host}}:{{.WsPort}}/reload");
+      tryConnectToReload("wss://{{.Host}}:{{.WssPort}}/reload");
     }
   } else {
     console.log("Your browser does not support WebSockets, cannot connect to the Reload service.");
