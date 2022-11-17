@@ -131,6 +131,8 @@ finished sub-tasks
 read all the history instead of trying to coordinate the log
 number that the browser knows against the log / bookID current.
 
+[x] mechanism to add comments into the stream.
+
 
 Still TODO
 ----------
@@ -139,12 +141,12 @@ Still TODO
 _ pick the websocket port dynamically, embed into index.html before sending.
  to avoid collisions with multiples running at once.
 
-_ add configuration command line options for setting options.
+_ add configuration command line options for setting options/ the name
+of the rbook file to save into.
 
 _ maybe a command to read through the .rbook file and write out just
 the R commands for easy text archive of the session.
 
-_ how to add comments into the stream? we can just dv() them? markdown them?
 
 _ we *could* auto-replay to re-obtain state as well... but might rather
 step through it. But could be a nice option.
