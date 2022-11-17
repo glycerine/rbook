@@ -36,7 +36,7 @@ func StartShowme(cfg *RbookConfig) {
 	tmpl, err := html_template.ParseFiles("index.template")
 	panicOn(err)
 
-	vv("cfg = '%#v'", cfg)
+	//vv("cfg = '%#v'", cfg)
 	err = tmpl.Execute(&readyIndexHtmlBuf, cfg)
 	panicOn(err)
 

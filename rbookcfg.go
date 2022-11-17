@@ -41,7 +41,7 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		c.WsPort = avail1
 	} else {
 		if !IsAvailPort(c.WsPort) {
-			AlwaysPrintf("c.WsPort %v not available, substituting port %v", c.WsPort, avail1)
+			//AlwaysPrintf("c.WsPort %v not available, substituting port %v", c.WsPort, avail1)
 			c.WsPort = avail1
 		}
 	}
@@ -49,7 +49,7 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		c.WssPort = avail2
 	} else {
 		if !IsAvailPort(c.WssPort) {
-			AlwaysPrintf("c.WssPort %v not available, substituting port %v", c.WssPort, avail2)
+			//AlwaysPrintf("c.WssPort %v not available, substituting port %v", c.WssPort, avail2)
 			c.WssPort = avail2
 		}
 	}
@@ -60,13 +60,13 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 	}
 
 	if c.Port != 0 && !IsAvailPort(c.Port) {
-		AlwaysPrintf("main web server c.Port %v not available, substituting port %v", c.Port, avail3)
+		//AlwaysPrintf("main web server c.Port %v not available, substituting port %v", c.Port, avail3)
 		c.Port = avail3
 	}
 
 	if c.Port == 0 {
 		c.Port = avail3
-		AlwaysPrintf("main web server choosing port %v", c.Port)
+		//AlwaysPrintf("main web server choosing port %v", c.Port)
 	}
 
 	if c.Host == "" {
@@ -82,6 +82,6 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		}
 	}
 
-	vv("end of FinishConfig, c = '%#v'", c)
+	//vv("end of FinishConfig, c = '%#v'", c)
 	return nil
 }
