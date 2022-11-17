@@ -74,7 +74,10 @@ each new code/plot addition for display.
 Comments are created by having R evaluate a string literal
 that starts with the hash symbol `#`.
 
-For example, at the rbook prompt:
+For example, at the rbook prompt (the + signs are automatically 
+added by the R REPL after the user presses enter in the
+middle of a string literal, to indicate that a multi-line string
+is being typed):
 
 ~~~
 > "# start a comment line
