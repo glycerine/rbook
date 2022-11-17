@@ -337,13 +337,13 @@ func prepCommentMessage(msg string, seqno int) string {
 
 	// one line into possibly multiple lines
 	lines := strings.Split(msg, "\\n")
-	vv("lines = '%#v'", lines)
+	//vv("lines = '%#v'", lines)
 	var comments []string
 	for _, line := range lines {
 		escline := escape(line)
-		vv("line '%v' -> escline '%v'", line, escline)
+		//vv("line '%v' -> escline '%v'", line, escline)
 
-		comments = append(comments, `## `+escline)
+		comments = append(comments, `### `+escline)
 	}
 
 	// get a json array of string
@@ -352,7 +352,7 @@ func prepCommentMessage(msg string, seqno int) string {
 
 	commentsJSON := string(by)
 
-	vv("commentsJSON = '%#v'", commentsJSON)
+	//vv("commentsJSON = '%#v'", commentsJSON)
 
 	json := fmt.Sprintf(`{"seqno": %v, "comment":%v}`, seqno, commentsJSON)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
