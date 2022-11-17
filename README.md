@@ -69,6 +69,34 @@ Simultanieously, rbook also runs a websocket interface
 that it uses to push to subscribed web browsers 
 each new code/plot addition for display.
 
+* Comments from the prompt into the book
+
+Comments are created by having R evaluate a string literal
+that starts with the hash symbol `#`.
+
+For example, at the rbook prompt:
+
+~~~
+> "# start a comment line
++ that can span multiple lines
++ and is finished by the ending double quote"
+~~~
+
+is then rendered in the browser with a beige background
+and `###` in front of each line.
+
+~~~
+### start a comment line
+### that can span multiple lines
+### and is finished by the ending double quote
+~~~
+
+R's evaluation engine simply ignores string literals
+at the command prompt. They are legal values, but
+are not assigned to anything and so change no state.
+The rbook callbacks notice these special string
+literals and display them nicely as comments.
+
 finished sub-tasks
 ------------------
 
