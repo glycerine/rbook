@@ -191,9 +191,9 @@ func main() {
 			}
 			captureJSON += `]`
 		}
-		vv("prevJSON = '%v'", prevJSON)
-		vv("prevJSON2 = '%v'", prevJSON2)
-		vv("captureJSON = '%v'", captureJSON)
+		//vv("prevJSON = '%v'", prevJSON)
+		//vv("prevJSON2 = '%v'", prevJSON2)
+		//vv("captureJSON = '%v'", captureJSON)
 
 		// Fortunately this does not appear to disturb Lastexpr().
 		// Likewise, errors do not make it to Lastexpr() on purpose,
@@ -237,7 +237,15 @@ func main() {
 		case "dv()":
 			if capturedOutputOK && prevJSON != "" {
 
-				msg := prepConsoleMessage(prevJSON, seqno)
+				prev := prevJSON
+				if strings.Contains(prevJSON, `(list "" '(("" . "")) '(""))`) {
+					// more injected ESS garbage?
+					// try one further back
+					vv("trying prevJSON2='%v' instead of prevJSON='%v'", prevJSON2, prevJSON)
+					prev = prevJSON2
+				}
+
+				msg := prepConsoleMessage(prev, seqno)
 				e.Typ = Console
 				e.ConsoleJSON = msg
 				e.msg = []byte(msg)
