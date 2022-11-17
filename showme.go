@@ -23,14 +23,11 @@ var ProgramName, Cmdline string
 
 var _ = exec.Command
 
-func StartShowme() {
+func StartShowme(cfg *RbookConfig) {
 
 	ProgramName = path.Base(os.Args[0])
 	Cmdline = strings.Join(os.Args, " ")
 
-	cfg := &ShowmeConfig{
-		Port: 8080,
-	}
 	/* allow any R flags ess wants to set
 	myflags := flag.NewFlagSet("myflags", flag.ExitOnError)
 	cfg.DefineFlags(myflags)
@@ -94,55 +91,62 @@ func StartShowme() {
 
 	n := len(pngs)
 
-	order := make(map[string]int)
-	for i := range pngs {
-		order[pngs[i]] = i
-	}
-	cur := 0
-	prev := 0
-	next := 0
-	if n > 1 {
-		next = 1
-	}
-	curpng := pngs[cur]
-	prevpng := pngs[prev]
-	nextpng := pngs[next]
+	// don't crash if no png files; just don't bother with the /view functionality
+	// TODO: in the future, maybe run a watch for .png files, and if they
+	// show up then start the /view handler.
+	viewOff := false
+	if n == 0 {
+		viewOff = true
 
-	viewHandler := func(w http.ResponseWriter, r *http.Request) {
-		what := r.URL.Path // [1:]
-		if strings.HasSuffix(what, ".png") {
-			curpng = path.Base(what)
+		order := make(map[string]int)
+		for i := range pngs {
+			order[pngs[i]] = i
 		}
-
-		loc := order[curpng]
-		switch {
-		case n == 1:
-			prevpng = curpng
-			nextpng = curpng
-		case n == 2:
-			if loc == 0 {
-				prevpng = pngs[1]
-				nextpng = pngs[1]
-			} else {
-				// loc == 1
-				prevpng = pngs[0]
-				nextpng = pngs[0]
-			}
-		default:
-			// n >= 3
-			if loc == 0 {
-				// wrap around
-				prevpng = pngs[n-1]
-				nextpng = pngs[1]
-			} else {
-				nextpng = pngs[(loc+1)%n]
-				prevpng = pngs[(loc-1)%n]
-			}
+		cur := 0
+		prev := 0
+		next := 0
+		if n > 1 {
+			next = 1
 		}
-		//fmt.Printf("r.URL.Path='%#v'\n", r.URL.Path)
+		curpng := pngs[cur]
+		prevpng := pngs[prev]
+		nextpng := pngs[next]
 
-		fmt.Fprintf(w, `<html><head><script type = "text/JavaScript">`)
-		script := fmt.Sprintf(`
+		viewHandler := func(w http.ResponseWriter, r *http.Request) {
+			what := r.URL.Path // [1:]
+			if strings.HasSuffix(what, ".png") {
+				curpng = path.Base(what)
+			}
+
+			loc := order[curpng]
+			switch {
+			case n == 1:
+				prevpng = curpng
+				nextpng = curpng
+			case n == 2:
+				if loc == 0 {
+					prevpng = pngs[1]
+					nextpng = pngs[1]
+				} else {
+					// loc == 1
+					prevpng = pngs[0]
+					nextpng = pngs[0]
+				}
+			default:
+				// n >= 3
+				if loc == 0 {
+					// wrap around
+					prevpng = pngs[n-1]
+					nextpng = pngs[1]
+				} else {
+					nextpng = pngs[(loc+1)%n]
+					prevpng = pngs[(loc-1)%n]
+				}
+			}
+			//fmt.Printf("r.URL.Path='%#v'\n", r.URL.Path)
+
+			fmt.Fprintf(w, `<html><head><script type = "text/JavaScript">`)
+			script := fmt.Sprintf(`
 
 		document.onkeydown = checkKey;
 
@@ -166,32 +170,28 @@ func StartShowme() {
 			}
 		}`, prevpng, nextpng)
 
-		fmt.Fprintf(w, "%v</script></head><body>", script)
-		fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<br>`, prevpng, nextpng, loc+1, n, curpng)
-		fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><br>`, nextpng, curpng)
-		fmt.Fprintf(w, "</body></html>")
+			fmt.Fprintf(w, "%v</script></head><body>", script)
+			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<br>`, prevpng, nextpng, loc+1, n, curpng)
+			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><br>`, nextpng, curpng)
+			fmt.Fprintf(w, "</body></html>")
+		}
+		http.HandleFunc("/view/", viewHandler)
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "index.html")
 	})
 
-	http.HandleFunc("/view/", viewHandler)
-
 	host := cfg.Host
 	if host == "" {
-		host = hostname
+		host = hostname // for nice presentation to the user.
 	}
 	fmt.Printf("\nUse http://%v:%v        -- for the rbook R session.\n", host, cfg.Port)
-	fmt.Printf("\nUse http://%v:%v/view   -- to view all .png images in initial directory.\n\n", host, cfg.Port)
+	if !viewOff {
+		fmt.Printf("\nUse http://%v:%v/view   -- to view all .png images in initial directory.\n\n", host, cfg.Port)
+	}
 	go func() {
 		err = http.ListenAndServe(fmt.Sprintf("%v:%v", cfg.Host, cfg.Port), nil)
 		panicOn(err)
 	}()
-	// hardcode darwin for now so that we can exit
-	// automatically when safari is closed.
-	//exec.Command("/usr/bin/open", "-F", "-W", "-n", fmt.Sprintf("http://%s", cfg.HostPort)).Run()
-
-	//select {}
-	//fmt.Printf("showme done.\n")
 }

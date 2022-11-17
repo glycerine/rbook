@@ -123,13 +123,15 @@ finished sub-tasks
    the browser has been restarted.
 
 [x]. have browser get the BookID and CreateTm from the server.
-[x]. If the browser's log already has length:
-      for new bookID, discard old log.
-      for same bookID, just extend from log.
 
-[x] done: it was simpler to have browser always discard all and then to
+[x] done: keeping the browser state in sync 
+
+it was simpler to have browser always discard all and then to
 read all the history instead of trying to coordinate the log
 number that the browser knows against the log / bookID current.
+
+rbook sends the browser an init message now, so it knows
+to discard the previous log of commands.
 
 [x] mechanism to add comments into the stream.
 

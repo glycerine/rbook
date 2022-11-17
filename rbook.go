@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"hash"
 	"io/ioutil"
@@ -58,7 +59,18 @@ func PathHash(path string) (hash string, imageBy []byte) {
 
 func main() {
 
-	fn := "my.rbook"
+	cfg := &RbookConfig{}
+	myflags := flag.NewFlagSet("myflags", flag.ExitOnError)
+	cfg.DefineFlags(myflags)
+
+	err := myflags.Parse(os.Args[1:])
+	err = cfg.ValidateConfig(myflags)
+	if err != nil {
+		AlwaysPrintf("%s command line flag error: '%s'", ProgramName, err)
+		os.Exit(1)
+	}
+
+	fn := cfg.RbookFilePath
 	cwd, err := os.Getwd()
 	panicOn(err)
 	bookpath := cwd + sep + fn
@@ -123,7 +135,7 @@ func main() {
 	// don't need to hold mut b/c reload server not started yet
 	seqno := len(history.elems)
 
-	StartShowme() // serve the initial html and the png files to the web browsers
+	StartShowme(cfg) // serve the initial html and the png files to the web browsers
 	//vv("Showme http server started. Starting reload websocket server.")
 	startReloadServer(history) // websockets to tell browsers what to show when there's an update.
 	//vv("Reload server started.")
@@ -260,7 +272,7 @@ func main() {
 			// as comments in the rbook browser view.
 			if strings.HasPrefix(cmd, `"#`) {
 
-				vv("see comment: '%v'", cmd)
+				//vv("see comment: '%v'", cmd)
 
 				msg := prepCommentMessage(cmd, seqno)
 				e.Typ = Comment
