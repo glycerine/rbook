@@ -113,7 +113,7 @@ func main() {
 	defer embedr.EndR()
 	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
 	//embedr.EvalR("require(R.utils)") // for captureOutput()
-	embedr.EvalR("x11()")
+	//embedr.EvalR("x11()")
 
 	//embedr.EvalR("hist(rnorm(1000))")             // worked.
 	//embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
