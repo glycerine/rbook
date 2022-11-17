@@ -145,7 +145,7 @@ function scrollToBottom() {
      
      if (update.init) {
          console.log("we just saw init message: ", update.init);
-         document.getElementById("bookID").innerHTML = update.book.user + "@" + update.book.host + ":" + update.book.path + "  BookID:" + update.book.bookID;
+         document.getElementById("bookID").innerHTML = '#' + update.book.user + "@" + update.book.host + ":" + update.book.path + "<br/>#BookID:" + update.book.bookID;
          document.getElementById("datetime").innerHTML = update.book.createTm;
          globalLastSeqno = -1;
          // this clears all previous log entries/cells.
@@ -227,9 +227,8 @@ try {
 </head>
 
 <body>
-  <p><span id="bookID"></span></p>
-  <p>#R rbook created: <span id="datetime"></span></p>
-  <hr>
+  <p><span id="bookID"></span><br/>
+  #R rbook created: <span id="datetime"></span></p>
   <div id="log"> </div>
 </body>
 
