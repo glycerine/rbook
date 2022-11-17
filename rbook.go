@@ -66,7 +66,7 @@ func main() {
 	cfg.DefineFlags(myflags)
 
 	err := myflags.Parse(os.Args[1:])
-	err = cfg.ValidateConfig(myflags)
+	err = cfg.FinishConfig(myflags)
 	if err != nil {
 		AlwaysPrintf("%s command line flag error: '%s'", ProgramName, err)
 		os.Exit(1)

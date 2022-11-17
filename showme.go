@@ -2,7 +2,9 @@ package main
 
 import (
 	//"flag"
+	"bytes"
 	"fmt"
+	html_template "html/template"
 	"net/http"
 	"os"
 	"os/exec"
@@ -28,16 +30,14 @@ func StartShowme(cfg *RbookConfig) {
 	ProgramName = path.Base(os.Args[0])
 	Cmdline = strings.Join(os.Args, " ")
 
-	/* allow any R flags ess wants to set
-	myflags := flag.NewFlagSet("myflags", flag.ExitOnError)
-	cfg.DefineFlags(myflags)
+	// instantiate index.template -> index.html
+	// with our websocket ports.
+	var readyIndexHtmlBuf bytes.Buffer
+	tmpl, err := html_template.New("index").ParseFiles("index.template")
+	panicOn(err)
 
-	err := myflags.Parse(os.Args[1:])
-	err = cfg.ValidateConfig()
-	if err != nil {
-		log.Fatalf("%s command line flag error: '%s'", ProgramName, err)
-	}
-	*/
+	err = tmpl.Execute(&readyIndexHtmlBuf, cfg)
+	panicOn(err)
 
 	pngs, err := filepath.Glob("*.png")
 	panicOn(err)

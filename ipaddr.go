@@ -100,7 +100,7 @@ func GetAvailPort() int {
 	return r.(*net.TCPAddr).Port
 }
 
-// get 2 ports
+// get 2 distinct free ports
 func GetAvailPort2() (int, int) {
 	l, _ := net.Listen("tcp", ":0")
 	r := l.Addr()
@@ -109,6 +109,20 @@ func GetAvailPort2() (int, int) {
 	l.Close()
 	l2.Close()
 	return r.(*net.TCPAddr).Port, r2.(*net.TCPAddr).Port
+}
+
+// get 3 distinct free ports
+func GetAvailPort3() (int, int, int) {
+	l, _ := net.Listen("tcp", ":0")
+	r := l.Addr()
+	l2, _ := net.Listen("tcp", ":0")
+	r2 := l2.Addr()
+	l3, _ := net.Listen("tcp", ":0")
+	r3 := l3.Addr()
+	l.Close()
+	l2.Close()
+	l3.Close()
+	return r.(*net.TCPAddr).Port, r2.(*net.TCPAddr).Port, r3.(*net.TCPAddr).Port
 }
 
 // GenAddress generates a local address by calling GetAvailPort() and
