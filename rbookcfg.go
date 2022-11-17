@@ -7,6 +7,8 @@ import (
 type RbookConfig struct {
 	Host          string
 	Port          int
+	WsPort        int
+	WssPort       int
 	RbookFilePath string
 }
 
