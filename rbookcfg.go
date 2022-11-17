@@ -68,11 +68,8 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 	}
 
 	if c.Host == "" {
-		if hostname != "" {
-			c.Host = hostname
-		} else {
-			c.Host = GetExternalIP()
-		}
+		// this means bind all interfaces, important to leave
+		// it alone!
 	}
 
 	vv("end of FinishConfig, c = '%#v'", c)
