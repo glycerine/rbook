@@ -325,6 +325,7 @@ func LoadBook(r *msgp.Reader) (book *HashRBook, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("LoadElem() error on tk.UnmarshalMsg(): '%s'", err)
 	}
+	ue.path2image = make(map[string]*HashRElem)
 
 	return &ue, nil
 }

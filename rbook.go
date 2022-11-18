@@ -312,7 +312,10 @@ func main() {
 
 		history.mut.Lock()
 		history.elems = append(history.elems, e)
-		history.path2image[e.ImagePath] = e
+		if e.ImagePath != "" {
+			//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
+			history.path2image[e.ImagePath] = e
+		}
 		history.mut.Unlock()
 
 		by, err := e.SaveToSlice()
