@@ -123,17 +123,23 @@ type HashRBook struct {
 	// on the wire, so lower case elems.
 	elems []*HashRElem `msg:"elems" json:"elems" zid:"5"`
 
+	// help webserver server /rbook/ content from the msgpack version
+	// so we don't depend on the .rbook directory being there, and a
+	// my.rbook file is complete by itself. Also hold mut when read/writing it.
+	path2image map[string]*HashRElem
+
 	// must hold when reading/writing elems
 	mut sync.Mutex
 }
 
 func NewHashRBook(user, host, path string) *HashRBook {
 	return &HashRBook{
-		CreateTm: time.Now(),
-		BookID:   cryrand.RandomStringWithUp(24),
-		User:     user,
-		Host:     host,
-		Path:     path,
+		CreateTm:   time.Now(),
+		BookID:     cryrand.RandomStringWithUp(24),
+		User:       user,
+		Host:       host,
+		Path:       path,
+		path2image: make(map[string]*HashRElem),
 	}
 }
 
@@ -175,6 +181,10 @@ func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err err
 		panicOn(err)
 		//vv("got '%v'", e)
 		h.elems = append(h.elems, e)
+
+		if e.Typ == Image {
+			h.path2image[e.ImagePath] = e
+		}
 	}
 	return
 }

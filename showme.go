@@ -25,7 +25,7 @@ var ProgramName, Cmdline string
 
 var _ = exec.Command
 
-func StartShowme(cfg *RbookConfig) {
+func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	ProgramName = path.Base(os.Args[0])
 	Cmdline = strings.Join(os.Args, " ")
@@ -186,6 +186,40 @@ func StartShowme(cfg *RbookConfig) {
 		w.Write(readyIndexHtmlBuf.Bytes())
 	})
 
+	http.HandleFunc("/rbook/", func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method != "GET" {
+			vv("only GET supported")
+			http.Error(w, "invalid URL path", http.StatusBadRequest)
+			return
+		}
+
+		path := r.URL.Path
+
+		if containsDotDot(path) {
+			http.Error(w, "invalid URL path", http.StatusBadRequest)
+			return
+		}
+
+		vv("looking up path = '%v'", path)
+
+		b.mut.Lock()
+		defer b.mut.Unlock()
+
+		e, ok := b.path2image[path]
+		if !ok {
+			vv("path '%v' not found in book path2image", path)
+			http.Error(w, "invalid URL path", http.StatusBadRequest)
+			return
+		}
+		vv("path '%v' found in book path2image", path)
+		w.Header().Set("Content-Type", "image/png")
+		readSeeker := bytes.NewReader(e.ImageBy)
+		name := "my.png"
+		modtime := e.Tm
+		http.ServeContent(w, r, name, modtime, readSeeker)
+	})
+
 	host := cfg.Host
 	if host == "" {
 		host = hostname // for nice presentation to the user.
@@ -199,3 +233,17 @@ func StartShowme(cfg *RbookConfig) {
 		panicOn(err)
 	}()
 }
+
+func containsDotDot(v string) bool {
+	if !strings.Contains(v, "..") {
+		return false
+	}
+	for _, ent := range strings.FieldsFunc(v, isSlashRune) {
+		if ent == ".." {
+			return true
+		}
+	}
+	return false
+}
+
+func isSlashRune(r rune) bool { return r == '/' || r == '\\' }

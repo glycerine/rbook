@@ -185,7 +185,7 @@ function appendLog(msg){
         if (update.pathhash) {
            hash = update.pathhash;
         }
-        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://{{.WsHost}}:{{.Port}}/images/' + update.image + '?pathhash=' + hash + '" style="max-width:100%;"/></div>';
+        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://{{.WsHost}}:{{.Port}}/rbook/' + update.image + '?pathhash=' + hash + '" style="max-width:100%;"/></div>';
         d.innerHTML += newstuff        
     }
     

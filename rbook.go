@@ -137,7 +137,7 @@ func main() {
 	// don't need to hold mut b/c reload server not started yet
 	seqno := len(history.elems)
 
-	StartShowme(cfg) // serve the initial html and the png files to the web browsers
+	StartShowme(cfg, history) // serve the initial html and the png files to the web browsers
 	//vv("Showme http server started. Starting reload websocket server.")
 	cfg.startReloadServer(history) // websockets to tell browsers what to show when there's an update.
 	//vv("Reload server started.")
@@ -312,6 +312,7 @@ func main() {
 
 		history.mut.Lock()
 		history.elems = append(history.elems, e)
+		history.path2image[e.ImagePath] = e
 		history.mut.Unlock()
 
 		by, err := e.SaveToSlice()
