@@ -186,6 +186,9 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		w.Write(readyIndexHtmlBuf.Bytes())
 	})
 
+	// So we have a portable archive that doesn't depend on copying
+	// the directory of images, this is the default now:
+	// Read from memory (equivalent to what is in the cfg.RbookFilePath / my.rbook file)
 	http.HandleFunc("/rbook/", func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method != "GET" {

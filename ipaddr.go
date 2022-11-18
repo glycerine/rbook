@@ -111,6 +111,24 @@ func GetAvailPort2() (int, int) {
 	return r.(*net.TCPAddr).Port, r2.(*net.TCPAddr).Port
 }
 
+func GetAvailPort2Excluding(exclude int) (int, int) {
+
+	l3, err := net.Listen("tcp", fmt.Sprintf(":%v", exclude))
+	// INVAR: err or not, exlucde is bound and we will
+	// not choose it for either of the next 2.
+
+	l, _ := net.Listen("tcp", ":0")
+	r := l.Addr()
+	l2, _ := net.Listen("tcp", ":0")
+	r2 := l2.Addr()
+	l.Close()
+	l2.Close()
+	if err == nil {
+		l3.Close() // only close it if we opened it.
+	}
+	return r.(*net.TCPAddr).Port, r2.(*net.TCPAddr).Port
+}
+
 // get 3 distinct free ports
 func GetAvailPort3() (int, int, int) {
 	l, _ := net.Listen("tcp", ":0")
