@@ -121,6 +121,8 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 #BookID:%v
 #R rbook created: %v
 
+require(png)
+
 `, username, hostname, bookpath, history.BookID, history.CreateTm.Format(RFC3339NanoNumericTZ0pad))
 	}
 
@@ -341,7 +343,7 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 			e.ImagePathHash = pathhash
 			e.msg = []byte(msg)
 
-			fmt.Fprintf(script, "    ## plot shown: %v\n", path)
+			fmt.Fprintf(script, "    ##img=readPNG('%v');x11();grid::grid.raster(img); #saved\n", path)
 
 			hub.broadcast <- e
 			seqno++
