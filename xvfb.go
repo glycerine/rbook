@@ -46,7 +46,8 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) {
 	c.icewm = startInBackground("/usr/bin/icewm")
 
 	// give it a nice wallpaper
-	wall := "/home/jaten/go/src/github.com/glycerine/rbook/misc/pexels-ian-turnell-709552.jpg"
+	// this is command line -wall flag
+	wall := c.Wallpaper
 	if FileExists(wall) {
 		go startInBackground("/usr/bin/feh", "--bg-scale", wall).Wait()
 	}
