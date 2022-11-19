@@ -307,10 +307,11 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 				e.ConsoleJSON = msg
 				e.msg = []byte(msg)
 
-				hub.broadcast <- e
 				for _, line := range prevCaptureOK {
 					fmt.Fprintf(script, "    ## %v\n", line)
 				}
+
+				hub.broadcast <- e
 				seqno++
 			}
 		case "sv()":
@@ -340,6 +341,8 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 			e.ImagePathHash = pathhash
 			e.msg = []byte(msg)
 
+			fmt.Fprintf(script, "    ## plot shown: %v\n", path)
+
 			hub.broadcast <- e
 			seqno++
 		default:
@@ -356,6 +359,8 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 				e.CommentJSON = msg
 				e.msg = []byte(msg)
 
+				writeScriptComment(script, cmd)
+
 				hub.broadcast <- e
 				seqno++
 
@@ -365,6 +370,9 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 				e.Typ = Command
 				e.CmdJSON = msg
 				e.msg = []byte(msg)
+
+				writeScriptCommand(script, cmd)
+
 				hub.broadcast <- e
 				seqno++
 			}
@@ -482,6 +490,22 @@ func prepInitMessage(book *HashRBook) string {
 	return lenPrefixedJson
 }
 
-func scriptPrepConsole(lines []string) (res []string) {
-	return lines
+func writeScriptComment(script *os.File, msg string) {
+
+	if msg == "" {
+		return
+	}
+	n := len(msg)
+	msg = msg[2 : n-1]
+
+	// one line into possibly multiple lines
+	lines := strings.Split(msg, "\\n")
+	//vv("lines = '%#v'", lines)
+	for _, line := range lines {
+		fmt.Fprintf(script, "### %v\n", line)
+	}
+}
+
+func writeScriptCommand(script *os.File, cmd string) {
+	fmt.Fprintf(script, "%v\n", cmd)
 }
