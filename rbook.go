@@ -113,7 +113,6 @@ func main() {
 	display := fmt.Sprintf(":%v", disp)
 	os.Setenv("DISPLAY", display)
 	cfg.StartXvfbAndFriends(display)
-	defer cfg.StopXvfb()
 
 	// For this proof-of-principle, these have already
 	// been started manually.
@@ -155,6 +154,9 @@ func main() {
 
 	// our repl
 	embedr.ReplDLLinit()
+	embedr.SetGoCallbackForCleanup(func() { cfg.StopXvfb() })
+	embedr.EvalR(`.Last.sys=function(){.C("CallGoCleanupFunc")}`)
+
 	// cannot do invisible(TRUE) inside here; as that will
 	// hide the previous command output!
 	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
