@@ -47,13 +47,6 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) {
 	// give it a nice wallpaper
 	go startInBackground("/usr/bin/feh", "--bg-scale", "misc/pexels-ian-turnell-709552.jpg").Wait()
 	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb")
-
-	// sigs := make(chan os.Signal, 1)
-	// signal.Notify(sigs, syscall.SIGTERM)
-	// go func() {
-	// 	<-sigs
-	// 	c.StopXvfb()
-	// }()
 }
 
 func (c *RbookConfig) StopXvfb() {
@@ -64,7 +57,8 @@ func (c *RbookConfig) StopXvfb() {
 	//c.xvfb.Process.Kill()
 
 	// try giving chance to clean up. Yes, much better.
-	// No more orphaned seen in ipcs -m
+	// No more orphaned seen in ipcs -m (with nattch 0;
+	// meaning no processes are using them).
 	c.x11vnc.Process.Signal(syscall.SIGTERM)
 	c.icewm.Process.Signal(syscall.SIGTERM)
 	c.xvfb.Process.Signal(syscall.SIGTERM)
