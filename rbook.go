@@ -109,7 +109,8 @@ func main() {
 	// feh --bg-scale ~/pexels-ian-turnell-709552.jpg
 	// x11vnc -display :99 -forever -nopw -quiet -xkb &
 
-	disp := 97
+	disp := GetAvailXvfbDisplay()
+	vv("disp = '%v'", disp)
 	display := fmt.Sprintf(":%v", disp)
 	os.Setenv("DISPLAY", display)
 	cfg.StartXvfbAndFriends(display)

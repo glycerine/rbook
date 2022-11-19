@@ -3,12 +3,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
-	//"os"
+	"io/ioutil"
 	"os/exec"
-	//"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
+
+	ps "github.com/mitchellh/go-ps"
 )
 
 func killProcessGroup(pid int) {
@@ -71,4 +74,44 @@ func startInBackground(path string, args ...string) *exec.Cmd {
 	panicOn(err)
 
 	return cmd
+}
+
+// read the command lines of all Xvfb processes from /proc
+// and pick an unused DISPLAY number.
+func GetAvailXvfbDisplay() int {
+
+	r := make(map[int]bool)
+
+	ps, err := ps.Processes()
+	if err != nil {
+		panic(err)
+	}
+	for _, proc := range ps {
+		if proc.Executable() == "Xvfb" {
+			cmdline := fmt.Sprintf("/proc/%d/cmdline", proc.Pid())
+			if FileExists(cmdline) {
+				by, err := ioutil.ReadFile(cmdline)
+				panicOn(err)
+				// C-style array of strings, 0 terminated.
+				split := bytes.Split(by, []byte{0})
+				for j := range split {
+					arg := string(split[j])
+					//vv("have arg '%v' from pid %v", arg, proc.Pid())
+					if len(arg) > 0 && arg[0] == ':' {
+						n, err := strconv.Atoi(arg[1:])
+						panicOn(err)
+						r[n] = true
+						//vv("added n = %v", n)
+					}
+				}
+			}
+		}
+	}
+	// try 30 - 199
+	for i := 30; i < 200; i++ {
+		if !r[i] {
+			return i
+		}
+	}
+	panic("could not get available Xvfb DISPLAY, tried 30 - 199")
 }
