@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"os/exec"
 )
 
@@ -40,7 +41,8 @@ func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
 	fs.BoolVar(&c.Help, "help", false, "show this help given rbook -h")
 	fs.BoolVar(&c.Dump, "dump", false, "write script version of the -path binary book to standard out, then exit.")
 
-	fs.StringVar(&c.Wallpaper, "wall", "~/wallpaper", "path or symlink to wallpaper to set on the Xvfb/x11vnc")
+	home := os.Getenv("HOME")
+	fs.StringVar(&c.Wallpaper, "wall", fmt.Sprintf("%v/wallpaper", home), "path or symlink to wallpaper to set on the Xvfb/x11vnc")
 }
 
 // call c.ValidateConfig() after myflags.Parse()
