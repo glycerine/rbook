@@ -101,10 +101,13 @@ func main() {
 	// start R first so it gets the main thread.
 
 	// TODO: start up Xvfb on a free DISPLAY like :99
-	// Xvfb :99 -screen 0 3000x2000x16
+	//       and put these child processes in our same process
+	//       group so they are closed when we are.
+	//
+	// Xvfb :99 -screen 0 3000x2000x16 &
 	// icewm &
 	// feh --bg-scale ~/pexels-ian-turnell-709552.jpg
-	// x11vnc -display :99 -forever -nopw -quiet -xkb
+	// x11vnc -display :99 -forever -nopw -quiet -xkb &
 
 	// For this proof-of-principle, these have already
 	// been started manually.

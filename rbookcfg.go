@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os/exec"
 )
 
 type RbookConfig struct {
@@ -13,6 +14,8 @@ type RbookConfig struct {
 	WssPort int
 
 	RbookFilePath string
+
+	xvfbCmd *exec.Cmd // see xvfbCmd.Process.Pid for PID
 }
 
 // call DefineFlags before myflags.Parse()
