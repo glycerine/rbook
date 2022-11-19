@@ -116,3 +116,27 @@ func GetAvailXvfbDisplay() int {
 	}
 	panic("could not get available Xvfb DISPLAY, tried 30 - 199")
 }
+
+// NB: x11vnc defunct diagnosis: during dev we probably left
+//     alot of orphaned shared memory, leading to running out.
+//
+// in a new shell, set DISPLAY and run x11vnc. Saw:
+//
+// 19/11/2022 16:15:06 shmget(scanline) failed.
+// 19/11/2022 16:15:06 shmget: No space left on device
+//
+// So x11vnc could not get a shm seg, clear out all the old ones with:
+//
+// for i in `ipcs -m|awk '$6==0 {print $2}'`; do ipcrm shm $i; done
+//
+// See also https://serverfault.com/questions/371068/shared-memory-shmget-fails-no-space-left-on-device-how-to-increase-limits
+//   which says:
+// "Use ipcs -l to check the limits actually in force, and
+//  ipcs -a and ipcs -m to see what is in use, so you can
+//  compare the output. Look at the nattch column: are there
+//  segments with no processes attached that were not removed
+//  when processes exited (which normally means the program crashed)?
+//  ipcrm can clear them, although if this is a test machine, a
+//  reboot is quicker (and will make sure your changes to
+//  limits are picked up)."
+//
