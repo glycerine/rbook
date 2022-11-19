@@ -155,7 +155,14 @@ func main() {
 	// our repl
 	embedr.ReplDLLinit()
 	embedr.SetGoCallbackForCleanup(func() { cfg.StopXvfb() })
-	embedr.EvalR(`.Last.sys=function(){.C("CallGoCleanupFunc")}`)
+
+	// In .Last.sys,
+	// do graphics.off() first to try and avoid q() resulting in:
+	//
+	//Error in .Internal(quit(save, status, runLast)) :
+	//  X11 fatal IO error: please save work and shut down R
+	//>
+	embedr.EvalR(`.Last.sys=function(){graphics.off();.C("CallGoCleanupFunc")}`)
 
 	// cannot do invisible(TRUE) inside here; as that will
 	// hide the previous command output!

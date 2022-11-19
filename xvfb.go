@@ -57,7 +57,7 @@ func (c *RbookConfig) StopXvfb() {
 	c.x11vnc.Process.Kill()
 	c.icewm.Process.Kill()
 	c.xvfb.Process.Kill()
-	vv("killed x11vnc, icewm, Xvfb")
+	//vv("killed x11vnc, icewm, Xvfb")
 }
 
 func startInBackground(path string, args ...string) *exec.Cmd {
