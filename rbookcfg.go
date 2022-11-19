@@ -64,12 +64,20 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 	if c.Port == 0 || !IsAvailPort(c.Port) {
 		// try our dev default first, for simplicity.
 		c.Port = 8888
+		if c.WsPort == 0 {
+			c.WsPort = c.Port + 1
+		}
+		if c.WssPort == 0 {
+			c.WssPort = c.Port + 2
+		}
 
-		// find the next incremental port above 8888, so we have
+		// find the next incremental 3 ports above 8888, so we have
 		// stability upon restarts, rather than a new random port each time.
-		for !IsAvailPort(c.Port) {
-			c.Port++
-			if c.Port > maxPort {
+		for !IsAvailPort(c.Port) || !IsAvailPort(c.WsPort) || !IsAvailPort(c.WssPort) {
+			c.Port += 3
+			c.WsPort = c.Port + 1
+			c.WssPort = c.Port + 2
+			if c.Port > maxPort-3 {
 				panic("could not find available port for main rbook webserver")
 			}
 		}
