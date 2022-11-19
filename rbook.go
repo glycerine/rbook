@@ -109,8 +109,11 @@ func main() {
 	// feh --bg-scale ~/pexels-ian-turnell-709552.jpg
 	// x11vnc -display :99 -forever -nopw -quiet -xkb &
 
+	rhome := "/usr/lib/R"
+	os.Setenv("R_HOME", rhome)
+
 	disp := GetAvailXvfbDisplay()
-	vv("disp = '%v'", disp)
+	fmt.Printf("staring Xvfb using DISPLAY=:%v    and R_HOME=%v\n", disp, rhome)
 	display := fmt.Sprintf(":%v", disp)
 	os.Setenv("DISPLAY", display)
 	cfg.StartXvfbAndFriends(display)
@@ -118,7 +121,6 @@ func main() {
 	// For this proof-of-principle, these have already
 	// been started manually.
 
-	os.Setenv("R_HOME", "/usr/lib/R")
 	embedr.InitR(true)
 	defer embedr.EndR()
 	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
