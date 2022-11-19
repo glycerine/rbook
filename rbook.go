@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"flag"
@@ -73,7 +74,7 @@ func main() {
 	}
 	err = cfg.FinishConfig(myflags)
 	if err != nil {
-		AlwaysPrintf("%s command line flag error: '%s'", ProgramName, err)
+		fmt.Fprintf(os.Stderr, "%s command line flag error: '%s'", ProgramName, err)
 		os.Exit(1)
 	}
 
@@ -93,9 +94,14 @@ func main() {
 	if !FileExists(scriptPath) {
 		freshScript = true
 	}
-	script, err = os.OpenFile(scriptPath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0770)
-	panicOn(err)
-
+	if cfg.Dump {
+		// we are dumping the binary to stdout in script/text format.
+		script = os.Stdout
+		freshScript = true
+	} else {
+		script, err = os.OpenFile(scriptPath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0770)
+		panicOn(err)
+	}
 	var history *HashRBook
 
 	history, appendFD, err := ReadBook(username, hostname, bookpath)
@@ -124,6 +130,11 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 require(png)
 
 `, username, hostname, bookpath, history.BookID, history.CreateTm.Format(RFC3339NanoNumericTZ0pad))
+	}
+
+	if cfg.Dump {
+		cfg.dumpToScript(script, history)
+		os.Exit(0)
 	}
 
 	// for each new websocket client, as they
@@ -309,9 +320,7 @@ require(png)
 				e.ConsoleJSON = msg
 				e.msg = []byte(msg)
 
-				for _, line := range prevCaptureOK {
-					fmt.Fprintf(script, "    ## %v\n", line)
-				}
+				writeScriptConsole(script, prevCaptureOK)
 
 				hub.broadcast <- e
 				seqno++
@@ -343,7 +352,7 @@ require(png)
 			e.ImagePathHash = pathhash
 			e.msg = []byte(msg)
 
-			fmt.Fprintf(script, "    ##img=readPNG('%v');x11();grid::grid.raster(img); #saved\n", path)
+			writeScriptImage(script, path)
 
 			hub.broadcast <- e
 			seqno++
@@ -510,4 +519,49 @@ func writeScriptComment(script *os.File, msg string) {
 
 func writeScriptCommand(script *os.File, cmd string) {
 	fmt.Fprintf(script, "%v\n", cmd)
+}
+
+func writeScriptImage(script *os.File, path string) {
+	fmt.Fprintf(script, "    ##img=readPNG('%v');x11();grid::grid.raster(img); #saved\n", path)
+}
+
+func writeScriptConsole(script *os.File, prevCaptureOK []string) {
+	for _, line := range prevCaptureOK {
+		fmt.Fprintf(script, "    ## %v\n", line)
+	}
+}
+
+type DecodeJSON struct {
+	Seqno   int      `json:"seqno"`
+	Command string   `json:"command"`
+	Console []string `json:"console"`
+	Comment []string `json:"comment"`
+	Image   string   `json:"image"`
+}
+
+func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
+	for _, e := range book.elems {
+		colon := bytes.Index(e.msg, []byte{':'})
+		msg := e.msg[colon+1:]
+		d := &DecodeJSON{}
+		panicOn(json.Unmarshal(msg, d))
+
+		switch e.Typ {
+		case Command:
+			fmt.Fprintf(fd, "%v\n", d.Command)
+		case Comment:
+			for _, line := range d.Comment {
+				fmt.Fprintf(fd, "%v\n", line)
+			}
+		case Console:
+			for _, line := range d.Console {
+				fmt.Fprintf(fd, "    ## %v\n", line)
+			}
+		case Image:
+			fmt.Fprintf(fd, "    ##img=readPNG('%v');x11();grid::grid.raster(img); #saved\n", d.Image)
+		}
+
+	}
+
+	fd.Sync()
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os/exec"
 )
 
@@ -23,6 +24,8 @@ type RbookConfig struct {
 	x11vnc *exec.Cmd
 
 	Help bool
+
+	Dump bool
 }
 
 // call DefineFlags before myflags.Parse()
@@ -32,6 +35,7 @@ func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
 	fs.StringVar(&c.RbookFilePath, "path", "", "path to the .rbook file to read and append to. this is also the default command line argument, so -path can be omitted in front of the path (default is my.rbook in the current dir)")
 	fs.StringVar(&c.Rhome, "rhome", "/usr/lib/R", "value of R_HOME to start R with. This directory should have contents: bin  COPYING  etc  lib  library  modules  site-library  SVN-REVISION")
 	fs.BoolVar(&c.Help, "help", false, "show this help given rbook -h")
+	fs.BoolVar(&c.Dump, "dump", false, "write script version of the -path binary book to standard out, then exit.")
 }
 
 // call c.ValidateConfig() after myflags.Parse()
@@ -46,6 +50,13 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 			c.RbookFilePath = "my.rbook"
 			//vv("defaulting c.RbookFilePath to '%v'", c.RbookFilePath)
 		}
+	}
+
+	if c.Dump {
+		if !FileExists(c.RbookFilePath) {
+			return fmt.Errorf("rbook -dump could not find book to dump at path '%v'", c.RbookFilePath)
+		}
+		return nil // no web server stuff needed
 	}
 
 	// set the main web server port
