@@ -27,6 +27,11 @@ rbook is displayed in a web browser and updated
 as the user's R session progresses. Should be usable
 under an ESS/emacs environment.
 
+The rbook provides an archive of plots and analysis
+together, much like a digital lab notebook.
+All data from the session is saved in a single
+portable file for easy backup and reference.
+
 * approach: 
 
 To capture graphs, we run under Xvfb and
@@ -37,11 +42,9 @@ current graph to the browser.
 
 Interactive graph development is followed
 in by running a vnc client attached to Xvfb session.
-There are even web-based vnc clients, but
-that seems like extra work when 
-running a native vnc client is simple
-and effective. https://www.realvnc.com/en/ is free,
-as are multiple alternatives.
+
+https://www.realvnc.com/en/ is a free VNC viewer.
+There are multiple free alternatives.
 
             
 * approach to show history in the browser:
@@ -57,7 +60,7 @@ listening browser over a websocket.
 To capture the output of commands, we use
 the R sink() facility. Like graphs, printed command
 output is only written to the browser on demand. The
-user types dv() to "display the last value" in
+user types dv() to "display the last console value" in
 the browser. We use the R sink() facility
 to capture the last value seen at the R
 top level.
@@ -74,10 +77,7 @@ each new code/plot addition for display.
 Comments are created by having R evaluate a string literal
 that starts with the hash symbol `#`.
 
-For example, at the rbook prompt (the + signs are automatically 
-added by the R REPL after the user presses enter in the
-middle of a string literal, to indicate that a multi-line string
-is being typed):
+For example, at the rbook prompt[1]:
 
 ~~~
 > "# start a comment line
@@ -88,6 +88,10 @@ is being typed):
 is then rendered in the browser with a beige background
 and `###` in front of each line.
 
+[1] In the above example, the user does not type the '+' signs.
+They are automatically added by the R REPL after the user 
+presses enter in the middle of a string literal, to indicate that a multi-line string
+is being typed.
 
 The example above could equally have been done
 with single quotes, since those also delimit string
@@ -116,16 +120,16 @@ literals and display them nicely as left-aligned
 `###` blocks, as is the convention for comments
 in some places such as ESS.
 
-From the ESS manual [1][2]:
+From the ESS manual [2][3]:
 
 > Comments are also handled specially by ESS, using an idea borrowed from the Emacs-Lisp indentation style. By default, comments beginning with ‘###’ are aligned to the beginning of the line. Comments beginning with ‘##’ are aligned to the current level of indentation for the block containing the comment. Finally, comments beginning with ‘#’ are aligned to a column on the right (the 40th column by default, but this value is controlled by the variable comment-column,) or just after the expression on the line containing the comment if it extends beyond the indentation column. You turn off the default behavior by adding the line (setq ess-indent-with-fancy-comments nil) to your .emacs file.
 
 
 references
 
-[1] http://ess.r-project.org/Manual/ess.html#Indenting
+[2] http://ess.r-project.org/Manual/ess.html#Indenting
 
-[2] https://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+[3] https://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
 
 
 
@@ -140,38 +144,22 @@ finished sub-tasks
 
 [x] done: keeping the browser state in sync 
 
-it was simpler to have browser always discard all and then to
-read all the history instead of trying to coordinate the log
-number that the browser knows against the log / bookID current.
-
-rbook sends the browser an init message now, so it knows
-to discard the previous log of commands.
-
 [x] mechanism to add comments into the stream.
 
-
-Still TODO
-----------
-
-
-_ pick the websocket port dynamically, embed into index.html before sending.
+[x] done. pick the websocket port dynamically, embed into index.html before sending.
  to avoid collisions with multiples running at once.
 
-_ add configuration command line options for setting options/ the name
+[x] done. add configuration command line options for setting options/ the name
 of the rbook file to save into.
 
-_ maybe a command to read through the .rbook file and write out just
-the R commands for easy text archive of the session.
+[x] done. a parallel script/text version of the session is also written
+for easy/quick review; without needing to open the browser.
 
-
-_ we *could* auto-replay to re-obtain state as well... but might rather
-step through it. But could be a nice option.
-
-2) Automate the startup of the Xvfb, the window manager, and
+[x] done: Automate the startup of the Xvfb, the window manager, and
    x11vnc server. Rbook should start them if they are
    not already running.
 
-3) authentiation: deferred.
+[ ] authentiation: deferred. None at the moment.
 
 The login.go contains a simple cookie based login example
 that would need to be made persistent to disk with
@@ -180,9 +168,12 @@ greenpack or other means. But we'll defer login until needed.
 installation
 =============
 
+Preparation:
 ~~~
 apt install Xvfb x11vnc icewm
 ~~~
+
+This installs the dependencies.
 
 
 How to get ESS to run rbook instead of default R:
@@ -231,8 +222,8 @@ x11vnc -display :99 -forever -nopw -quiet -xkb
 Now a vnc client connecting to port 5900 will
 show the xvfb frame buffer.
 
-earlier notes; may be out of date
----------------------------------
+earlier notes
+-------------
 
 In R
 ~~~
@@ -244,40 +235,19 @@ and then send the filename to rbook.
 
 Our rbook may then wish to copy the file
 version of plots for safe keeping into the archive.
-Update: yes, it copies them into a directory, .rbook,
-in the current directory.
+Update: yes, it copies them into a directory, my.rbook.plots,
+in the current directory (assuming my.rbook is the
+file name).
 
 Since sometimes plots are built up interactively, we
-may want to have a final() command added to R to tell
+wait until ready and given the final sv() command added to R to tell
 rbook to consolidate into just the nice finished plot.
 
 how to get the code snippets
 ----------------------------
 
-We'll try embedding R in our Go program 'rbook',
-and have it all in one process, so that we get a chance to
-see each command that comes through before
-it is passed to R. 
-
-This seems vastly better than hacking ESS and
-trying to hook the code evaluation from there.
-
-Since rbook should be saving everything to disk,
-so if we have to restart that shouldn't be
-a problem. Plus we'll know that rbook is
-always up if the wrapped R is running. And
-it is simple that it is all in the place; and
-we cannot miss any commands that way.
-
-Also with wrapping R, the wrapper Go code
-can recognize plot commands automatically,
-and not require anything extra complicated to
-always save them to disk; perhaps copying
-them into the archive, and associating them
-with the code.
-
-I'm liking this wrapper idea, simple single
-process idea.
+We embeded R in our Go program 'rbook'.
+So R and Go are all in one process. This
 
 We have embedr already working and it provides
 an API into executing arbitrary R code from Go.
