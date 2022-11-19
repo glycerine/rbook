@@ -3,7 +3,7 @@
 rbook
 ========
 
-Project `rbook` provides an R notebook,
+Project `rbook` provides R notebooks,
 affectionately known as rbooks.
 
 The server binary itself is called simply `rbook`
@@ -15,19 +15,11 @@ binary is also serving a live web view of the
 session to any (or multple) web browsers. 
 
 As plots are saved they are shown inline in realtime
-with the R code, as in a Jupyter notebook.
+with the R code, in the browser, as in a Jupyter notebook.
 R output and free-form comments can also be logged.
-Thus rbooks form a simple, compact, and append-only
+Since all graphics, comments, code, and chosen output
+are logged, rbooks form a simple, compact, and append-only
 digital lab notebook for R.
-
-Our rbook has similarities to a Jupyter/ipython notebook,
-but also differences. The web view here is a read-only mirror of the user's
-ongoing, interactive R session in emacs. This makes
-it suitable for sharing and teaching, as well as code review.
-
-As the R user conducts their data anaylysis in emacs,
-using ESS, the `rbook` logs their session to a single file,
-suitable for archiving and later retreival of the results.
 
 
 detail
