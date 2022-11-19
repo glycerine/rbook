@@ -17,6 +17,8 @@ import (
 	"github.com/glycerine/embedr"
 )
 
+const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
+
 func init() {
 	// Arrange that main.main runs on main thread. This lets R startup
 	// without crashing when run on a non-main thread.
@@ -80,6 +82,20 @@ func main() {
 	panicOn(err)
 	bookpath := cwd + sep + fn
 
+	// Generate an R script too.
+	// The script will have text version of the binary .rbook, written
+	// in parallel, for ease reference. Obviously it will be missing
+	// the plots; but we could write their paths in.
+	//
+	scriptPath := bookpath + ".rsh"
+	var script *os.File
+	freshScript := false
+	if !FileExists(scriptPath) {
+		freshScript = true
+	}
+	script, err = os.OpenFile(scriptPath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0770)
+	panicOn(err)
+
 	var history *HashRBook
 
 	history, appendFD, err := ReadBook(username, hostname, bookpath)
@@ -93,6 +109,20 @@ func main() {
 	}
 	_ = appendFD
 	_ = history
+
+	// write header for the script
+	if freshScript {
+		fmt.Fprintf(script, `#!/bin/bash
+exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
+
+# text version of:
+
+#%v@%v:%v
+#BookID:%v
+#R rbook created: %v
+
+`, username, hostname, bookpath, history.BookID, history.CreateTm.Format(RFC3339NanoNumericTZ0pad))
+	}
 
 	// for each new websocket client, as they
 	// arrive, replay the history for them.
@@ -178,6 +208,8 @@ func main() {
 	captureJSON := ""
 	prevJSON2 := ""
 	prevJSON := ""
+	var captureOK []string
+	var prevCaptureOK []string
 	for {
 
 		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
@@ -198,6 +230,9 @@ func main() {
 		capture, capturedOutputOK := sinkgot.([]string)
 
 		if capturedOutputOK {
+			prevCaptureOK = captureOK
+			captureOK = capture
+
 			prevJSON2 = prevJSON
 			prevJSON = captureJSON
 			captureJSON = "["
@@ -273,10 +308,13 @@ func main() {
 				e.msg = []byte(msg)
 
 				hub.broadcast <- e
+				for _, line := range prevCaptureOK {
+					fmt.Fprintf(script, "    ## %v\n", line)
+				}
 				seqno++
 			}
 		case "sv()":
-			odir := ".rbook"
+			odir := bookpath + ".plots"
 			panicOn(os.MkdirAll(odir, 0777))
 			rnd20 := cryrand.RandomStringWithUp(20)
 			path = fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
@@ -442,4 +480,8 @@ func prepInitMessage(book *HashRBook) string {
 	json := fmt.Sprintf(`{"init":true, "book":%v}`, string(by))
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return lenPrefixedJson
+}
+
+func scriptPrepConsole(lines []string) (res []string) {
+	return lines
 }

@@ -177,8 +177,13 @@ The login.go contains a simple cookie based login example
 that would need to be made persistent to disk with
 greenpack or other means. But we'll defer login until needed.
 
-install notes
+installation
 =============
+
+~~~
+apt install Xvfb x11vnc icewm
+~~~
+
 
 How to get ESS to run rbook instead of default R:
 
@@ -189,7 +194,7 @@ How to get ESS to run rbook instead of default R:
   (R)))
 ~~~
 
-To set manually:
+To set `inferior-R-program-name` manually:
 
 Ctrl-h v inferior-R-program-name -> position cursor over the customize link and press enter.
 
