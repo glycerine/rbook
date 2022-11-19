@@ -38,7 +38,7 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) {
 	c.xvfb = startInBackground("/usr/bin/Xvfb", strings.Split(display+" -screen 0 3000x2000x16", " ")...)
 	c.icewm = startInBackground("/usr/bin/icewm")
 	// give it a nice wallpaper
-	startInBackground("/usr/bin/feh", "--bg-scale", "misc/pexels-ian-turnell-709552.jpg")
+	go startInBackground("/usr/bin/feh", "--bg-scale", "misc/pexels-ian-turnell-709552.jpg").Wait()
 	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb")
 }
 
