@@ -15,7 +15,10 @@ type RbookConfig struct {
 
 	RbookFilePath string
 
-	xvfbCmd *exec.Cmd // see xvfbCmd.Process.Pid for PID
+	// see .Process.Pid for PID
+	xvfb   *exec.Cmd
+	icewm  *exec.Cmd
+	x11vnc *exec.Cmd
 }
 
 // call DefineFlags before myflags.Parse()

@@ -4,7 +4,7 @@ package main
 
 import (
 	"fmt"
-	"os"
+	//"os"
 	"os/exec"
 	"strings"
 	"syscall"
@@ -27,23 +27,30 @@ func killProcessGroup(pid int) {
 // icewm &
 // feh --bg-scale ~/pexels-ian-turnell-709552.jpg
 // x11vnc -display :99 -forever -nopw -quiet -xkb &
-func (c *RbookConfig) StartXvfbAndFriends() {
-	path := "/usr/bin/Xvfb"
-	if !FileExists(path) {
-		panic(fmt.Sprintf("could not find Xvfb at path '%v'", path))
-	}
-
-	disp := 99
-	display := fmt.Sprintf(":%v", disp)
-	os.Setenv("DISPLAY", display)
-	args := strings.Split(display+" -screen 0 3000x2000x16", " ")
-	c.xvfbCmd = exec.Command(path, args...)
+//
+// display example: ":99"
+func (c *RbookConfig) StartXvfbAndFriends(display string) {
 
 	// put in its own process group so all sub-process are also
-	// shut down and cleaned up if rbook is stopped.
-	systemCallSetGroup(c.xvfbCmd)
+	// shut down and cleaned up if rbook is stopped, using
+	// systemCallSetGroup.
 
-	err := c.xvfbCmd.Start()
+	c.xvfb = startInBackground("/usr/bin/Xvfb", strings.Split(display+" -screen 0 3000x2000x16", " ")...)
+	c.icewm = startInBackground("/usr/bin/icewm")
+	// give it a nice wallpaper
+	startInBackground("/usr/bin/feh", "--bg-scale", "misc/pexels-ian-turnell-709552.jpg")
+	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb")
+}
+
+func startInBackground(path string, args ...string) *exec.Cmd {
+	if !FileExists(path) {
+		panic(fmt.Sprintf("could not find path '%v'", path))
+	}
+
+	cmd := exec.Command(path, args...)
+	systemCallSetGroup(cmd)
+	err := cmd.Start()
 	panicOn(err)
 
+	return cmd
 }

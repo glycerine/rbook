@@ -109,10 +109,14 @@ func main() {
 	// feh --bg-scale ~/pexels-ian-turnell-709552.jpg
 	// x11vnc -display :99 -forever -nopw -quiet -xkb &
 
+	disp := 97
+	display := fmt.Sprintf(":%v", disp)
+	os.Setenv("DISPLAY", display)
+	cfg.StartXvfbAndFriends(display)
+
 	// For this proof-of-principle, these have already
 	// been started manually.
 
-	os.Setenv("DISPLAY", ":99")
 	os.Setenv("R_HOME", "/usr/lib/R")
 	embedr.InitR(true)
 	defer embedr.EndR()
