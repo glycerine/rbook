@@ -8,10 +8,17 @@ import (
 )
 
 type RbookConfig struct {
-	Host string
+	Host string // leave empty to bind all interfaces
 	Port int
 
-	WsHost  string // must fill something here to tell the client how to find us.
+	// Since Host empty means bind all interfaces, WsHost
+	// is what we embed in the index.html as to where to
+	// tell the client to websocket call back to.
+	// Defaults to our hostname, then the first found
+	// external IP address. Not currently a flag, but
+	// could be.
+	WsHost string // must fill something here to tell the client how to find us.
+
 	WsPort  int
 	WssPort int
 
