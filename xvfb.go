@@ -99,8 +99,9 @@ func GetAvailXvfbDisplay() int {
 					//vv("have arg '%v' from pid %v", arg, proc.Pid())
 					if len(arg) > 0 && arg[0] == ':' {
 						n, err := strconv.Atoi(arg[1:])
-						panicOn(err)
-						r[n] = true
+						if err == nil {
+							r[n] = true
+						}
 						//vv("added n = %v", n)
 					}
 				}

@@ -1,0 +1,2 @@
+# cryrand
+rng utility functions
