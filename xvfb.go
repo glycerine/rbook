@@ -4,8 +4,9 @@ package main
 
 import (
 	"fmt"
-	//"os"
+	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
 	"syscall"
 )
@@ -40,6 +41,19 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) {
 	// give it a nice wallpaper
 	go startInBackground("/usr/bin/feh", "--bg-scale", "misc/pexels-ian-turnell-709552.jpg").Wait()
 	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb")
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGTERM)
+	go func() {
+		<-sigs
+		c.StopXvfb()
+	}()
+}
+
+func (c *RbookConfig) StopXvfb() {
+	c.x11vnc.Process.Kill()
+	c.icewm.Process.Kill()
+	c.xvfb.Process.Kill()
 }
 
 func startInBackground(path string, args ...string) *exec.Cmd {
@@ -48,7 +62,10 @@ func startInBackground(path string, args ...string) *exec.Cmd {
 	}
 
 	cmd := exec.Command(path, args...)
-	systemCallSetGroup(cmd)
+
+	// actually I think we specifically do not want this!
+	//systemCallSetGroup(cmd)
+
 	err := cmd.Start()
 	panicOn(err)
 

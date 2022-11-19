@@ -113,6 +113,7 @@ func main() {
 	display := fmt.Sprintf(":%v", disp)
 	os.Setenv("DISPLAY", display)
 	cfg.StartXvfbAndFriends(display)
+	defer cfg.StopXvfb()
 
 	// For this proof-of-principle, these have already
 	// been started manually.
