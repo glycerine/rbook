@@ -162,7 +162,8 @@ finished sub-tasks
 of the rbook file to save into.
 
 [x] done. a parallel script/text version of the session is also written
-for easy/quick review; without needing to open the browser.
+for easy/quick review; without needing to open the browser. And if you
+have only the binary rbook -dump will regenerate the text form.
 
 [x] done: Automate the startup of the Xvfb, the window manager, and
    x11vnc server. Rbook should start them if they are
