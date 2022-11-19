@@ -149,3 +149,5 @@ func GetAvailXvfbDisplay() int {
 //  reboot is quicker (and will make sure your changes to
 //  limits are picked up)."
 //
+// Update: we use SIGTERM now to shutdown, and x11vnc/icewm/Xvfb now
+//         clean up after themselves better.
