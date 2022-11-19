@@ -57,9 +57,18 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) {
 }
 
 func (c *RbookConfig) StopXvfb() {
-	c.x11vnc.Process.Kill()
-	c.icewm.Process.Kill()
-	c.xvfb.Process.Kill()
+
+	// not good: leaving orphaned shm segments
+	//c.x11vnc.Process.Kill()
+	//c.icewm.Process.Kill()
+	//c.xvfb.Process.Kill()
+
+	// try giving chance to clean up. Yes, much better.
+	// No more orphaned seen in ipcs -m
+	c.x11vnc.Process.Signal(syscall.SIGTERM)
+	c.icewm.Process.Signal(syscall.SIGTERM)
+	c.xvfb.Process.Signal(syscall.SIGTERM)
+
 	//vv("killed x11vnc, icewm, Xvfb")
 }
 
