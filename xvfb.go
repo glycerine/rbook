@@ -97,7 +97,7 @@ func GetAvailXvfbDisplay() int {
 				for j := range split {
 					arg := string(split[j])
 					//vv("have arg '%v' from pid %v", arg, proc.Pid())
-					if len(arg) > 0 && arg[0] == ':' {
+					if len(arg) >= 2 && arg[0] == ':' {
 						n, err := strconv.Atoi(arg[1:])
 						if err == nil {
 							r[n] = true
