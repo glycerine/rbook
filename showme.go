@@ -204,7 +204,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			return
 		}
 
-		path = path[len("/rbook/"):]
+		path = path[len("/rbook"):]
 
 		//vv("looking up path = '%v'", path)
 
@@ -213,16 +213,15 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 		e, ok := b.path2image[path]
 		if !ok {
-			//vv("path '%v' not found in book path2image", path)
+			vv("path '%v' not found in book path2image; path2image = '%#v'", path, b.path2image)
 			http.Error(w, "invalid URL path", http.StatusBadRequest)
 			return
 		}
 		//vv("path '%v' found in book path2image", path)
 		w.Header().Set("Content-Type", "image/png")
 		readSeeker := bytes.NewReader(e.ImageBy)
-		name := "my.png"
 		modtime := e.Tm
-		http.ServeContent(w, r, name, modtime, readSeeker)
+		http.ServeContent(w, r, "", modtime, readSeeker)
 	})
 
 	host := cfg.Host
