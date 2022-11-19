@@ -166,8 +166,8 @@ func main() {
 
 	// cannot do invisible(TRUE) inside here; as that will
 	// hide the previous command output!
-	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" tells us to save the current graph.
-	embedr.EvalR(`dv=function(){}`) // easy to type. cmd == "dv()" tells us to save the last value.
+	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" : save the current graph (to browser).
+	embedr.EvalR(`dv=function(){}`) // easy to type. cmd == "dv()" : display the last printed output (in browser).
 
 	// need to save one console capture back for dv() recording of output
 	captureJSON := ""
