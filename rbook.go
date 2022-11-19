@@ -62,10 +62,13 @@ func main() {
 	cfg := &RbookConfig{}
 	// there will be R arguments we don't recognize, so
 	// ContinueOnError
-	myflags := flag.NewFlagSet("myflags", flag.ContinueOnError)
+	myflags := flag.NewFlagSet("rbook", flag.ContinueOnError)
 	cfg.DefineFlags(myflags)
 
 	err := myflags.Parse(os.Args[1:])
+	if err == flag.ErrHelp {
+		os.Exit(1)
+	}
 	err = cfg.FinishConfig(myflags)
 	if err != nil {
 		AlwaysPrintf("%s command line flag error: '%s'", ProgramName, err)
@@ -109,11 +112,10 @@ func main() {
 	// feh --bg-scale ~/pexels-ian-turnell-709552.jpg
 	// x11vnc -display :99 -forever -nopw -quiet -xkb &
 
-	rhome := "/usr/lib/R"
-	os.Setenv("R_HOME", rhome)
+	os.Setenv("R_HOME", cfg.Rhome)
 
 	disp := GetAvailXvfbDisplay()
-	fmt.Printf("staring Xvfb using DISPLAY=:%v    and R_HOME=%v\n", disp, rhome)
+	fmt.Printf("staring Xvfb using DISPLAY=:%v    and R_HOME=%v\n", disp, cfg.Rhome)
 	display := fmt.Sprintf(":%v", disp)
 	os.Setenv("DISPLAY", display)
 	cfg.StartXvfbAndFriends(display)
