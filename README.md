@@ -3,18 +3,39 @@
 rbook
 ========
 
-Project `rbook` provides an R notebook. `rbook` is 
-written in Go, and a little C, for use with R. It works well
+Project `rbook` provides an R notebook,
+affectionately known as rbooks.
+
+The server binary itself is called simply `rbook`
+and is used as a drop-in replacement
+for `R` inside emacs.
+
+When in an interactive R session, the rbook 
+binary is also serving a live web view of the
+session to any (or multple) web browsers. 
+
+As plots are saved they are shown inline in realtime
+with the R code, as in a Jupyter notebook.
+R output and free-form comments can also be logged.
+Thus rbooks form a simple, compact, and append-only
+digital lab notebook for R.
+
+Our rbook has similarities to a Jupyter/ipython notebook,
+but also differences. The web view here is a read-only mirror of the user's
+ongoing, interactive R session in emacs. This makes
+it suitable for sharing and teaching, as well as code review.
+
+As the R user conducts their data anaylysis in emacs,
+using ESS, the `rbook` logs their session to a single file,
+suitable for archiving and later retreival of the results.
+
+
+detail
+------
+
+`rbook` is written in Go for use with R. It is designed for use
 with emacs and ESS.
 
-An rbook is similar to a Jupyter/ipython notebook, but 
-is not built on them.
-
-However, rbook has some of the same goals:
-
-* show code and then graphs together on a web page
-
-* save the sequence of code and graphs to disk for archive and review.
 
 design
 ------
@@ -27,10 +48,6 @@ rbook is displayed in a web browser and updated
 as the user's R session progresses. Should be usable
 under an ESS/emacs environment.
 
-The rbook provides an archive of plots and analysis
-together, much like a digital lab notebook.
-All data from the session is saved in a single
-portable file for easy backup and reference.
 
 * approach: 
 
