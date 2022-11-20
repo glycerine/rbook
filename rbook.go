@@ -66,12 +66,29 @@ func main() {
 	// there will be R arguments we don't recognize, so
 	// ContinueOnError
 	myflags := flag.NewFlagSet("rbook", flag.ContinueOnError)
+
+	// suppress the flag errors when ess/emacs passes -no-readline or other R flags
+	var flagerr bytes.Buffer
+	myflags.SetOutput(&flagerr)
+
 	cfg.DefineFlags(myflags)
 
 	err := myflags.Parse(os.Args[1:])
 	if err == flag.ErrHelp {
+		fmt.Printf("%v\n", flagerr.String())
 		os.Exit(1)
 	}
+	if err != nil {
+		errs := err.Error()
+		if strings.HasPrefix(errs, "flag provided but not defined:") {
+			// just ignore -no-readline and any other R flags
+		} else {
+			vv("err on myflags.Parse(): '%v'", err.Error())
+			vv("flagerr = '%v'", flagerr.String())
+			panic("fixme?")
+		}
+	}
+
 	err = cfg.FinishConfig(myflags)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s command line flag error: '%s'", ProgramName, err)
