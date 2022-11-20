@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/glycerine/embedr"
 )
 
@@ -78,19 +80,25 @@ top:
 			select {
 			case client.send <- []byte(prepInitMessage(h.book)):
 				//vv("sent init msg to new client, have %v updates to follow", len(h.book.elems))
-			default:
+			case <-time.After(10 * time.Second):
+				//default:
+				//vv("client.send could not proceed after 10 seconds.")
 				close(client.send)
 				delete(h.clients, client)
-
 				h.book.mut.Unlock()
 				continue top // don't try to send below on closed channel!
 			}
-			for _, e := range h.book.elems {
+			for i, e := range h.book.elems {
+				_ = i
 				//vv("updating new client with seqno %v", e.Seqno)
 				select {
 				//huh. got after long inactivity, panic: send on closed channel
+				// also got when old client coming back to new server.
 				case client.send <- e.msg:
-				default:
+				case <-time.After(10 * time.Second):
+					//default:
+					// this was the closing too early culprit!
+					//vv("closing client.send after i=%v out of %v", i, len(h.book.elems))
 					close(client.send)
 					delete(h.clients, client)
 				}
@@ -101,14 +109,17 @@ top:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
+				//vv("closed client.send after unregister")
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {
 				select {
 				case client.send <- message.msg:
-				default:
+				case <-time.After(10 * time.Second):
+					//default:
 					close(client.send)
 					delete(h.clients, client)
+					//vv("closed client.send after broadcast failure")
 				}
 			}
 		}

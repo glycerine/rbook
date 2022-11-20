@@ -141,7 +141,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		vv("error trying upgrader.Upgrade(): '%v'", err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 8192)}
 	client.hub.register <- client
 	go client.writePump()
 	client.readPump()
