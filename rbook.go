@@ -376,9 +376,24 @@ require(png)
 		default:
 
 			// special handling for strings literal values
-			// that start with `"#`. We present them
+			// that start with `"#` or `;`. We present them
 			// as comments in the rbook browser view.
-			if strings.HasPrefix(cmd, `"#`) {
+			//
+			// # is the traditional comment start, while '; is very easy to
+			// type to start a comment, as no shift key is required. Simply
+			// add the comment, then end the string literal with another
+			// single quote '.
+			//
+			// Rather fortunately, the R parser rejects actual commands starting
+			// with semicolons, so there can't be any confusion here. We know
+			// we are examining a last expression value, so we know it got
+			// parsed just fine.
+			//
+			// > ; print("hi")
+			// Error: unexpected ';' in ";"
+			// >
+			//
+			if strings.HasPrefix(cmd, `"#`) || strings.HasPrefix(cmd, `;`) {
 
 				//vv("see comment: '%v'", cmd)
 
