@@ -445,7 +445,7 @@ func escape(s string) string {
 
 // add length: as prefix, so we can parse 2 messages that get piggy backed,
 // as occassionally happens on the websockets.
-func prepCommandMessage(msg string, seqno int) string {
+func prepCommandMessageOld(msg string, seqno int) string {
 	if msg == "" {
 		return ""
 	}
@@ -457,7 +457,7 @@ func prepCommandMessage(msg string, seqno int) string {
 // new version of prepCommandMessage that, like prepCommentMessage, doesn't compress into one line
 // As with all now, add length: as prefix, so we can parse 2 messages that get piggy backed,
 // as occassionally happens on the websockets.
-func prepCommandMessageNew(msg string, seqno int) string {
+func prepCommandMessage(msg string, seqno int) string {
 	//n := len(msg)
 	//msg = msg[1 : n-1]
 

@@ -37,7 +37,10 @@ var embedded_index_template = `
     .Rcommand       {margin-top: -1.0em;
                      display: block;
                     }
-  /*.RcommandLine   { margin-top: -0.1em; }*/
+    .RsecondCommandLine { color: rgba(0,0,0,0.4);
+                        };
+
+    /*.RcommandLine   { margin-top: -0.1em; }*/
 
     </style>
   
@@ -130,6 +133,8 @@ function pad(num, size) {
     while (num.length < size) num = "0" + num;
     return num;
 }
+
+var lineNum = 1;
       
 function appendLog(msg){
  
@@ -180,11 +185,15 @@ function appendLog(msg){
 
     if (update.command) {
          console.log("we just saw command message: ", update.command);
-         var nid = nextIDInt()+1;
+
          var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code>';
 
          for (let i = 0; i < update.command.length; i++) {
-             newstuff += '<div class="RcommandLine">'  + '[' + pad(nid,2) + '] ' + update.command[i] + '</div>';
+             var lineNumStr = '[' + pad(lineNum++,3) + ']';
+             if (i > 0) {
+                 lineNumStr = '<span class="RsecondCommandLine">' + lineNumStr + '</span>';
+             }
+             newstuff += '<div class="RcommandLine">'  + lineNumStr + ' ' + update.command[i] + '</div>';
          }
          d.innerHTML += newstuff + '</code></pre></div>';
          console.log("we added a command block")
