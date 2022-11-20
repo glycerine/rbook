@@ -78,6 +78,10 @@ func startInBackground(path string, args ...string) *exec.Cmd {
 
 	cmd := exec.Command(path, args...)
 
+	// this prevents the ctrl-c SIGINT at the R prompt
+	// from stopping the child processes.
+	systemCallSetGroup(cmd)
+
 	err := cmd.Start()
 	panicOn(err)
 

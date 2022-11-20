@@ -9,8 +9,10 @@ import (
 	"hash"
 	"io/ioutil"
 	"os"
+	//"os/signal"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/glycerine/blake2b-simd"
@@ -21,6 +23,8 @@ import (
 const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
 
 func init() {
+	//interceptSIGINT()
+
 	// Arrange that main.main runs on main thread. This lets R startup
 	// without crashing when run on a non-main thread.
 	runtime.LockOSThread()
@@ -59,6 +63,21 @@ func PathHash(path string) (hash string, imageBy []byte) {
 	hasher.Write(by)
 	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil)), by
 }
+
+/*
+func interceptSIGINT() {
+	//vv("interceptSIGINT installing")
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			// sig is a ^C, handle it
+			_ = sig
+			vv("go catches sigint.")
+		}
+	}()
+}
+*/
 
 func main() {
 
@@ -394,6 +413,10 @@ require(png)
 			// >
 			//
 			if strings.HasPrefix(cmd, `"#`) || strings.HasPrefix(cmd, `";`) {
+
+				// debug TODO remove
+				// on comment, send SIGINT to ourselves
+				syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 
 				//vv("see comment: '%v'", cmd)
 
