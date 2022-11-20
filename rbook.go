@@ -9,7 +9,7 @@ import (
 	"hash"
 	"io/ioutil"
 	"os"
-	//"os/signal"
+	"os/signal"
 	"runtime"
 	"strings"
 	"syscall"
@@ -23,7 +23,7 @@ import (
 const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
 
 func init() {
-	//interceptSIGINT()
+	interceptSIGINT()
 
 	// Arrange that main.main runs on main thread. This lets R startup
 	// without crashing when run on a non-main thread.
@@ -64,7 +64,6 @@ func PathHash(path string) (hash string, imageBy []byte) {
 	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil)), by
 }
 
-/*
 func interceptSIGINT() {
 	//vv("interceptSIGINT installing")
 	c := make(chan os.Signal, 1)
@@ -77,7 +76,6 @@ func interceptSIGINT() {
 		}
 	}()
 }
-*/
 
 func main() {
 
