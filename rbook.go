@@ -23,6 +23,8 @@ import (
 const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
 
 func init() {
+	// this important protection. R will crash if it gets SIGINT,
+	// so we intercept it now.
 	interceptSIGINT()
 
 	// Arrange that main.main runs on main thread. This lets R startup
@@ -72,7 +74,7 @@ func interceptSIGINT() {
 		for sig := range c {
 			// sig is a ^C, handle it
 			_ = sig
-			vv("go catches sigint.")
+			//vv("go catches sigint.")
 		}
 	}()
 }
