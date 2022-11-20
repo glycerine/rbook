@@ -452,10 +452,13 @@ func prepCommentMessage(msg string, seqno int) string {
 	//vv("lines = '%#v'", lines)
 	var comments []string
 	for _, line := range lines {
-		escline := escape(line)
+		// since we do json.Marshal() below, calling escape() as well is
+		// double escaping  > and < ; not needed and makes comments garbled.
+		//escline := escape(line)
 		//vv("line '%v' -> escline '%v'", line, escline)
+		//comments = append(comments, `### `+escline)
 
-		comments = append(comments, `### `+escline)
+		comments = append(comments, `### `+line)
 	}
 
 	// get a json array of string

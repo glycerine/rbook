@@ -41,6 +41,13 @@ var embedded_index_template = `
 
       var globalLastSeqno = -1;
 
+      // restore > and < in the comments
+      function unescape_gtlt(s) {
+          var r = s.replace(/\\u003c/g, "<").replace(/\\u003e/g, ">");
+          //console.log("unescape_glt: ", s, "  -->  ", r);
+          return r;
+      }
+
       function stamp() {
           var dt = new Date();
           //document.getElementById("datetime").innerHTML = dt.toLocaleString();
@@ -129,6 +136,7 @@ function appendLog(msg){
          var newstuff = '<div id="' + nextID() + '" class="Rcomment">';
 
         for (let i = 0; i < update.comment.length; i++) {
+            //newstuff += '<div class="RcommentLine">' + unescape_gtlt(update.comment[i]) + '</div>';
             newstuff += '<div class="RcommentLine">' + update.comment[i] + '</div>';
         }
          d.innerHTML += newstuff + '</div>';         
