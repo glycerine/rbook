@@ -165,12 +165,12 @@ function appendLog(msg){
 
     if (update.command) {
          console.log("we just saw command message: ", update.command);
-         var newstuff = '<div id="' + nextID() + '" class="Rcommand">';
+         var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code>';
 
          for (let i = 0; i < update.command.length; i++) {
              newstuff += '<div class="RcommandLine">' + update.command[i] + '</div>';
          }
-         d.innerHTML += newstuff + '</div>';         
+         d.innerHTML += newstuff + '</code></pre></div>';
          console.log("we added a command block")
 
         //var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
