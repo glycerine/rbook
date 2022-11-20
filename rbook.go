@@ -393,7 +393,7 @@ require(png)
 			// Error: unexpected ';' in ";"
 			// >
 			//
-			if strings.HasPrefix(cmd, `"#`) || strings.HasPrefix(cmd, `;`) {
+			if strings.HasPrefix(cmd, `"#`) || strings.HasPrefix(cmd, `";`) {
 
 				//vv("see comment: '%v'", cmd)
 
