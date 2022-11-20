@@ -445,11 +445,36 @@ func escape(s string) string {
 
 // add length: as prefix, so we can parse 2 messages that get piggy backed,
 // as occassionally happens on the websockets.
-func prepCommandMessage(msg string, seqno int) string {
+func prepCommandMessageOld(msg string, seqno int) string {
 	if msg == "" {
 		return ""
 	}
 	json := fmt.Sprintf(`{"seqno": %v, "command":"%v"}`, seqno, escape(msg))
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return lenPrefixedJson
+}
+
+// new version of prepCommandMessage that, like prepCommentMessage, doesn't compress into one line
+func prepCommandMessage(msg string, seqno int) string {
+	//n := len(msg)
+	//msg = msg[1 : n-1]
+
+	vv("prepCommandMessage msg = '%#v'", msg)
+
+	// one line into possibly multiple lines
+	commands := strings.Split(msg, "\n")
+
+	vv("commands = '%#v'", commands)
+
+	// get a json array of string
+	by, err := json.Marshal(commands)
+	panicOn(err)
+
+	commandsJSON := string(by)
+
+	//vv("commandsJSON = '%#v'", commandsJSON)
+
+	json := fmt.Sprintf(`{"seqno": %v, "command":%v}`, seqno, commandsJSON)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return lenPrefixedJson
 }

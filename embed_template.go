@@ -164,9 +164,18 @@ function appendLog(msg){
     }
 
     if (update.command) {
-        var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
-        d.innerHTML += newstuff
-        console.log("we added command text")
+         console.log("we just saw command message: ", update.command);
+         var newstuff = '<div id="' + nextID() + '" class="Rcommand">';
+
+         for (let i = 0; i < update.command.length; i++) {
+             newstuff += '<div class="RcommandLine">' + update.command[i] + '</div>';
+         }
+         d.innerHTML += newstuff + '</div>';         
+         console.log("we added a command block")
+
+        //var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
+        //d.innerHTML += newstuff
+        //console.log("we added command text")
     }
 
     // in theory the command and the output could arrive together, so
