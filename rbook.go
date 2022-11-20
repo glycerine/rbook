@@ -443,10 +443,21 @@ func escape(s string) string {
 	return string(by)
 }
 
+// add length: as prefix, so we can parse 2 messages that get piggy backed,
+// as occassionally happens on the websockets.
+func prepCommandMessage(msg string, seqno int) string {
+	if msg == "" {
+		return ""
+	}
+	json := fmt.Sprintf(`{"seqno": %v, "command":"%v"}`, seqno, escape(msg))
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return lenPrefixedJson
+}
+
 // new version of prepCommandMessage that, like prepCommentMessage, doesn't compress into one line
 // As with all now, add length: as prefix, so we can parse 2 messages that get piggy backed,
 // as occassionally happens on the websockets.
-func prepCommandMessage(msg string, seqno int) string {
+func prepCommandMessageNew(msg string, seqno int) string {
 	//n := len(msg)
 	//msg = msg[1 : n-1]
 

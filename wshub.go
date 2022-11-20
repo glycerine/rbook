@@ -60,6 +60,7 @@ func newHub(book *HashRBook) *Hub {
 }
 
 func (h *Hub) run() {
+top:
 	for {
 		select {
 		case client := <-h.register:
@@ -80,10 +81,14 @@ func (h *Hub) run() {
 			default:
 				close(client.send)
 				delete(h.clients, client)
+
+				h.book.mut.Unlock()
+				continue top // don't try to send below on closed channel!
 			}
 			for _, e := range h.book.elems {
 				//vv("updating new client with seqno %v", e.Seqno)
 				select {
+				//huh. got after long inactivity, panic: send on closed channel
 				case client.send <- e.msg:
 				default:
 					close(client.send)

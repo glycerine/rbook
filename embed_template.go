@@ -119,6 +119,17 @@ function nextID() {
     var id  = "log_" + n.toString();
     return id;
 }
+
+function nextIDInt() {
+    var d  = document.getElementById("log");
+    return d.children.length;
+}
+
+function pad(num, size) {
+    num = num.toString();
+    while (num.length < size) num = "0" + num;
+    return num;
+}
       
 function appendLog(msg){
  
@@ -169,10 +180,11 @@ function appendLog(msg){
 
     if (update.command) {
          console.log("we just saw command message: ", update.command);
+         var nid = nextIDInt()+1;
          var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code>';
 
          for (let i = 0; i < update.command.length; i++) {
-             newstuff += '<div class="RcommandLine">' + update.command[i] + '</div>';
+             newstuff += '<div class="RcommandLine">'  + '[' + pad(nid,2) + '] ' + update.command[i] + '</div>';
          }
          d.innerHTML += newstuff + '</code></pre></div>';
          console.log("we added a command block")
