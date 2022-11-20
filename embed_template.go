@@ -34,7 +34,11 @@ var embedded_index_template = `
                      margin-top: 0.50em;
                      display: block;
                     }
-    
+    .Rcommand       {margin-top: -1.0em;
+                     display: block;
+                    }
+  /*.RcommandLine   { margin-top: -0.1em; }*/
+
     </style>
   
     <script type="text/javascript">
