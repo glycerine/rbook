@@ -15,9 +15,11 @@ When in an interactive R session, the rbook
 binary is also serving a live web view of the
 session to any (or multple) web browsers. 
 
-As plots are saved they are shown inline in realtime
-with the R code, in the browser, as in a Jupyter notebook.
+Like a Jupyter notebook, plots can be saved and shown
+inline with the R code.
+
 R output and free-form comments can also be logged.
+
 Since all graphics, comments, code, and chosen output
 are logged, rbooks form a simple, compact, and append-only
 digital lab notebook for R.
