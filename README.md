@@ -80,14 +80,14 @@ top level.
 * Push communication with listening browsers:
 
 Rbook runs a web server to serve images to the browsers.
-Simultanieously, rbook also runs a websocket interface 
+Simultaneously, rbook also runs a websocket interface 
 that it uses to push to subscribed web browsers 
 each new code/plot addition for display.
 
 * Comments from the prompt into the book
 
 Comments are created by having R evaluate a string literal
-that starts with the hash symbol `#`.
+that starts with the hash symbol `#` or the semicolon `;`.
 
 For example, at the rbook prompt[1]:
 
@@ -109,9 +109,11 @@ The example above could equally have been done
 with single quotes, since those also delimit string
 literals in R. This may be easier to type, since
 it does not involve the shift key typically.
+We use the semicolon form too here, which also,
+ergonomically, avoids the shift key.
 
 ~~~
-'# start a comment line
+'; start a comment line
 + that can span multiple lines
 + and is finished by ending the string literal'
 ~~~
@@ -152,21 +154,21 @@ finished sub-tasks
    browsers can reload history; even after R or
    the browser has been restarted.
 
-[x]. have browser get the BookID and CreateTm from the server.
+[x] have browser get the BookID and CreateTm from the server.
 
 [x] done: keeping the browser state in sync 
 
 [x] mechanism to add comments into the stream.
 
-[x] done. pick the websocket port dynamically, embed into index.html before sending.
- to avoid collisions with multiples running at once.
+[x] done. pick the next highest unused websocket port, embed into index.html before sending.
+ to avoid collisions with multiple rbooks running at once.
 
 [x] done. add configuration command line options for setting options/ the name
 of the rbook file to save into.
 
 [x] done. a parallel script/text version of the session is also written
 for easy/quick review; without needing to open the browser. And if you
-have only the binary rbook -dump will regenerate the text form.
+have only the binary, rbook -dump will regenerate the text form.
 
 [x] done: Automate the startup of the Xvfb, the window manager, and
    x11vnc server. Rbook should start them if they are
@@ -222,7 +224,7 @@ howto - notes on figuring out what worked.
 xvfb-run R
 ~~~
 
-we can be sure that there is always a local X environment
+By running Xvfb, we can be sure that there is always a local X environment
 to write to. This can also be viewed in realtime with
 
 ~~~
@@ -285,7 +287,7 @@ https://rstudio.github.io/r-manuals/r-exts/Linking-GUIs-and-other-front-ends-to-
 
 
 
-notes 
+more notes 
 -----
 there is `max.deparse.length` as a limit, as an option to `source()` and a way to raise it
 
@@ -297,7 +299,7 @@ quoting a comment there:
 ~~~
 It looks like I want to set max.depare.lengt = echo() rather than an integer. The relevant code seems to be in: ess/etc/ESSR/R/.basic.R: Specifically, 
 
-.ess.eval <- function(string, visibly = TRUE, output = FALSE,              
+.ess.eval <- function(string, visibly = TRUE, output = FALSE,
                       max.deparse.length = 300,
                       file = tempfile("ESS"), local = NULL) { ...
 
