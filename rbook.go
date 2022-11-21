@@ -50,8 +50,16 @@ func init() {
 	username = os.Getenv("USER")
 
 	sep = string(os.PathSeparator)
+
+	/*	if m, err := TerminalMode(); err == nil {
+			origTerminalMode = m.(*termios)
+			vv("set origTerminalMode = '%#v'", origTerminalMode)
+		}
+	*/
 }
 
+var afterRInitTerminalMode *termios
+var origTerminalMode *termios
 var username string
 var hostname string
 var hasher hash.Hash
@@ -224,9 +232,9 @@ require(png)
 		// prefix could be used for git branch
 		cwd, err := os.Getwd()
 		panicOn(err)
-		// keep just the last 3 dir
+		// keep just the last 2 dir
 		splt := strings.Split(cwd, sep)
-		n := len(splt) - 3
+		n := len(splt) - 2
 		if n < 0 {
 			n = 0
 		}
@@ -248,8 +256,6 @@ require(png)
 	// our repl
 	embedr.ReplDLLinit()
 	embedr.SetGoCallbackForCleanup(func() { cfg.StopXvfb() })
-
-	//intercept_SIGINT() // no impact
 
 	// In .Last.sys,
 	// do graphics.off() first to try and avoid q() resulting in:
