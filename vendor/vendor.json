@@ -1,0 +1,85 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "l9W9LXO4MWGbMVbQOXnJZIj4m9I=",
+			"path": "github.com/glycerine/embedr",
+			"revision": "4da95d0d00047bb3467839ef4eb9264e31452a63",
+			"revisionTime": "2022-11-21T03:24:06Z"
+		},
+		{
+			"checksumSHA1": "Kh7O+r4/wh/zqQV3b2jvbnCvIxc=",
+			"path": "github.com/glycerine/go-tigertonic",
+			"revision": "9bbc60b9dfbac2c9fbcd580bfe8ab888752786b3",
+			"revisionTime": "2014-08-29T03:20:10Z"
+		},
+		{
+			"checksumSHA1": "5furDGBxcC4bK7PSpxeyCL23KHU=",
+			"path": "github.com/glycerine/greenpack/msgp",
+			"revision": "5d0445aa7a6cb233bf1d20eca6d1fb406e5a3da7",
+			"revisionTime": "2019-04-13T12:30:51Z"
+		},
+		{
+			"checksumSHA1": "wWrbjSqcnk68jd1v3POUwRUuLi4=",
+			"path": "github.com/glycerine/rbook",
+			"revision": "42af51ebe47ab9524b804bab00fa4603dca5cbcd",
+			"revisionTime": "2022-11-21T17:20:30Z"
+		},
+		{
+			"checksumSHA1": "8+/cBws9gaPxdeDUT79G+obEh/0=",
+			"path": "github.com/gorilla/mux",
+			"revision": "07eedffb4388b4ed26b86c67aedca1e513e7553b",
+			"revisionTime": "2022-08-17T20:49:02Z"
+		},
+		{
+			"checksumSHA1": "4vFY+nSq/mdCuPiAHzO3qyMeoyg=",
+			"path": "github.com/philhofer/fwd",
+			"revision": "b411808a24253af9235385bcbaf6896a873a18ec",
+			"revisionTime": "2022-07-15T09:04:28Z"
+		},
+		{
+			"checksumSHA1": "+bQFFYUwDQtQYiznID7DlnEYRfU=",
+			"path": "github.com/rcrowley/go-metrics",
+			"revision": "cf1acfcdf4751e0554ffa765d03e479ec491cad6",
+			"revisionTime": "2020-12-27T07:38:35Z"
+		},
+		{
+			"checksumSHA1": "tZTkV+HK9or+De+hN4xwApRtE0w=",
+			"path": "github.com/shurcooL/go-goon",
+			"revision": "7585751d9a1713e6e2a31d5860b6793e6683dbcb",
+			"revisionTime": "2021-01-10T23:39:00Z"
+		},
+		{
+			"checksumSHA1": "5cW/+LkLdzYv3o/PJDIsQbi4aM0=",
+			"path": "github.com/shurcooL/go/parserutil",
+			"revision": "93f07166e636e9ea49cd6e5cdda12d1579ae31d4",
+			"revisionTime": "2020-05-02T20:05:50Z"
+		},
+		{
+			"checksumSHA1": "5rstWtvfK2TcC92RFOq72xlzmXg=",
+			"path": "github.com/shurcooL/go/printerutil",
+			"revision": "93f07166e636e9ea49cd6e5cdda12d1579ae31d4",
+			"revisionTime": "2020-05-02T20:05:50Z"
+		},
+		{
+			"checksumSHA1": "KZPGEMLUjs0QkDXXUybswv1o8+A=",
+			"path": "github.com/shurcooL/go/reflectfind",
+			"revision": "93f07166e636e9ea49cd6e5cdda12d1579ae31d4",
+			"revisionTime": "2020-05-02T20:05:50Z"
+		},
+		{
+			"checksumSHA1": "Yy1dXdIJMXIvxbxVw6ViYZDoZuU=",
+			"path": "github.com/shurcooL/go/reflectsource",
+			"revision": "93f07166e636e9ea49cd6e5cdda12d1579ae31d4",
+			"revisionTime": "2020-05-02T20:05:50Z"
+		},
+		{
+			"checksumSHA1": "IOyqayRO8joDhe2dLV7xDs/Go7A=",
+			"path": "github.com/ugorji/go/codec",
+			"revision": "b14086ca574f6a530808600e4d1bb77939c84fdb",
+			"revisionTime": "2021-02-09T03:53:34Z"
+		}
+	],
+	"rootPath": "github.com/glycerine/rbook"
+}
