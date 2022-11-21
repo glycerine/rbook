@@ -190,6 +190,8 @@ apt install Xvfb x11vnc icewm
 
 This installs the dependencies.
 
+Any windows manager can be used. `icewm` seems nice, but
+there's nothing special about it.
 
 How to get ESS to run rbook instead of default R:
 
