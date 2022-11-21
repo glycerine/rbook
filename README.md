@@ -8,7 +8,8 @@ affectionately known as rbooks.
 
 The server binary itself is called simply `rbook`
 and is used as a drop-in replacement
-for `R` inside emacs.
+for `R` inside emacs. Of course it can be run outside of
+emacs on the command line too.
 
 When in an interactive R session, the rbook 
 binary is also serving a live web view of the
