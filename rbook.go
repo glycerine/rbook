@@ -20,12 +20,16 @@ import (
 	"github.com/glycerine/embedr"
 )
 
+var _ = syscall.Getpgid
+
 const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
 
 func init() {
-	// this important protection. R will crash if it gets SIGINT,
-	// so we intercept it now.
-	interceptSIGINT()
+	// this important protection. R will crash if it gets SIGINT under --no-readline,
+	// which we always use now because readline re-writes signal handler for
+	// SIGINT without the SA_ONSTACK flag, which panics the go runtime when seen.
+	// So we must intercept SIGINT now.
+	intercept_SIGINT()
 
 	// Arrange that main.main runs on main thread. This lets R startup
 	// without crashing when run on a non-main thread.
@@ -66,15 +70,15 @@ func PathHash(path string) (hash string, imageBy []byte) {
 	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil)), by
 }
 
-func interceptSIGINT() {
-	//vv("interceptSIGINT installing")
-	c := make(chan os.Signal, 1)
+func intercept_SIGINT() {
+	//vv("intercept_SIGINT installing")
+	c := make(chan os.Signal, 100)
 	signal.Notify(c, os.Interrupt)
 	go func() {
 		for sig := range c {
-			// sig is a ^C, handle it
+			// sig is a ^C, ctrl-c, handle it
 			_ = sig
-			//vv("go catches sigint.")
+			fmt.Printf("go/rbook squashed SIGINT\n")
 		}
 	}()
 }
@@ -182,9 +186,14 @@ require(png)
 
 	// start R first so it gets the main thread.
 
-	// TODO: start up Xvfb on a free DISPLAY like :99
-	//       and put these child processes in our same process
-	//       group so they are closed when we are.
+	// We start up Xvfb on a free DISPLAY like :30, :31, :32...,
+	// and put these child processes each in their own distinct process
+	// group. In isolated groups, they are then unaffected
+	// if a ctrl-c should get through, as was happening before we
+	// banned readline by always starting with the --no-readline flag.
+	// Also we figured out how to get R to callback on q() quit,
+	// by using .Last.sys below, so we can terminate these helpers
+	// reliably now with our StopXvfb().
 	//
 	// Xvfb :99 -screen 0 3000x2000x16 &
 	// icewm &
@@ -199,11 +208,23 @@ require(png)
 	os.Setenv("DISPLAY", display)
 	cfg.StartXvfbAndFriends(display)
 
-	// For this proof-of-principle, these have already
-	// been started manually.
-
+	// initialize the embedded R.
 	embedr.InitR(true)
 	defer embedr.EndR()
+
+	updatePromptCwd := func(prefix string) {
+		cwd, err := os.Getwd()
+		panicOn(err)
+		// keep just the last 3 dir
+		splt := strings.Split(cwd, sep)
+		n := len(splt) - 3
+		if n < 0 {
+			n = 0
+		}
+		embedr.SetCustomPrompt(prefix + strings.Join(splt[n:], sep) + " > ")
+	}
+	updatePromptCwd("")
+
 	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
 	//embedr.EvalR("require(R.utils)") // for captureOutput()
 	//embedr.EvalR("x11()")
@@ -261,6 +282,7 @@ require(png)
 	var prevCaptureOK []string
 	for {
 
+		updatePromptCwd("")
 		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
 		embedr.EvalR(`sink(textConnection("zrecord_mini_console", open="w"), split=T);`)
 
@@ -403,20 +425,19 @@ require(png)
 			// add the comment, then end the string literal with another
 			// single quote '.
 			//
-			// Rather fortunately, the R parser rejects actual commands starting
-			// with semicolons, so there can't be any confusion here. We know
+			// We also take advantage of the observation that the R parser
+			// will reject actual commands starting
+			// with semicolons, so there can't be any confusion here between
+			// a command and a string literal. We know
 			// we are examining a last expression value, so we know it got
-			// parsed just fine.
+			// parsed just fine, and thus it must be a string literal. If
+			// the string starts with a semicolon we know; it is our comment.
 			//
 			// > ; print("hi")
 			// Error: unexpected ';' in ";"
 			// >
 			//
 			if strings.HasPrefix(cmd, `"#`) || strings.HasPrefix(cmd, `";`) {
-
-				// debug TODO remove
-				// on comment, send SIGINT to ourselves
-				syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 
 				//vv("see comment: '%v'", cmd)
 
