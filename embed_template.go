@@ -17,13 +17,21 @@ var embedded_index_template = `
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   -->
   
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/default.min.css">
+  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/default.min.css"> -->
+
+  <!-- how to choose a specific style: -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/devibeans.min.css">
 
   <style>
     body {
         font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
         font-weight: bold;
         font-size: 20px;
+
+        /* dark background */
+        background-color: #101010;
+        /* light/white text color: */
+        color: #ffffff;
     }
 
     /* https://stackoverflow.com/questions/16240684/css-code-highlighter-margin-in-pre-code-tag */
@@ -32,9 +40,11 @@ var embedded_index_template = `
                  display: block;
     }
 
-    .RconsoleOutput {background-color: #e6e5e8; }
+/*  .RconsoleOutput {background-color: #e6e5e8; } */
+    .RconsoleOutput {background-color: #792374; } /* purple-ish*/
     .RconsoleLine   {text-indent: 50px; }
-    .Rcomment       {background-color: #edf1b5;
+    .Rcomment       {background-color: #7d8145;
+                     /* background-color: #edf1b5; */
                      margin-top: 0.50em;
                      display: block;
                     }
@@ -49,7 +59,7 @@ var embedded_index_template = `
     </style>
 
    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
-  
+
     <script type="text/javascript">
 
       var globalLastSeqno = -1;
