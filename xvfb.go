@@ -172,5 +172,6 @@ func CleanupOrphanedSharedMemorySegmentsFromXvfbCrashes() {
 	cmd := exec.Command("/bin/bash", path)
 	out, err := cmd.CombinedOutput()
 	panicOn(err)
+	_ = out
 	//vv("cleanup shm script output = '%v'", string(out))
 }
