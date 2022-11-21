@@ -1,5 +1,8 @@
 package main
 
+// Copyright (C) 2022 Jason E. Aten, Ph.D. All rights reserved.
+
+// portions of this code reused under this license.
 /*
 MIT License
 

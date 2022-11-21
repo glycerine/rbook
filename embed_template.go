@@ -1,5 +1,7 @@
 package main
 
+// Copyright (C) 2022 Jason E. Aten, Ph.D. All rights reserved.
+
 var embedded_index_template = `
 <!DOCTYPE html>
 <html lang="en">

@@ -1,8 +1,6 @@
-// home: https://github.com/glyerine/vprint
-// Copyright(C) 2019 Jason E. Aten, Ph.D. All rights reserved.
-// License: MIT
-
 package main
+
+// Copyright (C) 2022 Jason E. Aten, Ph.D. All rights reserved.
 
 import (
 	"fmt"

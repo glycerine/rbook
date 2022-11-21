@@ -322,3 +322,8 @@ and
 mikemtnbikes
 2022 Oct 25 
 ~~~
+
+copyright
+---------
+
+Copyright (C) 2022 Jason E. Aten, Ph.D. All rights reserved.

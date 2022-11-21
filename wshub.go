@@ -1,5 +1,7 @@
 package main
 
+// Copyright (C) 2022 Jason E. Aten, Ph.D. All rights reserved.
+
 import (
 	"fmt"
 	"time"
@@ -10,6 +12,7 @@ import (
 var _ = fmt.Printf
 var _ = embedr.SetCustomPrompt
 
+// portions of this code re-used under this license:
 /*
 MIT License
 
