@@ -39,7 +39,8 @@ type RbookConfig struct {
 
 	Wallpaper string
 
-	ShowVersion bool
+	ShowVersion  bool
+	ShowVersion2 bool
 }
 
 // call DefineFlags before myflags.Parse()
@@ -55,12 +56,13 @@ func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
 	home := os.Getenv("HOME")
 	fs.StringVar(&c.Wallpaper, "wall", fmt.Sprintf("%v/.wallpaper", home), "path or symlink to wallpaper to set on the Xvfb/x11vnc")
 	fs.BoolVar(&c.ShowVersion, "v", false, "show rbook version and exit")
+	fs.BoolVar(&c.ShowVersion2, "version", false, "show rbook version and exit")
 }
 
 // call c.ValidateConfig() after myflags.Parse()
 func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 
-	if c.ShowVersion {
+	if c.ShowVersion || c.ShowVersion2 {
 		fmt.Printf("%v\n", GetCodeVersion(ProgramName))
 		os.Exit(0)
 	}
