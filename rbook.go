@@ -58,8 +58,6 @@ func init() {
 	*/
 }
 
-var afterRInitTerminalMode *termios
-var origTerminalMode *termios
 var username string
 var hostname string
 var hasher hash.Hash
