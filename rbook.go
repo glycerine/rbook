@@ -362,11 +362,13 @@ require(png)
 		case "dv()":
 			if capturedOutputOK && prevJSON != "" {
 
+				//vv("prevJSON = '%v'; prevJSON2 = '%v'", prevJSON, prevJSON2)
+
 				prev := prevJSON
-				if strings.Contains(prevJSON, `(list "" '(("" . "")) '(""))`) {
+				if strings.Contains(prevJSON, `(list \"\" '((\"\" . \"\")) '(\"\"))"`) {
 					// more injected ESS garbage?
-					// try one further back
-					vv("trying prevJSON2='%v' instead of prevJSON='%v'", prevJSON2, prevJSON)
+					// try one further back. Yes this works, at least in the one time we saw.
+					//vv("trying prevJSON2='%v' instead of prevJSON='%v'", prevJSON2, prevJSON)
 					prev = prevJSON2
 				}
 
