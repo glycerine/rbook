@@ -17,6 +17,9 @@ var embedded_index_template = `
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   -->
   
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/default.min.css">
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
+
   <style>
     body {
         font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
@@ -189,7 +192,7 @@ function appendLog(msg){
     if (update.command) {
          console.log("we just saw command message: ", update.command);
 
-         var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code>';
+         var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code class="language-r">';
 
          for (let i = 0; i < update.command.length; i++) {
              var lineNumStr = '[' + pad(lineNum++,3) + ']';
