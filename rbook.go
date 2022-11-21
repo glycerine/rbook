@@ -101,6 +101,9 @@ func intercept_SIGINT() {
 
 func main() {
 
+	// crashes orphan shm segments, clean them up.
+	CleanupOrphanedSharedMemorySegmentsFromXvfbCrashes()
+
 	cfg := &RbookConfig{}
 	// there will be R arguments we don't recognize, so
 	// ContinueOnError

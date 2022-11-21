@@ -8,11 +8,13 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"syscall"
 
+	"github.com/glycerine/cryrand"
 	ps "github.com/mitchellh/go-ps"
 )
 
@@ -156,3 +158,19 @@ func GetAvailXvfbDisplay() int {
 //
 // Update: we use SIGTERM now to shutdown, and x11vnc/icewm/Xvfb now
 //         clean up after themselves better.
+
+func CleanupOrphanedSharedMemorySegmentsFromXvfbCrashes() {
+	rnd20 := cryrand.RandomStringWithUp(20)
+	path := fmt.Sprintf(".tmp.cleanup.shm.sh.%v", rnd20)
+
+	fd, err := os.Create(path)
+	panicOn(err)
+	defer os.Remove(path)
+	fmt.Fprintf(fd, "#!/bin/bash\nfor i in `/usr/bin/ipcs -m | "+
+		"/usr/bin/awk '$6==0 {print $2}'`; do /usr/bin/ipcrm shm $i; done\n")
+	fd.Close()
+	cmd := exec.Command("/bin/bash", path)
+	out, err := cmd.CombinedOutput()
+	panicOn(err)
+	//vv("cleanup shm script output = '%v'", string(out))
+}
