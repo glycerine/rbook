@@ -263,9 +263,18 @@ how to get the code snippets
 
 We embeded R in our Go program 'rbook'.
 So R and Go are all in one process. This
+avoids the problems of having two processes.
+In particular, having one crash and the
+other still be up is a pita, and normally
+requires extra monitoring and retries. A
+single process solution is robust.
+
 
 We have embedr already working and it provides
-an API into executing arbitrary R code from Go.
+an API for embedding R and executing 
+arbitrary R code from Go. It was based
+on my earlier `rmq` proof of concept (which
+is public); https://github.com/glycerine/rmq
 
 ~~~
 import (
