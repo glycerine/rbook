@@ -18,7 +18,6 @@ var embedded_index_template = `
   -->
   
   <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/default.min.css">
-  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
 
   <style>
     body {
@@ -48,6 +47,8 @@ var embedded_index_template = `
     /*.RcommandLine   { margin-top: -0.1em; }*/
 
     </style>
+
+   <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
   
     <script type="text/javascript">
 
@@ -192,14 +193,16 @@ function appendLog(msg){
     if (update.command) {
          console.log("we just saw command message: ", update.command);
 
-         var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code class="language-r">';
+         var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code>';
 
          for (let i = 0; i < update.command.length; i++) {
              var lineNumStr = '[' + pad(lineNum++,3) + ']';
              if (i > 0) {
                  lineNumStr = '<span class="RsecondCommandLine">' + lineNumStr + '</span>';
              }
-             newstuff += '<div class="RcommandLine">'  + lineNumStr + ' ' + update.command[i] + '</div>';
+             var cmdi = hljs.highlight(update.command[i], {language: 'R'}).value;
+
+             newstuff += '<div class="RcommandLine">'  + lineNumStr + ' ' + cmdi + '</div>';
          }
          d.innerHTML += newstuff + '</code></pre></div>';
          console.log("we added a command block")
@@ -229,6 +232,7 @@ function appendLog(msg){
         d.innerHTML += newstuff        
     }
     
+    //hljs.highlightAll();
 
     // scroll to the bottom to show the latest output.
     // 
