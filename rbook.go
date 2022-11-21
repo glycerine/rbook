@@ -231,19 +231,23 @@ require(png)
 	embedr.InitR(true)
 	defer embedr.EndR()
 
-	updatePromptCwd := func(prefix string) {
-		// prefix could be used for git branch
-		cwd, err := os.Getwd()
-		panicOn(err)
-		// keep just the last 2 dir
-		splt := strings.Split(cwd, sep)
-		n := len(splt) - 2
-		if n < 0 {
-			n = 0
-		}
-		embedr.SetCustomPrompt(prefix + strings.Join(splt[n:], sep) + " > ")
-	}
-	updatePromptCwd("")
+	// ESS hates this. It makes ctrl-a to move to
+	// beginning of line mess up and move before the > prompt.
+	// So leave it out for now until we (maybe) can patch ESS.
+	//
+	// updatePromptCwd := func(prefix string) {
+	// 	// prefix could be used for git branch
+	// 	cwd, err := os.Getwd()
+	// 	panicOn(err)
+	// 	// keep just the last 2 dir
+	// 	splt := strings.Split(cwd, sep)
+	// 	n := len(splt) - 2
+	// 	if n < 0 {
+	// 		n = 0
+	// 	}
+	// 	embedr.SetCustomPrompt(prefix + strings.Join(splt[n:], sep) + "_> ")
+	// }
+	//updatePromptCwd("")
 
 	// don't need to hold mut mutex here b/c reload server not started yet
 	seqno := len(history.elems)
@@ -281,7 +285,7 @@ require(png)
 	var prevCaptureOK []string
 	for {
 
-		updatePromptCwd("")
+		//updatePromptCwd("")
 		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
 		embedr.EvalR(`sink(textConnection("zrecord_mini_console", open="w"), split=T);`)
 
