@@ -29,6 +29,14 @@ func init() {
 	// which we always use now because readline re-writes signal handler for
 	// SIGINT without the SA_ONSTACK flag, which panics the go runtime when seen.
 	// So we must intercept SIGINT now.
+	//
+	// Hmm... but then it looks like even without readline, R installs
+	// its own SIGINT handler. Which is nice in that it lets us ctrl-c
+	// out of partial input. Our ReplDLLinit() go wrapper does
+	// C.set_SA_ONSTACK() too, so hopefully even without this (which
+	// does seem to get displayed quickly by R, we'll not crash.
+	// Leaving it here as extra cover, in case a SIGINT comes in
+	// before R's is set.
 	intercept_SIGINT()
 
 	// Arrange that main.main runs on main thread. This lets R startup
@@ -78,7 +86,7 @@ func intercept_SIGINT() {
 		for sig := range c {
 			// sig is a ^C, ctrl-c, handle it
 			_ = sig
-			fmt.Printf("go/rbook squashed SIGINT\n")
+			//fmt.Printf("go/rbook squashed SIGINT\n")
 		}
 	}()
 }
@@ -213,6 +221,7 @@ require(png)
 	defer embedr.EndR()
 
 	updatePromptCwd := func(prefix string) {
+		// prefix could be used for git branch
 		cwd, err := os.Getwd()
 		panicOn(err)
 		// keep just the last 3 dir
@@ -225,28 +234,7 @@ require(png)
 	}
 	updatePromptCwd("")
 
-	//embedr.EvalR("x11(); hist(rnorm(1000))") // only did the x11(); did not hist()
-	//embedr.EvalR("require(R.utils)") // for captureOutput()
-	//embedr.EvalR("x11()")
-
-	//embedr.EvalR("hist(rnorm(1000))")             // worked.
-	//embedr.EvalR(`savePlot(filename="hist.png")`) // worked.
-	// nice to have a starting .png so showme does not crash :)
-	// not to worry now. We have logo and 2 favicons always.
-
-	// If you want a custom prompt...
-	// https://lapsedgeographer.london/2020-11/custom-r-prompt/  says:
-	//
-	// "The prompt is a simple character string, stored in .Options, meaning we
-	// can easily inspect it and modify it.  You can even use emoji, though
-	// I’d recommend using a base emoji rather than a composite emoji...
-	//
-	// > getOption("prompt")
-	// [1] "> "
-	//	> options("prompt" = "! ")
-	//	!
-
-	// don't need to hold mut b/c reload server not started yet
+	// don't need to hold mut mutex here b/c reload server not started yet
 	seqno := len(history.elems)
 
 	StartShowme(cfg, history) // serve the initial html and the png files to the web browsers
@@ -260,6 +248,8 @@ require(png)
 	// our repl
 	embedr.ReplDLLinit()
 	embedr.SetGoCallbackForCleanup(func() { cfg.StopXvfb() })
+
+	//intercept_SIGINT() // no impact
 
 	// In .Last.sys,
 	// do graphics.off() first to try and avoid q() resulting in:
@@ -289,6 +279,7 @@ require(png)
 		path := ""
 		did := embedr.ReplDLLdo1()
 		_ = did
+		//vv("did = %v", did)
 		if did > 1 {
 			// did == 2: this seems to mean that the call is incomplete;
 			//vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
@@ -336,7 +327,7 @@ require(png)
 			continue
 		}
 		if did < 0 {
-			// ctrl-d (EOF or end-of-file).
+			// ctrl-d (EOF or end-of-file); back when using readline anyway.
 			// Ask the user if they want to quit, just as usual.
 			embedr.EvalR(`q()`)
 			continue
