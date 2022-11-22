@@ -41,7 +41,7 @@ func systemCallSetGroup(c *exec.Cmd) {
 // x11vnc -display :99 -forever -nopw -quiet -xkb &
 //
 // display example: ":99"
-func (c *RbookConfig) StartXvfbAndFriends(display string) {
+func (c *RbookConfig) StartXvfbAndFriends(display string) (vncPort int) {
 
 	// by default these are all in the process group
 	// of rbook, which is desired for clean shutdown.
@@ -55,7 +55,22 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) {
 	if FileExists(wall) {
 		go startInBackground("/usr/bin/feh", "--bg-scale", wall).Wait()
 	}
-	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb")
+
+	// determine the port here so we can print it and tell the user.
+	vncPort = -1
+	for i := 5900; i < 9000; i++ {
+		if IsAvailPort(i) {
+			vncPort = i
+			break
+		}
+	}
+	if vncPort < 0 {
+		panic("could not find free vnc port; tried 5900-9000")
+	}
+
+	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb", "-rbfport", fmt.Sprintf("%v", vncPort))
+
+	return
 }
 
 func (c *RbookConfig) StopXvfb() {

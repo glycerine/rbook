@@ -222,10 +222,10 @@ require(png)
 	os.Setenv("R_HOME", cfg.Rhome)
 
 	disp := GetAvailXvfbDisplay()
-	fmt.Printf("staring Xvfb using DISPLAY=:%v    and R_HOME=%v\n", disp, cfg.Rhome)
 	display := fmt.Sprintf(":%v", disp)
 	os.Setenv("DISPLAY", display)
-	cfg.StartXvfbAndFriends(display)
+	vncPort := cfg.StartXvfbAndFriends(display)
+	fmt.Printf("Xvfb using DISPLAY=:%v  R_HOME=%v  vncPort=%v\n", disp, cfg.Rhome, vncPort)
 
 	// initialize the embedded R.
 	embedr.InitR(true)
