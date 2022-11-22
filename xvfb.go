@@ -68,7 +68,7 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) (vncPort int) {
 		panic("could not find free vnc port; tried 5900-9000")
 	}
 
-	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb", "-rbfport", fmt.Sprintf("%v", vncPort))
+	c.x11vnc = startInBackground("/usr/bin/x11vnc", "-display", display, "-forever", "-nopw", "-quiet", "-xkb", "-rfbport", fmt.Sprintf("%v", vncPort))
 
 	return
 }
