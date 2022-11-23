@@ -47,8 +47,8 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	pngs, err := filepath.Glob("*.png")
 	panicOn(err)
 	if len(pngs) == 0 {
-		fmt.Fprintf(os.Stderr, "no png files present.\n")
-		os.Exit(1)
+		//fmt.Fprintf(os.Stderr, "no png files present.\n")
+		//os.Exit(1)
 	}
 	cwd, err := os.Getwd()
 	panicOn(err)
