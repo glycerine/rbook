@@ -201,12 +201,13 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 				break;
 			case "ArrowDown":
 				// Down pressed
+                window.location.replace('/view');
 				break;
 			}
 		}`, prevpng, nextpng, curpng)
 
 			fmt.Fprintf(w, "%v</script></head><body>", script)
-			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s &nbsp;&nbsp;&nbsp;<span id="saved_to_keepers"> %v </span><br>`, prevpng, nextpng, loc+1, n, curpng, alreadySaved)
+			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a>&nbsp;&nbsp;&nbsp;<a href="/view"> top</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s &nbsp;&nbsp;&nbsp;<span id="saved_to_keepers"> %v </span><br>`, prevpng, nextpng, loc+1, n, curpng, alreadySaved)
 			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><br>`, nextpng, curpng)
 			fmt.Fprintf(w, `</body></html>`)
 		}
