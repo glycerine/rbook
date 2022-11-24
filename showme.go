@@ -134,7 +134,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			alreadySaved := ""
 			savedMut.Lock()
 			if saved[curpng] {
-				alreadySaved = " <bold>saved to keepers</bold> <img src='/greencheckmark'>"
+				alreadySaved = ` <bold>saved to keepers</bold> <img class='left' src='/greencheckmark'>`
 			}
 			savedMut.Unlock()
 
@@ -165,7 +165,13 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			}
 			//fmt.Printf("r.URL.Path='%#v'\n", r.URL.Path)
 
-			fmt.Fprintf(w, `<html><head><script type = "text/JavaScript">`)
+			fmt.Fprintf(w, `<html>
+<head>
+<style type="text/css">
+  .left{float:left;}
+</style>
+<script type = "text/JavaScript">`)
+
 			script := fmt.Sprintf(`
 
 		document.onkeydown = checkKey;
@@ -183,7 +189,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 				break;
 			case "ArrowUp":
 				// Up pressed: save to keepers
-                document.getElementById("saved_to_keepers").innerHTML = " <bold>saved to keepers</bold> <img src='/keep/%s'>";
+                document.getElementById("saved_to_keepers").innerHTML = " <bold>saved to keepers</bold> <img class='left' src='/keep/%s'>";
 				break;
 			case "ArrowDown":
 				// Down pressed
