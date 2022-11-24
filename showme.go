@@ -168,8 +168,16 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			fmt.Fprintf(w, `<html>
 <head>
 <style type="text/css">
-  .left{float:right;}
+  .left{float:right;
+        display: block;
+        max-width:50px;
+        max-height:50px;
+        width: auto;
+        height: auto;
+}
 </style>
+
+
 <script type = "text/JavaScript">`)
 
 			script := fmt.Sprintf(`
