@@ -168,7 +168,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			fmt.Fprintf(w, `<html>
 <head>
 <style type="text/css">
-  .left{float:left;}
+  .left{float:right;}
 </style>
 <script type = "text/JavaScript">`)
 
