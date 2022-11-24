@@ -7,12 +7,14 @@ import (
 	"bytes"
 	"fmt"
 	html_template "html/template"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 	//"github.com/glycerine/fsnotify"
 	//"github.com/skratchdot/open-golang/open"
@@ -95,6 +97,10 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	http.Handle("/images/", http.StripPrefix("/images/",
 		http.FileServer(http.Dir("."))))
 
+	// have we saved to keepers already?
+	var savedMut sync.Mutex
+	saved := make(map[string]bool)
+
 	n := len(pngs)
 
 	// don't crash if no png files; just don't bother with the /view functionality
@@ -107,6 +113,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		order := make(map[string]int)
 		for i := range pngs {
 			order[pngs[i]] = i
+			saved[pngs[i]] = false
 		}
 		cur := 0
 		prev := 0
@@ -123,6 +130,13 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			if strings.HasSuffix(what, ".png") {
 				curpng = path.Base(what)
 			}
+
+			alreadySaved := ""
+			savedMut.Lock()
+			if saved[curpng] {
+				alreadySaved = "saved to keepers"
+			}
+			savedMut.Unlock()
 
 			loc := order[curpng]
 			switch {
@@ -178,9 +192,9 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}`, prevpng, nextpng, curpng)
 
 			fmt.Fprintf(w, "%v</script></head><body>", script)
-			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<br>`, prevpng, nextpng, loc+1, n, curpng)
+			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<span id="saved_to_keepers">%v</span><br>`, prevpng, nextpng, loc+1, n, curpng, alreadySaved)
 			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><br>`, nextpng, curpng)
-			fmt.Fprintf(w, `<div id="saved_to_keepers"></div></body></html>`)
+			fmt.Fprintf(w, `</body></html>`)
 		}
 		http.HandleFunc("/view/", viewHandler)
 	}
@@ -196,8 +210,33 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			http.Error(w, "invalid URL path", http.StatusBadRequest)
 			return
 		}
-		keep := path[len("/keep"):]
+		keep := path[len("/keep/"):]
 		vv("request to keep = '%v'", keep)
+
+		savedMut.Lock()
+		_, ok := saved[keep]
+		if ok {
+			saved[keep] = true
+		}
+		savedMut.Unlock()
+		if !ok {
+			http.Error(w, "invalid URL path", http.StatusBadRequest)
+			return
+		}
+
+		if !DirExists("keepers") {
+			panicOn(os.MkdirAll("keepers", 0777))
+		}
+		keepby, err := ioutil.ReadFile(keep)
+		panicOn(err)
+		out, err := os.Create("keepers/" + keep)
+		panicOn(err)
+		nw, err := out.Write(keepby)
+		panicOn(err)
+		if nw != len(keepby) {
+			panic(fmt.Sprintf("short write %v of %v on copy to keepers '%v'", nw, len(keepby), keep))
+		}
+		out.Close()
 
 		w.Header().Set("Content-Type", "image/png")
 		readSeeker := bytes.NewReader(savedToKeepersPng)
