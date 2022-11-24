@@ -134,7 +134,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			alreadySaved := ""
 			savedMut.Lock()
 			if saved[curpng] {
-				alreadySaved = " <bold>saved to keepers</bold> "
+				alreadySaved = " <bold>saved to keepers</bold> <img src='/greencheckmark'>"
 			}
 			savedMut.Unlock()
 
@@ -192,8 +192,8 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}`, prevpng, nextpng, curpng)
 
 			fmt.Fprintf(w, "%v</script></head><body>", script)
-			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<br>`, prevpng, nextpng, loc+1, n, curpng)
-			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><span id="saved_to_keepers">%v</span><br>`, nextpng, curpng, alreadySaved)
+			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s &nbsp;&nbsp;&nbsp;<span id="saved_to_keepers"> %v </span><br>`, prevpng, nextpng, loc+1, n, curpng, alreadySaved)
+			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><br>`, nextpng, curpng)
 			fmt.Fprintf(w, `</body></html>`)
 		}
 		http.HandleFunc("/view/", viewHandler)
@@ -247,6 +247,12 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		//http.ServeFile(w, r, "index.html")
 		w.Write(readyIndexHtmlBuf.Bytes())
+	})
+
+	http.HandleFunc("/greencheckmark", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		readSeeker := bytes.NewReader(savedToKeepersPng)
+		http.ServeContent(w, r, "", time.Time{}, readSeeker)
 	})
 
 	// So we have a portable archive that doesn't depend on copying
