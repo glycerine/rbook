@@ -134,7 +134,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			alreadySaved := ""
 			savedMut.Lock()
 			if saved[curpng] {
-				alreadySaved = "saved to keepers"
+				alreadySaved = " <bold>saved to keepers</bold> "
 			}
 			savedMut.Unlock()
 
@@ -183,7 +183,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 				break;
 			case "ArrowUp":
 				// Up pressed: save to keepers
-                document.getElementById("saved_to_keepers").innerHTML = "saved to keepers <img src='/keep/%s'>";
+                document.getElementById("saved_to_keepers").innerHTML = " <bold>saved to keepers</bold> <img src='/keep/%s'>";
 				break;
 			case "ArrowDown":
 				// Down pressed
@@ -192,8 +192,8 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}`, prevpng, nextpng, curpng)
 
 			fmt.Fprintf(w, "%v</script></head><body>", script)
-			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<span id="saved_to_keepers">%v</span><br>`, prevpng, nextpng, loc+1, n, curpng, alreadySaved)
-			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><br>`, nextpng, curpng)
+			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<br>`, prevpng, nextpng, loc+1, n, curpng)
+			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><span id="saved_to_keepers">%v</span><br>`, nextpng, curpng, alreadySaved)
 			fmt.Fprintf(w, `</body></html>`)
 		}
 		http.HandleFunc("/view/", viewHandler)
@@ -211,7 +211,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			return
 		}
 		keep := path[len("/keep/"):]
-		vv("request to keep = '%v'", keep)
+		//vv("request to keep = '%v'", keep)
 
 		savedMut.Lock()
 		_, ok := saved[keep]
