@@ -13,6 +13,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 	//"github.com/glycerine/fsnotify"
 	//"github.com/skratchdot/open-golang/open"
 )
@@ -167,21 +168,42 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
                 window.location.replace('/view/%v');
 				break;
 			case "ArrowUp":
-				// Up pressed
+				// Up pressed: save to keepers
+                document.getElementById("saved_to_keepers").innerHTML = "saved to keepers <img src='/keep/%s'>";
 				break;
 			case "ArrowDown":
 				// Down pressed
 				break;
 			}
-		}`, prevpng, nextpng)
+		}`, prevpng, nextpng, curpng)
 
 			fmt.Fprintf(w, "%v</script></head><body>", script)
 			fmt.Fprintf(w, `<font size="20">&nbsp;&nbsp;&nbsp;<a href="/view/%s">PREV</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/view/%s">NEXT</a></font>&nbsp;[%03d&nbsp;of&nbsp;%03d]:&nbsp;%s<br>`, prevpng, nextpng, loc+1, n, curpng)
 			fmt.Fprintf(w, `<a href="/view/%s"><img src="/images/%s"></a><br>`, nextpng, curpng)
-			fmt.Fprintf(w, "</body></html>")
+			fmt.Fprintf(w, `<div id="saved_to_keepers"></div></body></html>`)
 		}
 		http.HandleFunc("/view/", viewHandler)
 	}
+
+	http.HandleFunc("/keep/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			vv("only GET supported")
+			http.Error(w, "invalid URL path", http.StatusBadRequest)
+			return
+		}
+		path := r.URL.Path
+		if containsDotDot(path) {
+			http.Error(w, "invalid URL path", http.StatusBadRequest)
+			return
+		}
+		keep := path[len("/keep"):]
+		vv("request to keep = '%v'", keep)
+
+		w.Header().Set("Content-Type", "image/png")
+		readSeeker := bytes.NewReader(savedToKeepersPng)
+		modtime := time.Time{}
+		http.ServeContent(w, r, "", modtime, readSeeker)
+	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		//http.ServeFile(w, r, "index.html")
