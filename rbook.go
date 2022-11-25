@@ -76,7 +76,6 @@ var sep string
 // the browser skip fetching, since the content and
 // origin must be identical and the browser cache
 // is working as designed.
-//
 func PathHash(path string) (hash string, imageBy []byte) {
 	hasher.Reset()
 	hasher.Write([]byte(hostname + ":" + path + ":"))
@@ -96,6 +95,23 @@ func intercept_SIGINT() {
 			_ = sig
 			//fmt.Printf("go/rbook squashed SIGINT\n")
 		}
+	}()
+}
+
+// avoid leaving dangling Xvfb/x11vnc/icewm when we kill the *R*
+// session from within emacs.
+func (cfg *RbookConfig) intercept_SIGTERM_and_cleanup() {
+	ch := make(chan os.Signal, 100)
+	signal.Notify(ch, syscall.SIGTERM)
+	go func() {
+		<-ch
+		cfg.StopXvfb()
+		//fmt.Printf("rbook got SIGTERM and stopped helpers.")
+		// stop listening for SIGTERM, then send it again.
+		signal.Stop(ch)
+		signal.Reset(syscall.SIGTERM)
+		// let R shutdown
+		syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
 	}()
 }
 
@@ -230,6 +246,8 @@ require(png)
 	// initialize the embedded R.
 	embedr.InitR(true)
 	defer embedr.EndR()
+
+	cfg.intercept_SIGTERM_and_cleanup()
 
 	// ESS hates this. It makes ctrl-a to move to
 	// beginning of line mess up and move before the > prompt.
