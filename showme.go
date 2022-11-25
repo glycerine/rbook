@@ -95,7 +95,8 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	*/
 
 	http.Handle("/images/", http.StripPrefix("/images/",
-		http.FileServer(http.Dir("."))))
+		http.FileServer(http.Dir(cwd))))
+	//http.FileServer(http.Dir("."))))
 
 	// have we saved to keepers already?
 	var savedMut sync.Mutex
@@ -167,6 +168,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 			fmt.Fprintf(w, `<html>
 <head>
+%v
 <style type="text/css">
   .left{float:right;
         display: block;
@@ -178,7 +180,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 </style>
 
 
-<script type = "text/JavaScript">`)
+<script type = "text/JavaScript">`, RHashFavIcon)
 
 			script := fmt.Sprintf(`
 
