@@ -53,7 +53,10 @@ func (c *RbookConfig) StartXvfbAndFriends(display string) (vncPort int) {
 	// this is command line -wall flag
 	wall := c.Wallpaper
 	if FileExists(wall) {
-		go startInBackground("/usr/bin/feh", "--bg-scale", wall).Wait()
+		// feh --bg-max chapult.jpg
+		// feh --bg-tile chapult.jpg
+		//go startInBackground("/usr/bin/feh", "--bg-scale", wall).Wait()
+		go startInBackground("/usr/bin/feh", "--bg-tile", wall).Wait()
 	}
 
 	// determine the port here so we can print it and tell the user.
