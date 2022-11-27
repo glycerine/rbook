@@ -292,8 +292,8 @@ require(png)
 
 	// cannot do invisible(TRUE) inside here; as that will
 	// hide the previous command output!
-	embedr.EvalR(`sv=function(){}`) // easy to type. cmd == "sv()" : save the current graph (to browser).
-	embedr.EvalR(`dv=function(){}`) // easy to type. cmd == "dv()" : display the last printed output (in browser).
+	embedr.EvalR(`sv=function(...){}`) // easy to type. cmd == "sv()" : save the current graph (to browser).
+	embedr.EvalR(`dv=function(...){}`) // easy to type. cmd == "dv()" : display the last printed output (in browser).
 
 	// need to save one console capture back for dv() recording of output
 	captureJSON := ""
@@ -301,6 +301,12 @@ require(png)
 	prevJSON := ""
 	var captureOK []string
 	var prevCaptureOK []string
+	var captureHistoryJSON []string
+	var captureHistory []string
+	_ = captureHistoryJSON
+	_ = captureHistory
+	essGarbage := `(list \"\" '((\"\" . \"\")) '(\"\"))"` // randomly injected by ESS, ignored by rbook.
+
 	for {
 
 		//updatePromptCwd("")
@@ -328,18 +334,25 @@ require(png)
 
 			prevJSON2 = prevJSON
 			prevJSON = captureJSON
-			captureJSON = "["
+			captureJSON = ""
+			var newlines string
 
 			//vv("capture = %v lines\n", len(capture))
-			for i, line := range capture {
+			for _, line := range capture {
 				//fmt.Printf("line %02d: %v\n", i, line)
-				if i == 0 {
+				if strings.Contains(line, essGarbage) {
+					continue
+				}
+				newlines += line + "\n"
+				if captureJSON == "" {
 					captureJSON += fmt.Sprintf(`"## %v"`, escape(line))
 				} else {
 					captureJSON += fmt.Sprintf(`,"## %v"`, escape(line))
 				}
 			}
-			captureJSON += `]`
+			captureHistoryJSON = append(captureHistoryJSON, captureJSON)
+			captureJSON = `[` + captureJSON + `]`
+			captureHistory = append(captureHistory, newlines)
 		}
 		//vv("prevJSON = '%v'", prevJSON)
 		//vv("prevJSON2 = '%v'", prevJSON2)
@@ -383,14 +396,14 @@ require(png)
 			Tm:    time.Now(),
 			Seqno: seqno,
 		}
-		switch cmd {
-		case "dv()":
+		switch {
+		case strings.HasPrefix(cmd, "dv("):
 			if capturedOutputOK && prevJSON != "" {
 
 				//vv("prevJSON = '%v'; prevJSON2 = '%v'", prevJSON, prevJSON2)
 
 				prev := prevJSON
-				if strings.Contains(prevJSON, `(list \"\" '((\"\" . \"\")) '(\"\"))"`) {
+				if strings.Contains(prevJSON, essGarbage) {
 					// more injected ESS garbage?
 					// try one further back. Yes this works, at least in the one time we saw.
 					//vv("trying prevJSON2='%v' instead of prevJSON='%v'", prevJSON2, prevJSON)
@@ -402,12 +415,13 @@ require(png)
 				e.ConsoleJSON = msg
 				e.msg = []byte(msg)
 
+				// append to our text file version on disk
 				writeScriptConsole(script, prevCaptureOK)
 
 				hub.broadcast <- e
 				seqno++
 			}
-		case "sv()":
+		case cmd == "sv()":
 			odir := bookpath + ".plots"
 			panicOn(os.MkdirAll(odir, 0777))
 			rnd20 := cryrand.RandomStringWithUp(20)
