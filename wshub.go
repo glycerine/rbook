@@ -83,7 +83,7 @@ top:
 			select {
 			case client.send <- []byte(prepInitMessage(h.book)):
 				//vv("sent init msg to new client, have %v updates to follow", len(h.book.elems))
-			case <-time.After(10 * time.Second):
+			case <-time.After(300 * time.Second):
 				//default:
 				//vv("client.send could not proceed after 10 seconds.")
 				close(client.send)
@@ -98,7 +98,7 @@ top:
 				//huh. got after long inactivity, panic: send on closed channel
 				// also got when old client coming back to new server.
 				case client.send <- e.msg:
-				case <-time.After(10 * time.Second):
+				case <-time.After(300 * time.Second):
 					//default:
 					// this was the closing too early culprit!
 					//vv("closing client.send after i=%v out of %v", i, len(h.book.elems))
