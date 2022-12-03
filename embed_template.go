@@ -106,7 +106,7 @@ function tryConnectToReload(address) {
   };
 
     conn.onmessage = function(evt) {
-        console.log("onmessage: ", evt.data);
+        //console.log("onmessage: ", evt.data);
 
         // We send length prefixed messages, in case they get concatenated.
         // Break them up and append them separately here.
@@ -165,18 +165,18 @@ function appendLog(msg){
     var d  = document.getElementById("log");
 
     if (update.comment) {
-         console.log("we just saw comment message: ", update.comment);
+         //console.log("we just saw comment message: ", update.comment);
          var newstuff = '<div id="' + nextID() + '" class="Rcomment">';
 
         for (let i = 0; i < update.comment.length; i++) {
             newstuff += '<div class="RcommentLine">' + update.comment[i] + '</div>';
         }
          d.innerHTML += newstuff + '</div>';         
-         console.log("we added a comment block")
+         //console.log("we added a comment block")
     }
      
     if (update.init) {
-         console.log("we just saw init message: ", update.init);
+         //console.log("we just saw init message: ", update.init);
          lineNum = 1;
          document.getElementById("bookID").innerHTML = '#' + update.book.user + "@" + update.book.host + ":" + update.book.path + "<br/>#BookID:" + update.book.bookID;
          document.getElementById("datetime").innerHTML = update.book.createTm;
@@ -199,13 +199,13 @@ function appendLog(msg){
             globalLastSeqno = update.seqno;
         } else {
            // drop duplicates
-           console.log("dropping stale message update.seqno" + update.seqno + " vs. last " + globalLastSeqno);
+           //console.log("dropping stale message update.seqno" + update.seqno + " vs. last " + globalLastSeqno);
            return;
         }
     }
 
     if (update.command) {
-         console.log("we just saw command message: ", update.command);
+         //console.log("we just saw command message: ", update.command);
 
          var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code>';
 
@@ -219,7 +219,7 @@ function appendLog(msg){
              newstuff += '<div class="RcommandLine">'  + lineNumStr + ' ' + cmdi + '</div>';
          }
          d.innerHTML += newstuff + '</code></pre></div>';
-         console.log("we added a command block")
+         //console.log("we added a command block")
 
         //var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
         //d.innerHTML += newstuff
@@ -234,7 +234,7 @@ function appendLog(msg){
             newstuff += '<div class="RconsoleLine">' + update.console[i] + '</div>';
         }
         d.innerHTML += newstuff + '</code></pre></div>';
-        console.log("we added console output")
+        //console.log("we added console output")
     }
 
     if (update.image) {
