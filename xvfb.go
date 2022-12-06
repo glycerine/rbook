@@ -28,8 +28,9 @@ func killProcessGroup(pid int) {
 }
 
 // only used to have each process start its own
-// new process group, which is the opposite of what
-// we want here.
+// new process group, which is usefull here so
+// as to avoid having ctrl-c at the R prompt kill the
+// background processes.
 func systemCallSetGroup(c *exec.Cmd) {
 	c.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 }

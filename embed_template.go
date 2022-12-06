@@ -105,29 +105,74 @@ function tryConnectToReload(address) {
     }, 2000);
   };
 
+    var partialMsg = "";
     conn.onmessage = function(evt) {
-        //console.log("onmessage: ", evt.data);
+        // console.log("onmessage: evt.data = <<<<<", evt.data,">>>>>");
 
         // We send length prefixed messages, in case they get concatenated.
         // Break them up and append them separately here.
-        var remain = evt.data;
-        var colon = remain.indexOf(":")
-        while (colon >= 0) {
-            if (colon > 0) {
-                var len = parseInt(remain.substring(0, colon).trim());
-                var msg = remain.substring(colon+1, colon+1+len);
+
+
+        var remain = "";
+        if (partialMsg.length > 0) {
+            remain = partialMsg + evt.data;
+            partialMsg = "";
+        } else {
+            remain = evt.data;
+        }
+
+        // messages also seem to be newline delimitted, so use that.
+        var lines = remain.split("\n");
+        var i = 0;
+        for (i = 0; i < lines.length; i++) {
+           var line = lines[i]; 
+
+           var colon = line.indexOf(":")
+           if (colon <= 0) {
+               partialMsg = lines.slice(i).join("\n");
+               // wait for more on next onmessage() callback.
+               return;
+           }
+           //var len = parseInt(line.substring(0, colon).trim());
+           //var lastCurly = msg.lastIndexOf("}");
+           var msg = line.substring(colon+1)
+           appendLog(msg);    
+        }
+        // try just the newlines alone. very simple.
+        /*
+        var colon = line.indexOf(":")
+        while (colon > 0) {
+                var len = parseInt(line.substring(0, colon).trim());
+                if (line.length - colon - 1 < len) {
+                    console.log("incomplete message, not enough line.len=", line.length, " to satisfy len =", len);
+                    break;
+                }
+                var msg = line.substring(colon+1, Math.min(colon+1+len, line.length));
+
+                // len can be too long if the escaped characters then compress back,
+                // so we'll also insist on ending with a curly brace + newline, which should
+                // be the last thing in the textual JSON object.
+                var lastCurly = msg.lastIndexOf("}\n") + 1;
+                if (lastCurly <= 0) {
+                     console.log("incomplete message, wait for more: '", msg, "'");
+                     break;
+                }
+
+                if (len > lastCurly) {
+                    console.log("problem: len was too long: len= ", len, " but lastCurly =  ", lastCurly, " msg='", msg, "'");
+                    len = lastCurly;
+                    msg = line.substring(colon+1, colon+1, len);
+                }
                 appendLog(msg);
                 remain = remain.substring(colon+2+len);
+                if (remain.length == 0) {
+                    break;
+                }
                 colon = remain.indexOf(":");
-            }
-        }
-      
-        // If we uncomment this line, then the page will refresh every time a message is received.
-        //location.reload()
-        
-        // After we return from this callback,
-        // the scroll position is moved up from the bottom
-        // where we had set it.
+           }
+           partialMsg = remain;
+           console.log("set partialMsg = '", partialMsg, "'");
+           */
   };
 }
 

@@ -305,7 +305,9 @@ require(png)
 	var captureHistory []string
 	_ = captureHistoryJSON
 	_ = captureHistory
-	essGarbage := `(list \"\" '((\"\" . \"\")) '(\"\"))"` // randomly injected by ESS, ignored by rbook.
+	// (list "" '(("..." . "")) '("..."))
+	// (list "" '((" " . "")) '(""))
+	essGarbage := `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
 
 	for {
 
@@ -344,10 +346,15 @@ require(png)
 					continue
 				}
 				newlines += line + "\n"
+				esc, grew := escape(line)
+				if grew > 0 {
+					vv("see grew = %v on line '%v'", line)
+					vv("esc version = '%v'", esc)
+				}
 				if captureJSON == "" {
-					captureJSON += fmt.Sprintf(`"## %v"`, escape(line))
+					captureJSON += fmt.Sprintf(`"## %v"`, esc)
 				} else {
-					captureJSON += fmt.Sprintf(`,"## %v"`, escape(line))
+					captureJSON += fmt.Sprintf(`,"## %v"`, esc)
 				}
 			}
 			captureHistoryJSON = append(captureHistoryJSON, captureJSON)
@@ -519,10 +526,12 @@ require(png)
 	select {}
 }
 
-func escape(s string) string {
+func escape(s string) (res string, grew int) {
 	if len(s) == 0 {
-		return s
+		return
 	}
+
+	beglen := len(s)
 
 	// coerce any control characters to be valid JSON
 	by, err := json.Marshal(s)
@@ -537,7 +546,9 @@ func escape(s string) string {
 	if by[n-1] == '"' {
 		by = by[:n-1]
 	}
-	return string(by)
+	res = string(by)
+	grew = len(res) - beglen
+	return
 }
 
 // add length: as prefix, so we can parse 2 messages that get piggy backed,
@@ -546,7 +557,9 @@ func prepCommandMessageOld(msg string, seqno int) string {
 	if msg == "" {
 		return ""
 	}
-	json := fmt.Sprintf(`{"seqno": %v, "command":"%v"}`, seqno, escape(msg))
+	esc, grew := escape(msg)
+	_ = grew
+	json := fmt.Sprintf(`{"seqno": %v, "command":"%v"}`, seqno, esc)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
 	return lenPrefixedJson
 }
@@ -677,29 +690,35 @@ func writeScriptConsole(script *os.File, prevCaptureOK []string) {
 
 type DecodeJSON struct {
 	Seqno   int      `json:"seqno"`
-	Command string   `json:"command"`
+	Command []string `json:"command"`
 	Console []string `json:"console"`
 	Comment []string `json:"comment"`
 	Image   string   `json:"image"`
 }
 
 func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
-	for _, e := range book.elems {
+	for i, e := range book.elems {
 		colon := bytes.Index(e.msg, []byte{':'})
 		msg := e.msg[colon+1:]
 		d := &DecodeJSON{}
-		panicOn(json.Unmarshal(msg, d))
+		err := json.Unmarshal(msg, d)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "problem at i = %v, colon = %v, e = '%#v': msg='%v', err = '%v'", i, colon, e, string(msg), err)
+			panicOn(err)
+		}
 
 		switch e.Typ {
 		case Command:
-			fmt.Fprintf(fd, "%v\n", d.Command)
+			for _, line := range d.Command {
+				fmt.Fprintf(fd, "%v\n", line)
+			}
 		case Comment:
 			for _, line := range d.Comment {
 				fmt.Fprintf(fd, "%v\n", line)
 			}
 		case Console:
 			for _, line := range d.Console {
-				fmt.Fprintf(fd, "    ## %v\n", line)
+				fmt.Fprintf(fd, "   %v\n", line)
 			}
 		case Image:
 			fmt.Fprintf(fd, "    ##img=readPNG('%v');x11();grid::grid.raster(img); #saved\n", d.Image)
