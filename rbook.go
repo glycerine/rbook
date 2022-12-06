@@ -347,10 +347,11 @@ require(png)
 				}
 				newlines += line + "\n"
 				esc, grew := escape(line)
-				if grew > 0 {
-					vv("see grew = %v on line '%v'", line)
-					vv("esc version = '%v'", esc)
-				}
+				_ = grew
+				//if grew > 0 {
+				//	vv("see grew = %v on line '%v'", line)
+				//	vv("esc version = '%v'", esc)
+				//}
 				if captureJSON == "" {
 					captureJSON += fmt.Sprintf(`"## %v"`, esc)
 				} else {
