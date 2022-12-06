@@ -241,7 +241,7 @@ require(png)
 	display := fmt.Sprintf(":%v", disp)
 	os.Setenv("DISPLAY", display)
 	vncPort := cfg.StartXvfbAndFriends(display)
-	fmt.Printf("version: %v\n", GetCodeVersion(ProgramName))
+	fmt.Printf("rbook version: %v\n", GetCodeVersion(ProgramName))
 	fmt.Printf("Xvfb using DISPLAY=:%v  R_HOME=%v  vncPort=%v\n", disp, cfg.Rhome, vncPort)
 
 	// initialize the embedded R.
