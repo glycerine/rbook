@@ -263,11 +263,13 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		//http.ServeFile(w, r, "index.html")
+		w.Header().Set("Access-Control-Allow-Private-Network", "true")
 		w.Write(readyIndexHtmlBuf.Bytes())
 	})
 
 	http.HandleFunc("/greencheckmark", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
+
 		readSeeker := bytes.NewReader(savedToKeepersPng)
 		http.ServeContent(w, r, "", time.Time{}, readSeeker)
 	})
@@ -305,6 +307,13 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}
 		//vv("path '%v' found in book path2image", path)
 		w.Header().Set("Content-Type", "image/png")
+
+		// suddenly chrome is refusing to load images. wtf.
+		// Access to image at 'http://rog:8888/rbook/home/jaten/powerscalp_dni/my.rbook.plots/plotmini_000_zVoV92eLXjdLxMkY2Cyg.png?pathhash=tpRjceX508i5xt9Gw1boII1Tur77Jb-qJ_o0qjEQa33MmnlSKAsoJK-qRNvjomPn0f10Pvnum9sdpj92VoVMAw' (redirected from 'http://rog:8888/rbook//home/jaten/powerscalp_dni/my.rbook.plots/plotmini_000_zVoV92eLXjdLxMkY2Cyg.png?pathhash=tpRjceX508i5xt9Gw1boII1Tur77Jb-qJ_o0qjEQa33MmnlSKAsoJK-qRNvjomPn0f10Pvnum9sdpj92VoVMAw') from origin 'http://rog:8888' has been blocked by CORS policy: The request client is not a secure context and the resource is in more-private address space `private`.
+		// https://developer.chrome.com/blog/private-network-access-preflight/
+		// Access-Control-Allow-Private-Network: true
+		w.Header().Set("Access-Control-Allow-Private-Network", "true")
+
 		readSeeker := bytes.NewReader(e.ImageBy)
 		modtime := e.Tm
 		http.ServeContent(w, r, "", modtime, readSeeker)
