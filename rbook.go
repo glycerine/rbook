@@ -167,7 +167,7 @@ func main() {
 	if !FileExists(scriptPath) {
 		freshScript = true
 	}
-	if cfg.Dump {
+	if cfg.Dump || cfg.DumpTimestamps {
 		// we are dumping the binary to stdout in script/text format.
 		script = os.Stdout
 		freshScript = true
@@ -205,7 +205,7 @@ require(png)
 `, username, hostname, bookpath, history.BookID, history.CreateTm.Format(RFC3339NanoNumericTZ0pad))
 	}
 
-	if cfg.Dump {
+	if cfg.Dump || cfg.DumpTimestamps {
 		cfg.dumpToScript(script, history)
 		os.Exit(0)
 	}
@@ -707,7 +707,9 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 			panicOn(err)
 		}
 
-		fmt.Printf("            =====  ['%v'] =====:\n", e.Tm.In(Chicago).Format(RFC3339MicroTz0))
+		if c.DumpTimestamps {
+			fmt.Printf("          ##  =====  ['%v'] =====:\n", e.Tm.In(Chicago).Format(RFC3339MicroTz0))
+		}
 		switch e.Typ {
 		case Command:
 			for _, line := range d.Command {

@@ -76,7 +76,8 @@ type RbookConfig struct {
 
 	Help bool
 
-	Dump bool
+	Dump           bool
+	DumpTimestamps bool
 
 	Wallpaper string
 
@@ -86,6 +87,8 @@ type RbookConfig struct {
 
 // call DefineFlags before myflags.Parse()
 func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
+
+	fs.BoolVar(&c.DumpTimestamps, "dumpts", false, "-dump but add timestamps to each line")
 	fs.StringVar(&c.Host, "host", "", "host/ip to server on (optional)")
 	fs.IntVar(&c.Port, "port", 0, "port to serve index.html for images/R updates on (optional; if -port is taken or 0, defaults to the first free port at or above 8888)")
 	fs.StringVar(&c.RbookFilePath, "path", "", "path to the .rbook file to read and append to. this is also the default command line argument, so -path can be omitted in front of the path (default is my.rbook in the current dir)")
@@ -119,7 +122,7 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		}
 	}
 
-	if c.Dump {
+	if c.Dump || c.DumpTimestamps {
 		if !FileExists(c.RbookFilePath) {
 			return fmt.Errorf("rbook -dump could not find book to dump at path '%v'", c.RbookFilePath)
 		}
