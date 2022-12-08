@@ -24,8 +24,6 @@ import (
 
 var _ = syscall.Getpgid
 
-const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
-
 func init() {
 	// this important protection. R will crash if it gets SIGINT under --no-readline,
 	// which we always use now because readline re-writes signal handler for
@@ -709,6 +707,7 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 			panicOn(err)
 		}
 
+		fmt.Printf("            =====  ['%v'] =====:\n", e.Tm.In(Chicago).Format(RFC3339MicroTz0))
 		switch e.Typ {
 		case Command:
 			for _, line := range d.Command {

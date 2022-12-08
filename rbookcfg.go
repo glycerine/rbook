@@ -7,7 +7,48 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
+
+	"4d63.com/tz"
 )
+
+const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
+
+const RFC3339MicroTz0 = "2006-01-02T15:04:05.000000Z07:00"
+
+var UtcTz *time.Location
+var NYC *time.Location
+var Chicago *time.Location
+var Frankfurt *time.Location
+var London *time.Location
+var IST *time.Location // Indian Standard Time
+var Halifax *time.Location
+
+func init() {
+	initTimezonesEtc()
+}
+
+func initTimezonesEtc() {
+
+	// do this is ~/.bashrc so we get the default.
+	os.Setenv("TZ", "America/Chicago")
+
+	var err error
+	UtcTz, err = tz.LoadLocation("UTC")
+	panicOn(err)
+	NYC, err = tz.LoadLocation("America/New_York")
+	panicOn(err)
+	Chicago, err = tz.LoadLocation("America/Chicago")
+	panicOn(err)
+	Frankfurt, err = tz.LoadLocation("Europe/Berlin")
+	panicOn(err)
+	IST, err = tz.LoadLocation("Asia/Kolkata") // Indian Standard Time; UTC + 05:30
+	panicOn(err)
+	Halifax, err = tz.LoadLocation("America/Halifax")
+	panicOn(err)
+	London, err = tz.LoadLocation("Europe/London")
+	panicOn(err)
+}
 
 type RbookConfig struct {
 	Host string // leave empty to bind all interfaces
