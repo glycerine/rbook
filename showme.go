@@ -301,7 +301,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 		e, ok := b.path2image[path]
 		if !ok {
-			vv("path '%v' not found in book path2image; path2image = '%#v'", path, b.path2image)
+			//vv("path '%v' not found in book path2image; path2image = '%#v'", path, b.path2image)
 			http.Error(w, "invalid URL path", http.StatusBadRequest)
 			return
 		}
