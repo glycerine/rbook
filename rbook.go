@@ -277,9 +277,66 @@ require(png)
 	// number the saved png files.
 	nextSave := 0
 
+	svvPlot := func() {
+		//fmt.Printf("svvPlot() called!  seqno=%v, bookpath='%v'\n", seqno, bookpath)
+
+		e := &HashRElem{
+			Tm:    time.Now(),
+			Seqno: seqno,
+		}
+
+		odir := bookpath + ".plots"
+		panicOn(os.MkdirAll(odir, 0777))
+		rnd20 := cryrand.RandomStringWithUp(20)
+		path := fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
+		err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+		if err != nil {
+			// possibly "no plot on device to save";
+			// don't bother to send to browser. And don't crash.
+			//continue
+			vv("error during savePlot(filename='%v'): '%v'", path, err)
+			return
+		}
+		panicOn(err)
+		pathhash, imageby := PathHash(path)
+		//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
+		nextSave++
+
+		//vv("Reloading browser with image path '%v'", path)
+		msg := prepImageMessage(path, pathhash, seqno)
+
+		e.Typ = Image
+		e.ImageJSON = msg
+		e.ImageHost = hostname
+		e.ImagePath = path
+		e.ImageBy = imageby
+		e.ImagePathHash = pathhash
+		e.msg = []byte(msg)
+
+		writeScriptImage(script, path)
+
+		hub.broadcast <- e
+		seqno++
+
+		// CODEX: keep in sync with code after the switch below!
+		history.mut.Lock()
+		history.elems = append(history.elems, e)
+		if e.ImagePath != "" {
+			//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
+			history.path2image[e.ImagePath] = e
+		}
+		history.mut.Unlock()
+
+		by, err := e.SaveToSlice()
+		panicOn(err)
+		_, err = appendFD.Write(by)
+		panicOn(err)
+	}
+
 	// our repl
 	embedr.ReplDLLinit()
 	embedr.SetGoCallbackForCleanup(func() { cfg.StopXvfb() })
+	embedr.SetRCallbackToGoFunc(svvPlot)
 
 	// In .Last.sys,
 	// do graphics.off() first to try and avoid q() resulting in:
@@ -293,6 +350,9 @@ require(png)
 	// hide the previous command output!
 	embedr.EvalR(`sv=function(...){}`) // easy to type. cmd == "sv()" : save the current graph (to browser).
 	embedr.EvalR(`dv=function(...){}`) // easy to type. cmd == "dv()" : display the last printed output (in browser).
+
+	// for in an R program loop... save the current graph (to browser).
+	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
 
 	// need to save one console capture back for dv() recording of output
 	captureJSON := ""
@@ -314,7 +374,7 @@ require(png)
 		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
 		embedr.EvalR(`sink(textConnection("zrecord_mini_console", open="w"), split=T);`)
 
-		path := ""
+		//path := ""
 		did := embedr.ReplDLLdo1()
 		_ = did
 		//vv("did = %v", did)
@@ -429,36 +489,40 @@ require(png)
 				seqno++
 			}
 		case cmd == "sv()":
-			odir := bookpath + ".plots"
-			panicOn(os.MkdirAll(odir, 0777))
-			rnd20 := cryrand.RandomStringWithUp(20)
-			path = fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
-			err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
-			if err != nil {
-				// possibly "no plot on device to save";
-				// don't bother to send to browser. And don't crash.
-				continue
-			}
-			panicOn(err)
-			pathhash, imageby := PathHash(path)
-			//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
-			nextSave++
+			svvPlot()
+			continue // svvPlot() does the CODEX code below; it has to for browser to see the plot.
+			/*
+				odir := bookpath + ".plots"
+				panicOn(os.MkdirAll(odir, 0777))
+				rnd20 := cryrand.RandomStringWithUp(20)
+				path = fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
+				err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+				if err != nil {
+					// possibly "no plot on device to save";
+					// don't bother to send to browser. And don't crash.
+					continue
+				}
+				panicOn(err)
+				pathhash, imageby := PathHash(path)
+				//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
+				nextSave++
 
-			//vv("Reloading browser with image path '%v'", path)
-			msg := prepImageMessage(path, pathhash, seqno)
+				//vv("Reloading browser with image path '%v'", path)
+				msg := prepImageMessage(path, pathhash, seqno)
 
-			e.Typ = Image
-			e.ImageJSON = msg
-			e.ImageHost = hostname
-			e.ImagePath = path
-			e.ImageBy = imageby
-			e.ImagePathHash = pathhash
-			e.msg = []byte(msg)
+				e.Typ = Image
+				e.ImageJSON = msg
+				e.ImageHost = hostname
+				e.ImagePath = path
+				e.ImageBy = imageby
+				e.ImagePathHash = pathhash
+				e.msg = []byte(msg)
 
-			writeScriptImage(script, path)
+				writeScriptImage(script, path)
 
-			hub.broadcast <- e
-			seqno++
+				hub.broadcast <- e
+				seqno++
+			*/
 		default:
 
 			// special handling for strings literal values
@@ -510,6 +574,7 @@ require(png)
 			}
 		}
 
+		// CODEX: keep in sync with the svvPlot() CODEX above.
 		history.mut.Lock()
 		history.elems = append(history.elems, e)
 		if e.ImagePath != "" {
