@@ -285,7 +285,7 @@ function appendLog(msg){
 
         //var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
         //d.innerHTML += newstuff
-        //console.log("we added command text")
+        //console.log("we added command text");
     }
 
     // in theory the command and the output could arrive together, so
@@ -296,7 +296,7 @@ function appendLog(msg){
             newstuff += '<div class="RconsoleLine">' + update.console[i] + '</div>';
         }
         d.innerHTML += newstuff + '</code></pre></div>';
-        //console.log("we added console output")
+        //console.log("we added console output");
     }
 
     if (update.image) {
@@ -304,8 +304,12 @@ function appendLog(msg){
         if (update.pathhash) {
            hash = update.pathhash;
         }
-        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://{{.WsHost}}:{{.Port}}/rbook/' + update.image + '?pathhash=' + hash + '" style="max-width:100%%;"/></div>';
-        d.innerHTML += newstuff        
+        // remove the leading slash(es) from update.image to avoid the 247msec network 301 redirect
+        // that happens when seeing host:port/rbook//path -> host:port/rbook/path
+        var upimg = update.image.replace(/^\/+/, '');
+
+        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://{{.WsHost}}:{{.Port}}/rbook/' + upimg + '?pathhash=' + hash + '" style="max-width:100%%;"/></div>';
+        d.innerHTML += newstuff;        
     }
     
     //hljs.highlightAll();
