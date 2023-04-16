@@ -195,7 +195,7 @@ function lastID() {
     return id;
 }
 
-function scrollToLastID() 
+function scrollToLastID() {
     var d = document.getElementById(lastID());
     if (d === null) { 
       // don't deference it.
