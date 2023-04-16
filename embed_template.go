@@ -188,6 +188,21 @@ function nextID() {
     return id;
 }
 
+function lastID() {
+    var d  = document.getElementById("log");
+    var n  = d.children.length -1;
+    var id  = "log_" + n.toString();
+    return id;
+}
+
+function scrollToLastID() 
+    var d = document.getElementById(lastID())
+    if (d != null) { 
+      d.scrollIntoView(true); 
+    }
+}
+
+
 function nextIDInt() {
     var d  = document.getElementById("log");
     return d.children.length;
@@ -203,7 +218,7 @@ var lineNum = 1;
       
 function appendLog(msg){
  
-    //console.log("msg = ", msg);
+    console.log("msg = ", msg);
     
     const update = JSON.parse(msg)
 
@@ -298,7 +313,9 @@ function appendLog(msg){
     // 2 msec isn't long enough to win the fight for the scrollbar
     // position, usually. but 20 msec seems to win it consistently.
     //
-    setTimeout(function() { /*console.log("called back!");*/ scrollToBottom()}, 20);
+    //setTimeout(function() { /*console.log("called back!");*/ scrollToBottom()}, 20);
+    scrollToLastID()
+
     
 } // end appendLog()
 
