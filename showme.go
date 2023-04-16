@@ -314,6 +314,17 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		// Access-Control-Allow-Private-Network: true
 		w.Header().Set("Access-Control-Allow-Private-Network", "true")
 
+		// https://stackoverflow.com/questions/61050144/cache-control-immutable-header/61053585#61053585
+		etag := `"` + e.ImagePathHash + `"` // "SomeKey describing content - eg checksum"
+		w.Header().Set("Etag", etag)
+		w.Header().Set("Cache-Control", "max-age=365000000, immutable") // >10 years, immutable
+		if match := r.Header.Get("If-None-Match"); match != "" {
+			if strings.Contains(match, etag) {
+				w.WriteHeader(http.StatusNotModified)
+				return
+			}
+		}
+
 		readSeeker := bytes.NewReader(e.ImageBy)
 		modtime := e.Tm
 		http.ServeContent(w, r, "", modtime, readSeeker)
