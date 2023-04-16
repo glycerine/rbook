@@ -196,8 +196,10 @@ function lastID() {
 }
 
 function scrollToLastID() 
-    var d = document.getElementById(lastID())
-    if (d != null) { 
+    var d = document.getElementById(lastID());
+    if (d === null) { 
+      // don't deference it.
+    } else {
       d.scrollIntoView(true); 
     }
 }
