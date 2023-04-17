@@ -30,6 +30,10 @@ var ProgramName, Cmdline string
 
 var _ = exec.Command
 
+// store image hashes here
+var curDirImages = make(map[string]*HashRElem)
+var curDirImagesLoaded = make(chan bool, 0)
+
 func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	ProgramName = path.Base(os.Args[0])
@@ -57,6 +61,23 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	panicOn(err)
 	_ = cwd
 	//fmt.Printf("showme running in '%s' with %v png files\n", cwd, len(pngs))
+
+	if len(pngs) > 0 {
+		go func() {
+			for _, png := range pngs {
+				hash, by := PathHash(png)
+				curDirImages[png] = &HashRElem{
+					Typ:           Image,
+					Tm:            ModTime(png),
+					ImageHost:     hostname,
+					ImagePath:     png,
+					ImageBy:       by,
+					ImagePathHash: hash,
+				}
+			}
+			close(curDirImagesLoaded)
+		}()
+	}
 
 	/*
 			watcher, err := fsnotify.NewWatcher()
@@ -127,6 +148,9 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		nextpng := pngs[next]
 
 		viewHandler := func(w http.ResponseWriter, r *http.Request) {
+			// make sure we have loaded the hashes first.
+			<-curDirImagesLoaded
+
 			what := r.URL.Path // [1:]
 			if strings.HasSuffix(what, ".png") {
 				curpng = path.Base(what)
@@ -358,3 +382,11 @@ func containsDotDot(v string) bool {
 }
 
 func isSlashRune(r rune) bool { return r == '/' || r == '\\' }
+
+func ModTime(fn string) (m time.Time) {
+	fi, err := os.Stat(fn)
+	if err != nil {
+		return
+	}
+	return fi.ModTime()
+}
