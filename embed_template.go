@@ -195,6 +195,7 @@ function lastID() {
     return id;
 }
 
+// causes Chrome to freeze/spin forever on 1k-2k lines of rbook.
 function scrollToLastID() {
     var d = document.getElementById(lastID());
     if (d === null) { 
@@ -320,7 +321,10 @@ function appendLog(msg){
     // position, usually. but 20 msec seems to win it consistently.
     //
     //setTimeout(function() { /*console.log("called back!");*/ scrollToBottom()}, 20);
-    scrollToLastID()
+
+    // this causes Chrome to spin forever on a couple thousand log lines.
+    // We'll omit it and hope to make the 15 minute pauses go away.
+    //scrollToLastID()
 
     
 } // end appendLog()
