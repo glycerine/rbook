@@ -351,12 +351,13 @@ require(png)
 	var capturedOutputOK bool
 
 	dvvFunc := func() {
-		//fmt.Printf("dvvFunc() called!  seqno=%v, bookpath='%v'\n", seqno, bookpath)
 
 		// collect any text in the sink
 		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
 		panicOn(err)
 		capture, capturedOutputOK = sinkgot.([]string)
+
+		fmt.Printf("dvvFunc() called!  seqno=%v, capture='%v'; capturedOutputOK=%v\n", seqno, capture, capturedOutputOK)
 
 		if capturedOutputOK {
 			prevCaptureOK = captureOK
@@ -374,53 +375,40 @@ require(png)
 					continue
 				}
 				newlines += line + "\n"
-				esc, grew := escape(line)
-				_ = grew
-				//if grew > 0 {
-				//	vv("see grew = %v on line '%v'", line)
-				//	vv("esc version = '%v'", esc)
-				//}
+				esc, _ := escape(line)
 				if captureJSON == "" {
 					captureJSON += fmt.Sprintf(`"## %v"`, esc)
 				} else {
 					captureJSON += fmt.Sprintf(`,"## %v"`, esc)
 				}
 			}
+			//vv("captureJSON='%v'", captureJSON)
 			captureHistoryJSON = append(captureHistoryJSON, captureJSON)
 			captureJSON = `[` + captureJSON + `]`
 			captureHistory = append(captureHistory, newlines)
 		}
 
+		if !capturedOutputOK || captureJSON == "" {
+			return
+		}
 		// reset the sink, so if we call dvv() again in a loop, we won't repeat ourselves.
 		embedr.EvalR(`sink(file=NULL)`)
 		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
 		embedr.EvalR(`sink(textConnection("zrecord_mini_console", open="w"), split=T);`)
 
-		if !capturedOutputOK || prevJSON == "" {
-			return
-		}
 		e := &HashRElem{
 			Tm:    time.Now(),
 			Seqno: seqno,
 		}
 
-		//vv("prevJSON = '%v'; prevJSON2 = '%v'", prevJSON, prevJSON2)
-
-		prev := prevJSON
-		if strings.Contains(prevJSON, essGarbage) {
-			// more injected ESS garbage?
-			// try one further back. Yes this works, at least in the one time we saw.
-			//vv("trying prevJSON2='%v' instead of prevJSON='%v'", prevJSON2, prevJSON)
-			prev = prevJSON2
-		}
-
-		msg := prepConsoleMessage(prev, seqno)
+		//vv("prepConsoleMessages(captureJSON='%v', seqno='%v')", captureJSON, seqno)
+		msg := prepConsoleMessage(captureJSON, seqno)
 		e.Typ = Console
 		e.ConsoleJSON = msg
 		e.msg = []byte(msg)
 
 		// append to our text file version on disk
-		writeScriptConsole(script, prevCaptureOK)
+		writeScriptConsole(script, capture)
 
 		hub.broadcast <- e
 		seqno++
