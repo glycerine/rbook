@@ -424,7 +424,7 @@ require(png)
 	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
 	embedr.EvalR(`dvv=function(...){ .C("CallRCallbackToGoFuncDvv"); c()}`)
 
-	// need to save one console capture back for dv() recording of output
+	// need to save one console capture back for dv() recording of output, since dv() itself will be a command.
 	captureJSON := ""
 	prevJSON2 := ""
 	prevJSON := ""

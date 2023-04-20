@@ -195,13 +195,21 @@ function lastID() {
     return id;
 }
 
-// causes Chrome to freeze/spin forever on 1k-2k lines of rbook.
 function scrollToLastID() {
     var d = document.getElementById(lastID());
     if (d === null) { 
       // don't deference it.
     } else {
-      d.scrollIntoView(true); 
+      d.scrollIntoView(false); // align the bottom of the element to the bottom of the viewport 
+    }
+}
+
+function scrollToEndOfLog() {
+    var d = document.getElementById("end-of-log");
+    if (d === null) { 
+      // don't deference it.
+    } else {
+      d.scrollIntoView(true); // align the bottom of the element to the bottom of the viewport 
     }
 }
 
@@ -338,11 +346,12 @@ function appendLog(msg){
     // 2 msec isn't long enough to win the fight for the scrollbar
     // position, usually. but 20 msec seems to win it consistently.
     //
-    //setTimeout(function() { /*console.log("called back!");*/ scrollToBottom()}, 20);
+    //setTimeout(function() { /*console.log("called back!");*/ scrollToEndOfLog();}, 1000);
+    //requestIdleCallback(function(idleDeadline) { scrollToEndOfLog(); console.log("done with idle scroll");}, {timeout: 1000});
 
-    // this causes Chrome to spin forever on a couple thousand log lines.
-    // We'll omit it and hope to make the 15 minute pauses go away.
-    //scrollToLastID()
+    //scrollToEndOfLog();
+    //scrollToLastID();
+    //scrollToBottom();
 
     
 } // end appendLog()
@@ -372,6 +381,7 @@ try {
     #R rbook created: <span id="datetime"></span></p>
   <br/>
   <div id="log"> </div>
+  <div id="end-of-log">--- end of log ---</div>
 </body>
 
 </html>
