@@ -226,6 +226,23 @@ function pad(num, size) {
 }
 
 var lineNum = 1;
+
+function rendered() {
+    //Render complete
+    //alert("image rendered");
+    console.log("rendered() called. render complete");
+    scrollToEndOfLog();
+}
+
+function startRender() {
+    //Rendering start
+    requestAnimationFrame(rendered);
+}
+
+function loaded()  {
+    requestAnimationFrame(startRender);
+}
+
       
 function appendLog(msg){
  
@@ -346,13 +363,15 @@ function appendLog(msg){
     // 2 msec isn't long enough to win the fight for the scrollbar
     // position, usually. but 20 msec seems to win it consistently.
     //
-    //setTimeout(function() { /*console.log("called back!");*/ scrollToEndOfLog();}, 1000);
+    setTimeout(function() { /*console.log("called back!");*/ scrollToEndOfLog();}, 500);
     //requestIdleCallback(function(idleDeadline) { scrollToEndOfLog(); console.log("done with idle scroll");}, {timeout: 1000});
 
     //scrollToEndOfLog();
     //scrollToLastID();
     //scrollToBottom();
 
+    // https://stackoverflow.com/questions/14578356/how-to-detect-when-an-image-has-finished-rendering-in-the-browser-i-e-painted
+    //requestAnimationFrame(startRender);
     
 } // end appendLog()
 
