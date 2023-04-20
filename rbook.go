@@ -333,10 +333,118 @@ require(png)
 		panicOn(err)
 	}
 
+	// moved up here so dvvFunc can reference them.
+	// need to save one console capture back for dv() recording of output
+	captureJSON := ""
+	prevJSON2 := ""
+	prevJSON := ""
+	var captureOK []string
+	var prevCaptureOK []string
+	var captureHistoryJSON []string
+	var captureHistory []string
+	_ = captureHistoryJSON
+	_ = captureHistory
+	// (list "" '(("..." . "")) '("..."))
+	// (list "" '((" " . "")) '(""))
+	essGarbage := `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
+	var capture []string
+	var capturedOutputOK bool
+
+	dvvFunc := func() {
+		//fmt.Printf("dvvFunc() called!  seqno=%v, bookpath='%v'\n", seqno, bookpath)
+
+		// collect any text in the sink
+		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
+		panicOn(err)
+		capture, capturedOutputOK = sinkgot.([]string)
+
+		if capturedOutputOK {
+			prevCaptureOK = captureOK
+			captureOK = capture
+
+			prevJSON2 = prevJSON
+			prevJSON = captureJSON
+			captureJSON = ""
+			var newlines string
+
+			//vv("capture = %v lines\n", len(capture))
+			for _, line := range capture {
+				//fmt.Printf("line %02d: %v\n", i, line)
+				if strings.Contains(line, essGarbage) {
+					continue
+				}
+				newlines += line + "\n"
+				esc, grew := escape(line)
+				_ = grew
+				//if grew > 0 {
+				//	vv("see grew = %v on line '%v'", line)
+				//	vv("esc version = '%v'", esc)
+				//}
+				if captureJSON == "" {
+					captureJSON += fmt.Sprintf(`"## %v"`, esc)
+				} else {
+					captureJSON += fmt.Sprintf(`,"## %v"`, esc)
+				}
+			}
+			captureHistoryJSON = append(captureHistoryJSON, captureJSON)
+			captureJSON = `[` + captureJSON + `]`
+			captureHistory = append(captureHistory, newlines)
+		}
+
+		// reset the sink, so if we call dvv() again in a loop, we won't repeat ourselves.
+		embedr.EvalR(`sink(file=NULL)`)
+		embedr.EvalR(`if(exists("zrecord_mini_console")) { rm("zrecord_mini_console") }`)
+		embedr.EvalR(`sink(textConnection("zrecord_mini_console", open="w"), split=T);`)
+
+		if !capturedOutputOK || prevJSON == "" {
+			return
+		}
+		e := &HashRElem{
+			Tm:    time.Now(),
+			Seqno: seqno,
+		}
+
+		//vv("prevJSON = '%v'; prevJSON2 = '%v'", prevJSON, prevJSON2)
+
+		prev := prevJSON
+		if strings.Contains(prevJSON, essGarbage) {
+			// more injected ESS garbage?
+			// try one further back. Yes this works, at least in the one time we saw.
+			//vv("trying prevJSON2='%v' instead of prevJSON='%v'", prevJSON2, prevJSON)
+			prev = prevJSON2
+		}
+
+		msg := prepConsoleMessage(prev, seqno)
+		e.Typ = Console
+		e.ConsoleJSON = msg
+		e.msg = []byte(msg)
+
+		// append to our text file version on disk
+		writeScriptConsole(script, prevCaptureOK)
+
+		hub.broadcast <- e
+		seqno++
+
+		// CODEX: keep in sync with code after the switch below!
+		history.mut.Lock()
+		history.elems = append(history.elems, e)
+		if e.ImagePath != "" {
+			//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
+			history.path2image[e.ImagePath] = e
+		}
+		history.mut.Unlock()
+
+		by, err := e.SaveToSlice()
+		panicOn(err)
+		_, err = appendFD.Write(by)
+		panicOn(err)
+	}
+
 	// our repl
 	embedr.ReplDLLinit()
 	embedr.SetGoCallbackForCleanup(func() { cfg.StopXvfb() })
 	embedr.SetRCallbackToGoFunc(svvPlot)
+	embedr.SetRCallbackToGoFuncDvv(dvvFunc)
 
 	// In .Last.sys,
 	// do graphics.off() first to try and avoid q() resulting in:
@@ -353,20 +461,7 @@ require(png)
 
 	// for in an R program loop... save the current graph (to browser).
 	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
-
-	// need to save one console capture back for dv() recording of output
-	captureJSON := ""
-	prevJSON2 := ""
-	prevJSON := ""
-	var captureOK []string
-	var prevCaptureOK []string
-	var captureHistoryJSON []string
-	var captureHistory []string
-	_ = captureHistoryJSON
-	_ = captureHistory
-	// (list "" '(("..." . "")) '("..."))
-	// (list "" '((" " . "")) '(""))
-	essGarbage := `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
+	embedr.EvalR(`dvv=function(...){ .C("CallRCallbackToGoFuncDvv"); c()}`)
 
 	for {
 
@@ -387,7 +482,7 @@ require(png)
 
 		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
 		panicOn(err)
-		capture, capturedOutputOK := sinkgot.([]string)
+		capture, capturedOutputOK = sinkgot.([]string)
 
 		if capturedOutputOK {
 			prevCaptureOK = captureOK
@@ -465,6 +560,9 @@ require(png)
 		}
 		switch {
 		case strings.HasPrefix(cmd, "dv("):
+			//dvvFunc()
+			//continue // dvvFunc() does the CODEX code below; it has to for browser to see the console output.
+
 			if capturedOutputOK && prevJSON != "" {
 
 				//vv("prevJSON = '%v'; prevJSON2 = '%v'", prevJSON, prevJSON2)
@@ -574,7 +672,7 @@ require(png)
 			}
 		}
 
-		// CODEX: keep in sync with the svvPlot() CODEX above.
+		// CODEX: keep in sync with the svvPlot() and dvvFunc() CODEX above.
 		history.mut.Lock()
 		history.elems = append(history.elems, e)
 		if e.ImagePath != "" {
