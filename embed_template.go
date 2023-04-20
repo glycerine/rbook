@@ -234,7 +234,11 @@ function appendLog(msg){
         for (let i = 0; i < update.comment.length; i++) {
             newstuff += '<div class="RcommentLine">' + update.comment[i] + '</div>';
         }
-         d.innerHTML += newstuff + '</div>';         
+         newstuff += '</div>';
+         var newDiv = document.createElement('div');
+         newDiv.innerHTML = newstuff;
+         d.appendChild(newDiv);
+         //d.innerHTML += newstuff + '</div>';
          //console.log("we added a comment block")
     }
      
@@ -281,7 +285,11 @@ function appendLog(msg){
 
              newstuff += '<div class="RcommandLine">'  + lineNumStr + ' ' + cmdi + '</div>';
          }
-         d.innerHTML += newstuff + '</code></pre></div>';
+         newstuff += '</code></pre></div>';
+         var newDiv = document.createElement('div');
+         newDiv.innerHTML = newstuff;
+         d.appendChild(newDiv);
+         //d.innerHTML += newstuff + '</code></pre></div>';
          //console.log("we added a command block")
 
         //var newstuff = '<div id="' + nextID() + '">' + update.command + '</div>';
@@ -296,7 +304,12 @@ function appendLog(msg){
         for (let i = 0; i < update.console.length; i++) {
             newstuff += '<div class="RconsoleLine">' + update.console[i] + '</div>';
         }
-        d.innerHTML += newstuff + '</code></pre></div>';
+         newstuff += '</code></pre></div>';
+         var newDiv = document.createElement('div');
+         newDiv.innerHTML = newstuff;
+         d.appendChild(newDiv);
+
+        //d.innerHTML += newstuff + '</code></pre></div>';
         //console.log("we added console output");
     }
 
@@ -310,7 +323,12 @@ function appendLog(msg){
         var upimg = update.image.replace(/^\/+/, '');
 
         var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://{{.WsHost}}:{{.Port}}/rbook/' + upimg + '?pathhash=' + hash + '" style="max-width:100%%;"/></div>';
-        d.innerHTML += newstuff;        
+
+         var newDiv = document.createElement('div');
+         newDiv.innerHTML = newstuff;
+         d.appendChild(newDiv);
+
+        //d.innerHTML += newstuff;        
     }
     
     //hljs.highlightAll();
