@@ -333,47 +333,22 @@ require(png)
 		panicOn(err)
 	}
 
-	// moved up here so dvvFunc can reference them.
-	// need to save one console capture back for dv() recording of output
-	captureJSON := ""
-	prevJSON2 := ""
-	prevJSON := ""
-	var captureOK []string
-	var prevCaptureOK []string
-	var captureHistoryJSON []string
-	var captureHistory []string
-	_ = captureHistoryJSON
-	_ = captureHistory
-	// (list "" '(("..." . "")) '("..."))
-	// (list "" '((" " . "")) '(""))
-	essGarbage := `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
-	var capture []string
-	var capturedOutputOK bool
-
 	dvvFunc := func() {
 
 		// collect any text in the sink
 		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
 		panicOn(err)
-		capture, capturedOutputOK = sinkgot.([]string)
+		capture, capturedOutputOK := sinkgot.([]string)
 
-		fmt.Printf("dvvFunc() called!  seqno=%v, capture='%v'; capturedOutputOK=%v\n", seqno, capture, capturedOutputOK)
+		//fmt.Printf("dvvFunc() called!  seqno=%v, capture='%v'; capturedOutputOK=%v\n", seqno, capture, capturedOutputOK)
 
+		captureJSON := ""
 		if capturedOutputOK {
-			prevCaptureOK = captureOK
-			captureOK = capture
-
-			prevJSON2 = prevJSON
-			prevJSON = captureJSON
-			captureJSON = ""
 			var newlines string
 
 			//vv("capture = %v lines\n", len(capture))
 			for _, line := range capture {
 				//fmt.Printf("line %02d: %v\n", i, line)
-				if strings.Contains(line, essGarbage) {
-					continue
-				}
 				newlines += line + "\n"
 				esc, _ := escape(line)
 				if captureJSON == "" {
@@ -383,9 +358,7 @@ require(png)
 				}
 			}
 			//vv("captureJSON='%v'", captureJSON)
-			captureHistoryJSON = append(captureHistoryJSON, captureJSON)
 			captureJSON = `[` + captureJSON + `]`
-			captureHistory = append(captureHistory, newlines)
 		}
 
 		if !capturedOutputOK || captureJSON == "" {
@@ -450,6 +423,22 @@ require(png)
 	// for in an R program loop... save the current graph (to browser).
 	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
 	embedr.EvalR(`dvv=function(...){ .C("CallRCallbackToGoFuncDvv"); c()}`)
+
+	// need to save one console capture back for dv() recording of output
+	captureJSON := ""
+	prevJSON2 := ""
+	prevJSON := ""
+	var captureOK []string
+	var prevCaptureOK []string
+	var captureHistoryJSON []string
+	var captureHistory []string
+	_ = captureHistoryJSON
+	_ = captureHistory
+	// (list "" '(("..." . "")) '("..."))
+	// (list "" '((" " . "")) '(""))
+	essGarbage := `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
+	var capture []string
+	var capturedOutputOK bool
 
 	for {
 
