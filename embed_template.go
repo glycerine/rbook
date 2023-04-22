@@ -61,19 +61,6 @@ var embedded_index_template = fmt.Sprintf(`
 
     /*.RcommandLine   { margin-top: -0.1em; }*/
 
-    /* hide the arrows/spinners on the goto-line input box */
-    /* https://stackoverflow.com/questions/3790935/can-i-hide-the-html5-number-input-s-spin-box */
-       /* Chrome, Safari, Edge, Opera */
-       input::-webkit-outer-spin-button,
-       input::-webkit-inner-spin-button {
-         -webkit-appearance: none;
-         margin: 0;
-       }
-       /* Firefox */
-       input[type=number] {
-         -moz-appearance: textfield;
-       }
-
     </style>
 
    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
@@ -81,6 +68,10 @@ var embedded_index_template = fmt.Sprintf(`
     <script type="text/javascript">
 
       var globalLastSeqno = -1;
+
+      function noNumbers(e) {
+          this.value = this.value.replace(/[^\d]/, '');
+      }
 
       // down arrow scrolls to bottom of page, otherwise leave current view unchanged.
       function checkKey(event) {
@@ -104,8 +95,9 @@ var embedded_index_template = fmt.Sprintf(`
 
                 var gotoDialogBox = document.getElementById("myGotoLineDialog");
                 var gotoLineEntry = document.getElementById("line_request");
+                // only accept numbers, thus tossing out the 'g' too.
                 gotoLineEntry.value = '';
-                // didn't work: event.stopPropagation(); // try to not put a 'g' into the form input.
+                gotoLineEntry.addEventListener('input', noNumbers, false);
                 gotoDialogBox.showModal();
              }
       }
@@ -459,7 +451,7 @@ try {
 <body>
   <dialog id="myGotoLineDialog">
       <form method="dialog">
-          <label>goto line:<input type="number" name="line_req" id="line_request" placeholder="enter a line number"/></label>
+          <label>goto line:<input name="line_req" id="line_request" placeholder="enter a line number"/></label>
           <button id="gotoDialogOK" value="default" hidden>ok</button>
       </form>
   </dialog>
