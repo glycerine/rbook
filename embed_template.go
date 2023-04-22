@@ -90,8 +90,8 @@ var embedded_index_template = fmt.Sprintf(`
 
                 var gotoDialogBox = document.getElementById("myGotoLineDialog");
                 var gotoLineEntry = document.getElementById("line_request");
-                gotoLineEntry.innerHTML = "";
-                event.stopPropagation(); // try to not put a 'g' into the form input.
+                gotoLineEntry.value = '';
+                // didn't work: event.stopPropagation(); // try to not put a 'g' into the form input.
                 gotoDialogBox.showModal();
              }
       }
@@ -445,8 +445,8 @@ try {
 <body>
   <dialog id="myGotoLineDialog">
       <form method="dialog">
-          <label>goto line:<input name="line_name" id="line_request" placeholder="Enter a line number"/></label>
-          <button id="gotoDialogOK" value="default">ok</button>
+          <label>goto line:<input name="line_name" id="line_request" placeholder="enter a line number"/></label>
+          <button id="gotoDialogOK" value="default" hidden>ok</button>
       </form>
   </dialog>
   
