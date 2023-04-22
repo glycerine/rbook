@@ -68,6 +68,23 @@ var embedded_index_template = fmt.Sprintf(`
 
       var globalLastSeqno = -1;
 
+      // down arrow scrolls to bottom of page, otherwise leave current view unchanged.
+      function checkKey(event) {
+            if (event.shiftKey) {
+               switch (event.key) {
+                  case "ArrowDown":
+                     // shift + Down pressed
+                     scrollToLastID();
+                     break;
+                  case "ArrowUp":
+                     // shift + Up pressed
+                     window.scrollTo(0, 0);
+                     break;
+                }
+             }
+      }
+      document.onkeydown = checkKey;
+
       function stamp() {
           var dt = new Date();
           //document.getElementById("datetime").innerHTML = dt.toLocaleString();
@@ -200,7 +217,8 @@ function scrollToLastID() {
     if (d === null) { 
       // don't deference it.
     } else {
-      d.scrollIntoView(false); // align the bottom of the element to the bottom of the viewport 
+      // align the bottom of the element to the bottom of the viewport 
+      d.scrollIntoView({behavior:"instant", block: "start", inline: "nearest"}); 
     }
 }
 
@@ -363,7 +381,7 @@ function appendLog(msg){
     // 2 msec isn't long enough to win the fight for the scrollbar
     // position, usually. but 20 msec seems to win it consistently.
     //
-    setTimeout(function() { /*console.log("called back!");*/ scrollToEndOfLog();}, 500);
+    //setTimeout(function() { /*console.log("called back!");*/ scrollToEndOfLog();}, 500);
     //requestIdleCallback(function(idleDeadline) { scrollToEndOfLog(); console.log("done with idle scroll");}, {timeout: 1000});
 
     //scrollToEndOfLog();
