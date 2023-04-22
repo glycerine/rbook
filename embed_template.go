@@ -45,6 +45,7 @@ var embedded_index_template = fmt.Sprintf(`
     }
 
 /*  .RconsoleOutput {background-color: #e6e5e8; } */
+
     .RconsoleOutput {background-color: #792374; } /* purple-ish*/
     .RconsoleLine   {text-indent: 50px; }
     .Rcomment       {background-color: #7d8145;
@@ -59,6 +60,19 @@ var embedded_index_template = fmt.Sprintf(`
                         };
 
     /*.RcommandLine   { margin-top: -0.1em; }*/
+
+    /* hide the arrows/spinners on the goto-line input box */
+    /* https://stackoverflow.com/questions/3790935/can-i-hide-the-html5-number-input-s-spin-box */
+       /* Chrome, Safari, Edge, Opera */
+       input::-webkit-outer-spin-button,
+       input::-webkit-inner-spin-button {
+         -webkit-appearance: none;
+         margin: 0;
+       }
+       /* Firefox */
+       input[type=number] {
+         -moz-appearance: textfield;
+       }
 
     </style>
 
