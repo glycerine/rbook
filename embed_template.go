@@ -462,7 +462,7 @@ try {
   <p/>
   <br/>
   <div id="log"> </div>
-  <div id="end-of-log">--- end of log --- [shift-down: end-of-log || shift-up: pop to top || shift-space: page up || space: page down]</div>
+  <div id="end-of-log">--- end of log --- [g: goto line || shift-down: end-of-log || shift-up: pop to top || shift-space: page up || space: page down]</div>
 </body>
 
 </html>
