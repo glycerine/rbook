@@ -445,7 +445,7 @@ try {
 <body>
   <dialog id="myGotoLineDialog">
       <form method="dialog">
-          <label>goto line:<input name="line_name" id="line_request" placeholder="enter a line number"/></label>
+          <label>goto line:<input type="number" name="line_req" id="line_request" placeholder="enter a line number"/></label>
           <button id="gotoDialogOK" value="default" hidden>ok</button>
       </form>
   </dialog>
