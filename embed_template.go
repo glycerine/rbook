@@ -70,6 +70,7 @@ var embedded_index_template = fmt.Sprintf(`
 
       // down arrow scrolls to bottom of page, otherwise leave current view unchanged.
       function checkKey(event) {
+            //console.log("event: ", event);
             if (event.shiftKey) {
                switch (event.key) {
                   case "ArrowDown":
@@ -82,8 +83,35 @@ var embedded_index_template = fmt.Sprintf(`
                      break;
                 }
              }
+             if (event.key == "g") {
+                // goto line numer dialog box mechanics
+                var gotolineSubmitButton = document.getElementById("gotoDialogOK");
+                gotoDialogOK.addEventListener('click', goToLine);
+
+                var gotoDialogBox = document.getElementById("myGotoLineDialog");
+                var gotoLineEntry = document.getElementById("line_request");
+                gotoLineEntry.innerHTML = "";
+                event.stopPropagation(); // try to not put a 'g' into the form input.
+                gotoDialogBox.showModal();
+             }
       }
       document.onkeydown = checkKey;
+
+      function goToLine() {
+          let lineNum = document.querySelector('input').value;
+          //console.log("goto diaglog sees input: ", lineNum);
+          if (lineNum != '') {
+             var lineNumClass = 'line_' + lineNum.toString();
+             //console.log("trying to scroll to " + lineNumClass);
+
+             var list = document.querySelectorAll('.'+lineNumClass);
+             if (list.length > 0) {
+                 d=list[0];
+                 //console.log("found element to scroll to: ", d);
+                 d.scrollIntoView({behavior:"instant", block: "start", inline: "nearest"}); 
+             }
+          }
+      }
 
       function stamp() {
           var dt = new Date();
@@ -264,7 +292,7 @@ function loaded()  {
       
 function appendLog(msg){
  
-    console.log("msg = ", msg);
+    //console.log("msg = ", msg);
     
     const update = JSON.parse(msg)
 
@@ -320,13 +348,14 @@ function appendLog(msg){
          var newstuff = '<div id="' + nextID() + '" class="Rcommand"><pre><code>';
 
          for (let i = 0; i < update.command.length; i++) {
+             var lineNumClass = 'line_' + lineNum.toString();
              var lineNumStr = '[' + pad(lineNum++,3) + ']';
              if (i > 0) {
                  lineNumStr = '<span class="RsecondCommandLine">' + lineNumStr + '</span>';
              }
              var cmdi = hljs.highlight(update.command[i], {language: 'R'}).value;
 
-             newstuff += '<div class="RcommandLine">'  + lineNumStr + ' ' + cmdi + '</div>';
+             newstuff += '<div class="RcommandLine '+lineNumClass+'">'  + lineNumStr + ' ' + cmdi + '</div>';
          }
          newstuff += '</code></pre></div>';
          var newDiv = document.createElement('div');
@@ -414,6 +443,13 @@ try {
 </head>
 
 <body>
+  <dialog id="myGotoLineDialog">
+      <form method="dialog">
+          <label>goto line:<input name="line_name" id="line_request" placeholder="Enter a line number"/></label>
+          <button id="gotoDialogOK" value="default">ok</button>
+      </form>
+  </dialog>
+  
   <p><span id="bookID"></span><br/>
     #R rbook created: <span id="datetime"></span></p>
   <br/>
