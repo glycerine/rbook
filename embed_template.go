@@ -418,7 +418,7 @@ try {
     #R rbook created: <span id="datetime"></span></p>
   <br/>
   <div id="log"> </div>
-  <div id="end-of-log">--- end of log ---</div>
+  <div id="end-of-log">--- end of log --- (keys: shift-down: go to end-of-log || shift-up: pop to top)</div>
 </body>
 
 </html>
