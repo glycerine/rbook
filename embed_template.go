@@ -68,6 +68,7 @@ var embedded_index_template = fmt.Sprintf(`
     <script type="text/javascript">
 
       var globalLastSeqno = -1;
+      var lineNum = 1;
 
       function noNumbers(e) {
           this.value = this.value.replace(/[^\d]/, '');
@@ -80,7 +81,8 @@ var embedded_index_template = fmt.Sprintf(`
                switch (event.key) {
                   case "ArrowDown":
                      // shift + Down pressed
-                     scrollToLastID();
+                     //scrollToLastID();
+                     scrollToEndOfLog();
                      break;
                   case "ArrowUp":
                      // shift + Up pressed
@@ -104,10 +106,15 @@ var embedded_index_template = fmt.Sprintf(`
       document.onkeydown = checkKey;
 
       function goToLine() {
-          let lineNum = document.querySelector('input').value;
-          //console.log("goto diaglog sees input: ", lineNum);
-          if (lineNum != '') {
-             var lineNumClass = 'line_' + lineNum.toString();
+          let lineNum0 = document.querySelector('input').value;
+          //console.log("goto diaglog sees input: ", lineNum0);
+          if (lineNum0 != '') {
+             var line0 = parseInt(lineNum0);
+             if (line0 > lineNum) {
+                 scrollToEndOfLog();
+                 return;
+             }
+             var lineNumClass = 'line_' + lineNum0.toString();
              //console.log("trying to scroll to " + lineNumClass);
 
              var list = document.querySelectorAll('.'+lineNumClass);
@@ -276,8 +283,6 @@ function pad(num, size) {
     while (num.length < size) num = "0" + num;
     return num;
 }
-
-var lineNum = 1;
 
 function rendered() {
     //Render complete
