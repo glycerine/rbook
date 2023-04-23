@@ -437,6 +437,8 @@ require(png)
 	// (list "" '(("..." . "")) '("..."))
 	// (list "" '((" " . "")) '(""))
 	essGarbage := `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
+	// more garbage that slipped through the above check:
+	// (list "stats" '(("x" . "") ("df1" . "") ("df2" . "") ("ncp" . "") ("log" . "FALSE")) '("x" "df1" "df2" "ncp" "log"))
 	var capture []string
 	var capturedOutputOK bool
 
