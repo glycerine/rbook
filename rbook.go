@@ -1,6 +1,6 @@
 package main
 
-// Copyright (C) 2022 Jason E. Aten, Ph.D. All rights reserved.
+// Copyright (C) 2023 Jason E. Aten, Ph.D. All rights reserved.
 
 import (
 	"bytes"
@@ -91,7 +91,8 @@ func intercept_SIGINT() {
 		for sig := range c {
 			// sig is a ^C, ctrl-c, handle it
 			_ = sig
-			//fmt.Printf("go/rbook squashed SIGINT\n")
+			fmt.Printf("rbook got SIGINT... setting R_interrupts_pending = 1.\n")
+			embedr.SetR_interrupts_pending()
 		}
 	}()
 }
