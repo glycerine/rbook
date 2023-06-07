@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -236,12 +237,35 @@ require(png)
 
 	os.Setenv("R_HOME", cfg.Rhome)
 
-	disp := GetAvailXvfbDisplay()
-	display := fmt.Sprintf(":%v", disp)
-	os.Setenv("DISPLAY", display)
-	vncPort := cfg.StartXvfbAndFriends(display)
 	fmt.Printf("rbook version: %v\n", GetCodeVersion(ProgramName))
-	fmt.Printf("Xvfb using DISPLAY=:%v  R_HOME=%v  vncPort=%v\n", disp, cfg.Rhome, vncPort)
+
+	if cfg.Display == "xvfb" {
+		disp := GetAvailXvfbDisplay()
+		display := fmt.Sprintf(":%v", disp)
+		os.Setenv("DISPLAY", display)
+		vncPort := cfg.StartXvfbAndFriends(display)
+		fmt.Printf("Xvfb using DISPLAY=:%v  R_HOME=%v  vncPort=%v\n", disp, cfg.Rhome, vncPort)
+
+	} else {
+		if cfg.Display == "" {
+			cfg.Display = ":10"
+			fmt.Printf("rbook using (default) DISPLAY=:10")
+		} else {
+			if cfg.Display[0] != ':' {
+				panic(fmt.Sprintf("rbook -display argument '%v' did not start with ':'", cfg.Display))
+			}
+			mustBeNumber := string([]byte(cfg.Display)[1:])
+			num, err := strconv.Atoi(mustBeNumber)
+			if err != nil {
+				panic(fmt.Sprintf("rbook -display argument '%v' did not have a number following the ':'", cfg.Display))
+			}
+			if num < 0 {
+				panic(fmt.Sprintf("rbook -display argument '%v' was a negative number", cfg.Display))
+			}
+			fmt.Printf("rbook using -display specified DISPLAY=%v", cfg.Display)
+		}
+		os.Setenv("DISPLAY", cfg.Display)
+	}
 
 	// initialize the embedded R.
 	embedr.InitR(true)
