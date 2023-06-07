@@ -87,9 +87,15 @@ func (c *RbookConfig) StopXvfb() {
 	// try giving chance to clean up. Yes, much better.
 	// No more orphaned seen in ipcs -m (with nattch 0;
 	// meaning no processes are using them).
-	c.x11vnc.Process.Signal(syscall.SIGTERM)
-	c.icewm.Process.Signal(syscall.SIGTERM)
-	c.xvfb.Process.Signal(syscall.SIGTERM)
+	if c.x11vnc != nil {
+		c.x11vnc.Process.Signal(syscall.SIGTERM)
+	}
+	if c.icewm != nil {
+		c.icewm.Process.Signal(syscall.SIGTERM)
+	}
+	if c.xvfb != nil {
+		c.xvfb.Process.Signal(syscall.SIGTERM)
+	}
 
 	//vv("killed x11vnc, icewm, Xvfb")
 }
