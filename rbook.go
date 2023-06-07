@@ -249,7 +249,7 @@ require(png)
 	} else {
 		if cfg.Display == "" {
 			cfg.Display = ":10"
-			fmt.Printf("rbook using (default) DISPLAY=:10")
+			fmt.Printf("rbook using (default) DISPLAY=:10\n")
 		} else {
 			if cfg.Display[0] != ':' {
 				panic(fmt.Sprintf("rbook -display argument '%v' did not start with ':'", cfg.Display))
@@ -262,7 +262,7 @@ require(png)
 			if num < 0 {
 				panic(fmt.Sprintf("rbook -display argument '%v' was a negative number", cfg.Display))
 			}
-			fmt.Printf("rbook using -display specified DISPLAY=%v", cfg.Display)
+			fmt.Printf("rbook using -display specified DISPLAY=%v\n", cfg.Display)
 		}
 		os.Setenv("DISPLAY", cfg.Display)
 	}
