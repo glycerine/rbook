@@ -89,12 +89,15 @@ func (c *RbookConfig) StopXvfb() {
 	// meaning no processes are using them).
 	if c.x11vnc != nil {
 		c.x11vnc.Process.Signal(syscall.SIGTERM)
+		c.x11vnc = nil // idempotent to repeated calls.
 	}
 	if c.icewm != nil {
 		c.icewm.Process.Signal(syscall.SIGTERM)
+		c.icewm = nil
 	}
 	if c.xvfb != nil {
 		c.xvfb.Process.Signal(syscall.SIGTERM)
+		c.xvfb = nil
 	}
 
 	//vv("killed x11vnc, icewm, Xvfb")
