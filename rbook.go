@@ -191,6 +191,12 @@ func main() {
 	_ = appendFD
 	_ = history
 
+	scriptID := fmt.Sprintf(`
+#%v@%v:%v
+#BookID:%v
+#R rbook created: %v
+`, username, hostname, bookpath, history.BookID, history.CreateTm.Format(RFC3339NanoNumericTZ0pad))
+
 	// write header for the script
 	if freshScript {
 		fmt.Fprintf(script, `#!/bin/bash
@@ -198,13 +204,11 @@ exec R --vanilla -q --slave -e "source(file=pipe(\"tail -n +3 $0\"))" --args $@
 
 # text version of:
 
-#%v@%v:%v
-#BookID:%v
-#R rbook created: %v
+%v
 
 require(png)
 
-`, username, hostname, bookpath, history.BookID, history.CreateTm.Format(RFC3339NanoNumericTZ0pad))
+`, scriptID)
 	}
 
 	if cfg.Dump || cfg.DumpTimestamps {
@@ -238,6 +242,8 @@ require(png)
 	os.Setenv("R_HOME", cfg.Rhome)
 
 	fmt.Printf("rbook version: %v\n", GetCodeVersion(ProgramName))
+
+	fmt.Printf("cwd: %v\n\n%v\n", cwd, scriptID)
 
 	if cfg.Display == "xvfb" {
 		disp := GetAvailXvfbDisplay()
