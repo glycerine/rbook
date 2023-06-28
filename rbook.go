@@ -755,6 +755,11 @@ require(png)
 						seqno++
 						archiveElem(e2)
 					}
+
+					// auto sv() too
+					if strings.HasPrefix(cmd, "plot(") || strings.HasPrefix(cmd, "hist(") {
+						svvPlot()
+					}
 				} // end if autoDV
 			} // end else cmd
 		} // end switch
