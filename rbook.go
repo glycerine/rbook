@@ -492,7 +492,8 @@ require(png)
 	// so maybe alias x11 = function() { quartz(bg="white"); } on darwin
 	// as a convenience and make things the same as on linux.
 	if runtime.GOOS == "darwin" {
-		embedr.EvalR(`quartz(bg="white"); x11=function() {quartz(bg="white")}`)
+		embedr.EvalR(`quartz(bg="white")`)
+		embedr.EvalR(`x11=function() {quartz(bg="white")}`)
 		// see also
 		// https://doingbayesiandataanalysis.blogspot.com/2015/05/graphics-window-for-macos-and-rstudio.html
 		// for hints on doing cross-platform plots; e.g. under RStudio, Windoze, etc.
