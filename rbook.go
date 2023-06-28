@@ -485,10 +485,17 @@ require(png)
 
 	// on darwin, we need to start a quartz window with
 	// the bg="white", or else the browser will get an opaque
-	// background which can look invisible. So don't let quartz()
-	// because implicitly first; and just try to reuse this plot.
+	// background which can look invisible (dark gray on black).
+	// So don't let quartz() happen implicitly--deliberately start
+	// a quartz window with a white background first; and just
+	// try to reuse this plot. If starting a new plot, well need this;
+	// so maybe alias x11 = function() { quartz(bg="white"); } on darwin
+	// as a convenience and make things the same as on linux.
 	if runtime.GOOS == "darwin" {
-		embedr.EvalR(`quartz(bg="white")`)
+		embedr.EvalR(`quartz(bg="white"); x11=function() {quartz(bg="white")}`)
+		// see also
+		// https://doingbayesiandataanalysis.blogspot.com/2015/05/graphics-window-for-macos-and-rstudio.html
+		// for hints on doing cross-platform plots; e.g. under RStudio, Windoze, etc.
 	}
 
 	// need to save one console capture back for dv() recording of output, since dv() itself will be a command.
