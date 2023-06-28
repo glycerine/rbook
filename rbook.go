@@ -337,7 +337,12 @@ require(png)
 		panicOn(os.MkdirAll(odir, 0777))
 		rnd20 := cryrand.RandomStringWithUp(20)
 		path := fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
-		err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+		var err error
+		if runtime.GOOS == "darwin" {
+			err = embedr.EvalR(fmt.Sprintf(`quartz.save(file='%v', type = "png", device = dev.cur(), dpi = 100, bg="white")`, path))
+		} else {
+			err = embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+		}
 		if err != nil {
 			// possibly "no plot on device to save";
 			// don't bother to send to browser. And don't crash.
@@ -477,6 +482,14 @@ require(png)
 	// for in an R program loop... save the current graph (to browser).
 	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
 	embedr.EvalR(`dvv=function(...){ .C("CallRCallbackToGoFuncDvv"); c()}`)
+
+	// on darwin, we need to start a quartz window with
+	// the bg="white", or else the browser will get an opaque
+	// background which can look invisible. So don't let quartz()
+	// because implicitly first; and just try to reuse this plot.
+	if runtime.GOOS == "darwin" {
+		embedr.EvalR(`quartz(bg="white")`)
+	}
 
 	// need to save one console capture back for dv() recording of output, since dv() itself will be a command.
 	captureJSON := ""
