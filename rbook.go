@@ -308,6 +308,22 @@ require(png)
 	// number the saved png files.
 	nextSave := 0
 
+	archiveElem := func(e *HashRElem) {
+		// CODEX: keep in sync with the svvPlot() and dvvFunc() CODEX above.
+		history.mut.Lock()
+		history.elems = append(history.elems, e)
+		if e.ImagePath != "" {
+			//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
+			history.path2image[e.ImagePath] = e
+		}
+		history.mut.Unlock()
+
+		by, err := e.SaveToSlice()
+		panicOn(err)
+		_, err = appendFD.Write(by)
+		panicOn(err)
+	}
+
 	svvPlot := func() {
 		//fmt.Printf("svvPlot() called!  seqno=%v, bookpath='%v'\n", seqno, bookpath)
 
@@ -349,19 +365,22 @@ require(png)
 		hub.broadcast <- e
 		seqno++
 
-		// CODEX: keep in sync with code after the switch below!
-		history.mut.Lock()
-		history.elems = append(history.elems, e)
-		if e.ImagePath != "" {
-			//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
-			history.path2image[e.ImagePath] = e
-		}
-		history.mut.Unlock()
+		archiveElem(e)
+		/*
+			// CODEX: keep in sync with code after the switch below!
+			history.mut.Lock()
+			history.elems = append(history.elems, e)
+			if e.ImagePath != "" {
+				//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
+				history.path2image[e.ImagePath] = e
+			}
+			history.mut.Unlock()
 
-		by, err := e.SaveToSlice()
-		panicOn(err)
-		_, err = appendFD.Write(by)
-		panicOn(err)
+			by, err := e.SaveToSlice()
+			panicOn(err)
+			_, err = appendFD.Write(by)
+			panicOn(err)
+		*/
 	}
 
 	dvvFunc := func() {
@@ -371,7 +390,7 @@ require(png)
 		panicOn(err)
 		capture, capturedOutputOK := sinkgot.([]string)
 
-		//fmt.Printf("dvvFunc() called!  seqno=%v, capture='%v'; capturedOutputOK=%v\n", seqno, capture, capturedOutputOK)
+		fmt.Printf("dvvFunc() called!  seqno=%v, capture='%v'; capturedOutputOK=%v\n", seqno, capture, capturedOutputOK)
 
 		captureJSON := ""
 		if capturedOutputOK {
@@ -417,19 +436,22 @@ require(png)
 		hub.broadcast <- e
 		seqno++
 
-		// CODEX: keep in sync with code after the switch below!
-		history.mut.Lock()
-		history.elems = append(history.elems, e)
-		if e.ImagePath != "" {
-			//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
-			history.path2image[e.ImagePath] = e
-		}
-		history.mut.Unlock()
+		archiveElem(e)
+		/*
+			// CODEX: keep in sync with code after the switch below!
+			history.mut.Lock()
+			history.elems = append(history.elems, e)
+			if e.ImagePath != "" {
+				//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
+				history.path2image[e.ImagePath] = e
+			}
+			history.mut.Unlock()
 
-		by, err := e.SaveToSlice()
-		panicOn(err)
-		_, err = appendFD.Write(by)
-		panicOn(err)
+			by, err := e.SaveToSlice()
+			panicOn(err)
+			_, err = appendFD.Write(by)
+			panicOn(err)
+		*/
 	}
 
 	// our repl
@@ -472,6 +494,7 @@ require(png)
 	// (list "stats" '(("x" . "") ("df1" . "") ("df2" . "") ("ncp" . "") ("log" . "FALSE")) '("x" "df1" "df2" "ncp" "log"))
 	var capture []string
 	var capturedOutputOK bool
+	var lastHistory string
 
 	for {
 
@@ -484,11 +507,17 @@ require(png)
 		_ = did
 		//vv("did = %v", did)
 		if did > 1 {
-			// did == 2: this seems to mean that the call is incomplete;
+			// did == 2: this seems to mean that the parse is incomplete; need more input.
 			//vv("back from one call to R_ReplDLLdo1(); did = %v\n", did)
 		}
 		// did == 0 => error evaluating
 		// did == -1 => ctrl-d (end of file).
+
+		lastHistory = embedr.LastHistoryLine() // to check for trailing semicolon
+		trailingSemicolon := strings.HasSuffix(lastHistory, ";")
+		autoDV := !trailingSemicolon
+		_ = autoDV
+		//vv("lastHistory = '%v'; trailingSemicolon = %v", lastHistory, trailingSemicolon)
 
 		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
 		panicOn(err)
@@ -569,6 +598,7 @@ require(png)
 			Seqno: seqno,
 		}
 		switch {
+
 		case strings.HasPrefix(cmd, "dv("):
 			//dvvFunc()
 			//continue // dvvFunc() does the CODEX code below; it has to for browser to see the console output.
@@ -595,10 +625,11 @@ require(png)
 
 				hub.broadcast <- e
 				seqno++
+				archiveElem(e)
 			}
 		case cmd == "sv()":
 			svvPlot()
-			continue // svvPlot() does the CODEX code below; it has to for browser to see the plot.
+			continue // svvPlot() does the archiveElem(); it has to for browser to see the plot.
 			/*
 				odir := bookpath + ".plots"
 				panicOn(os.MkdirAll(odir, 0777))
@@ -667,8 +698,9 @@ require(png)
 
 				hub.broadcast <- e
 				seqno++
+				archiveElem(e)
 
-			} else {
+			} else { // cmd
 
 				msg := prepCommandMessage(cmd, seqno)
 				e.Typ = Command
@@ -678,23 +710,54 @@ require(png)
 				writeScriptCommand(script, cmd)
 
 				hub.broadcast <- e
+				//vv("send cmd='%v' as seqno = %v", cmd, seqno)
 				seqno++
-			}
-		}
+				archiveElem(e)
 
-		// CODEX: keep in sync with the svvPlot() and dvvFunc() CODEX above.
-		history.mut.Lock()
-		history.elems = append(history.elems, e)
-		if e.ImagePath != "" {
-			//vv("saving e.ImagePath '%v' to path2image", e.ImagePath)
-			history.path2image[e.ImagePath] = e
-		}
-		history.mut.Unlock()
+				//vv("autoDV = %v, at cmd = '%v'", autoDV, cmd)
+				if autoDV {
+					// version of dv() that does not need to use prev and prevCaptureOK
+					if capturedOutputOK && captureJSON != "" {
 
-		by, err := e.SaveToSlice()
-		panicOn(err)
-		_, err = appendFD.Write(by)
-		panicOn(err)
+						// before we overwrite e from the cmd just above,
+						// save it as in the CODEX.
+
+						history.mut.Lock()
+						history.elems = append(history.elems, e)
+						history.mut.Unlock()
+
+						by, err := e.SaveToSlice()
+						panicOn(err)
+						_, err = appendFD.Write(by)
+						panicOn(err)
+
+						// ship capture
+						//vv("autoDV is on. shipping captureJSON = '%v'", captureJSON)
+
+						//vv("prevJSON = '%v'; prevJSON2 = '%v'", prevJSON, prevJSON2)
+
+						msg := prepConsoleMessage(captureJSON, seqno)
+						// do not reuse e, possible race with shipping it to the browser
+
+						var e2 = &HashRElem{
+							Tm:    e.Tm,
+							Seqno: seqno,
+						}
+
+						e2.Typ = Console
+						e2.ConsoleJSON = msg
+						e2.msg = []byte(msg)
+
+						// append to our text file version on disk
+						writeScriptConsole(script, captureOK)
+
+						hub.broadcast <- e2
+						seqno++
+						archiveElem(e2)
+					}
+				} // end if autoDV
+			} // end else cmd
+		} // end switch
 	}
 	select {}
 }
