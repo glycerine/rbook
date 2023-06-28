@@ -240,6 +240,7 @@ require(png)
 	// x11vnc -display :99 -forever -nopw -quiet -xkb &
 
 	os.Setenv("R_HOME", cfg.Rhome)
+	fmt.Printf("we set: export R_HOME=%v\n", cfg.Rhome)
 
 	fmt.Printf("rbook version: %v\n", GetCodeVersion(ProgramName))
 

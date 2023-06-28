@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"time"
 
 	"4d63.com/tz"
@@ -94,7 +95,12 @@ func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
 	fs.StringVar(&c.Host, "host", "", "host/ip to server on (optional)")
 	fs.IntVar(&c.Port, "port", 0, "port to serve index.html for images/R updates on (optional; if -port is taken or 0, defaults to the first free port at or above 8888)")
 	fs.StringVar(&c.RbookFilePath, "path", "", "path to the .rbook file to read and append to. this is also the default command line argument, so -path can be omitted in front of the path (default is my.rbook in the current dir)")
-	fs.StringVar(&c.Rhome, "rhome", "/usr/lib/R", "value of R_HOME to start R with. This directory should have contents: bin  COPYING  etc  lib  library  modules  site-library  SVN-REVISION")
+
+	defaultR_HOME := "/usr/lib/R" // linux
+	if runtime.GOOS == "darwin" {
+		defaultR_HOME = "/Library/Frameworks/R.framework/Versions/Current/Resources"
+	}
+	fs.StringVar(&c.Rhome, "rhome", defaultR_HOME, "value of R_HOME to start R with. This directory should have contents: bin  COPYING  etc  lib  library  modules  site-library  SVN-REVISION")
 
 	fs.BoolVar(&c.Help, "help", false, "show this help given rbook -h")
 	fs.BoolVar(&c.Dump, "dump", false, "write script version of the -path binary book to standard out, then exit.")
