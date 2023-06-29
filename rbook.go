@@ -739,7 +739,8 @@ require(png)
 				//vv("autoDV = %v, at cmd = '%v'", autoDV, cmd)
 				if autoDV {
 					// reject progress messages from in-progress operations
-					isProgress := strings.Contains(captureJSON, "|=") // or "|======", ...
+					isProgress := strings.Contains(captureJSON, "|=") ||
+						strings.Contains(captureJSON, "|--") // or "|======", ...
 
 					// version of dv() that does not need to use prev and prevCaptureOK
 					if capturedOutputOK && captureJSON != "" && !isProgress {
