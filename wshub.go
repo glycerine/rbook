@@ -75,17 +75,17 @@ top:
 			// conn embeds net.Conn
 			ncli := len(h.clients)
 			_ = ncli
-			//vv("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
+			vvlog("websocket client (count %v) remote:%v", ncli, cc.RemoteAddr().String())
 			//embedr.SetCustomPrompt(fmt.Sprintf("[wsclient: %v] >", ncli))
 
 			// give the new client all the book, starting with the init message
 			h.book.mut.Lock()
 			select {
 			case client.send <- []byte(prepInitMessage(h.book)):
-				//vv("sent init msg to new client, have %v updates to follow", len(h.book.elems))
+				vvlog("sent init msg to new client, have %v updates to follow", len(h.book.elems))
 			case <-time.After(300 * time.Second):
 				//default:
-				//vv("client.send could not proceed after 10 seconds.")
+				vvlog("client.send could not proceed after 300 seconds.")
 				close(client.send)
 				delete(h.clients, client)
 				h.book.mut.Unlock()

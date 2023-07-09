@@ -325,7 +325,7 @@ function appendLog(msg){
     }
      
     if (update.init) {
-         //console.log("we just saw init message: ", update.init);
+         console.log("we just saw init message: ", update.init);
          lineNum = 1;
          document.getElementById("bookID").innerHTML = '#' + update.book.user + "@" + update.book.host + ":" + update.book.path + "<br/>#BookID:" + update.book.bookID;
          document.getElementById("datetime").innerHTML = update.book.createTm;
@@ -338,6 +338,7 @@ function appendLog(msg){
      if (update.seqno) {
          // recognize a refresh from the start
          if (update.seqno == 0) {
+             console.log("update.seqno is 0, clearing all and restarting: update=", update);
              globalLastSeqno = -1;
              // this clears all previous log entries/cells.
              d.innerHTML = "";

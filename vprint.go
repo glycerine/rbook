@@ -98,3 +98,22 @@ func Caller(upStack int) string {
 	}
 	return f.Function
 }
+
+var fdlog *os.File
+
+func vvlog(format string, a ...interface{}) {
+	var err error
+	if fdlog == nil {
+		fdlog, err = os.Create(".rbook.vvlog")
+		panicOn(err)
+	}
+	TSFprintf(fdlog, format, a...)
+}
+
+// to file handle
+func TSFprintf(fd *os.File, format string, a ...interface{}) {
+	tsPrintfMut.Lock()
+	fmt.Fprintf(fd, "\n%s %s ", FileLine(3), ts())
+	fmt.Fprintf(fd, format+"\n", a...)
+	tsPrintfMut.Unlock()
+}
