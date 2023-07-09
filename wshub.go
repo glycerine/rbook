@@ -101,7 +101,7 @@ top:
 				case <-time.After(300 * time.Second):
 					//default:
 					// this was the closing too early culprit!
-					//vv("closing client.send after i=%v out of %v", i, len(h.book.elems))
+					vvlog("closing client.send after i=%v out of %v", i, len(h.book.elems))
 					close(client.send)
 					delete(h.clients, client)
 				}
@@ -112,7 +112,7 @@ top:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
-				//vv("closed client.send after unregister")
+				vvlog("closed client.send after unregister")
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {
@@ -122,7 +122,7 @@ top:
 					//default:
 					close(client.send)
 					delete(h.clients, client)
-					//vv("closed client.send after broadcast failure")
+					vvlog("closed client.send after broadcast failure")
 				}
 			}
 		}

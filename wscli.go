@@ -85,8 +85,8 @@ func (c *Client) readPump() {
 				// may not be worth complaining about, but leave on to see
 				// if its anything fixable.
 				// Well, browser picked back up on refresh fine, server was fine. quiet.
-				//vv("An error happened when reading from the Websocket client: %v", err)
 			}
+			vvlog("An error happened when reading from the Websocket client: %v", err)
 			break
 		}
 	}
