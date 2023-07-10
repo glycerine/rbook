@@ -63,7 +63,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	// close to flush; and we will re-read it on demand.
 	panicOn(cfg.myClientHtmlFd.Close())
 	cfg.myClientHtmlFd = nil
-	AlwaysPrintf("nb: wrote client code to '%v'... edit there to change browser behavior.",
+	fmt.Printf("\n  %v   has the rbook browser code: edit that and reload browser to debug.\n",
 		cfg.myClientHtmlPath)
 
 	//vv("readyIndexHtmlBuf = '%v'\n", readyIndexHtmlBuf.String())

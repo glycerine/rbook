@@ -118,7 +118,7 @@ top:
 			for client := range h.clients {
 				select {
 				case client.send <- message.msg:
-				case <-time.After(10 * time.Second):
+				case <-time.After(300 * time.Second):
 					//default:
 					close(client.send)
 					delete(h.clients, client)
