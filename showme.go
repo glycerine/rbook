@@ -51,8 +51,8 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	// write it out to a file on disk we can watch and maybe reload if changed,
 	// to edit the client side without killing the rbook webserver.
-	cfg.myClientHtmlPath = fmt.Sprintf(".browser.rbook.%v.%v.%v.html",
-		cfg.WsHost, cfg.WsPort, cfg.WssPort)
+	cfg.myClientHtmlPath = fmt.Sprintf(".browser.rbook.%v.%v.%v.%v.html",
+		cfg.WsHost, cfg.Port, cfg.WsPort, cfg.WssPort)
 	cfg.myClientHtmlFd, err = os.Create(cfg.myClientHtmlPath)
 	panicOn(err)
 	var nw int
