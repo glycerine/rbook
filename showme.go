@@ -49,6 +49,23 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	err = tmpl.Execute(&readyIndexHtmlBuf, cfg)
 	panicOn(err)
 
+	// write it out to a file on disk we can watch and maybe reload if changed,
+	// to edit the client side without killing the rbook webserver.
+	cfg.myClientHtmlPath = fmt.Sprintf(".browser.rbook.%v.%v.%v.html",
+		cfg.WsHost, cfg.WsPort, cfg.WssPort)
+	cfg.myClientHtmlFd, err = os.Create(cfg.myClientHtmlPath)
+	panicOn(err)
+	var nw int
+	nw, err = cfg.myClientHtmlFd.Write(readyIndexHtmlBuf.Bytes())
+	panicOn(err)
+	cfg.myClientHtmlModTime = time.Now()
+	cfg.myClientHtmlModSz = nw
+	// close to flush; and we will re-read it on demand.
+	panicOn(cfg.myClientHtmlFd.Close())
+	cfg.myClientHtmlFd = nil
+	AlwaysPrintf("nb: wrote client code to '%v'... edit there to change browser behavior.",
+		cfg.myClientHtmlPath)
+
 	//vv("readyIndexHtmlBuf = '%v'\n", readyIndexHtmlBuf.String())
 
 	pngs, err := filepath.Glob("*.png")
@@ -288,6 +305,13 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		//http.ServeFile(w, r, "index.html")
 		w.Header().Set("Access-Control-Allow-Private-Network", "true")
+
+		// re-read from cfg.myClientHtmlPath each time, to pick up any
+		// changes on disk.
+		by, err := ioutil.ReadFile(cfg.myClientHtmlPath)
+		panicOn(err)
+		readyIndexHtmlBuf.Reset()
+		readyIndexHtmlBuf.Write(by) // cache our read from disk for reference.
 		w.Write(readyIndexHtmlBuf.Bytes())
 	})
 

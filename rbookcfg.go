@@ -86,6 +86,11 @@ type RbookConfig struct {
 	ShowVersion2 bool
 
 	Display string
+
+	myClientHtmlPath    string
+	myClientHtmlFd      *os.File
+	myClientHtmlModTime time.Time
+	myClientHtmlModSz   int
 }
 
 // call DefineFlags before myflags.Parse()

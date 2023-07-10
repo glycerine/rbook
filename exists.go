@@ -4,6 +4,7 @@ package main
 
 import (
 	"os"
+	"time"
 )
 
 func FileExists(name string) bool {
@@ -34,4 +35,12 @@ func FileSize(name string) (int64, error) {
 		return -1, err
 	}
 	return fi.Size(), nil
+}
+
+func FileModTime(name string) (time.Time, error) {
+	fi, err := os.Stat(name)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return fi.ModTime(), nil
 }
