@@ -36,7 +36,7 @@ import (
 
 const (
 	// Time allowed to write a message to the peer.
-	writeWait = 300 * time.Second
+	writeWait = 600 * time.Second // allow up to 10 minutes, files can be big and networks slow.
 
 	// Time allowed to read the next pong message from the peer.
 	pongWait = 60 * time.Second
