@@ -36,13 +36,14 @@ import (
 
 const (
 	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
+	writeWait = 300 * time.Second
 
 	// Time allowed to read the next pong message from the peer.
 	pongWait = 60 * time.Second
 
 	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
+	//pingPeriod = (pongWait * 9) / 10
+	pingPeriod = 30 * time.Second
 )
 
 var (
@@ -109,7 +110,7 @@ func (c *Client) writePump() {
 		select {
 		case message, ok := <-c.send:
 			if !ok {
-				// The hub closed the channel.
+				vvlog("The hub closed the channel.")
 				c.write(websocket.CloseMessage, []byte{})
 				return
 			}
