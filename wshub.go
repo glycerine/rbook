@@ -64,7 +64,25 @@ func newHub(book *HashRBook) *Hub {
 	}
 }
 
+// restart the run() function if it crashes,
+// to avoid bringing down the whole process.
+func (h *Hub) runRestarter() {
+	// unless it panics, h.run() should not return.
+	// in case it does, we just restart it. It will have logged the panic.
+	for {
+		h.run()
+	}
+}
+
 func (h *Hub) run() {
+	defer func() {
+		r := recover()
+		if r != nil {
+			msg := fmt.Sprintf("Hub.run() recover from panic: '%v'", r)
+			fmt.Printf("%v\n", msg)
+			vvlog(msg)
+		}
+	}()
 top:
 	for {
 		select {

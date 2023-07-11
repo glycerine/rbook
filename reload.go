@@ -93,7 +93,7 @@ func createCertFiles() (cert string, key string) {
 
 func (cfg *RbookConfig) startReloadServer(book *HashRBook) {
 	hub = newHub(book)
-	go hub.run()
+	go hub.runRestarter()
 	http.HandleFunc("/reload", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
