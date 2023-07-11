@@ -732,7 +732,7 @@ require(png)
 				e.msg = []byte(msg)
 				e.BeginCommandLineNum = lastCommandLineNum + 1
 				e.NumCommandLines = numlines
-				lastCommandLineNum += numlines
+				lastCommandLineNum += numlines - 1
 
 				writeScriptCommand(script, cmd)
 
@@ -1005,7 +1005,7 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 }
 
 // where we continue our command line numbering from
-func getLastCommandLineNum(history *HashRBook) int {
+func getLastCommandLineNum(history *HashRBook) (lastCommandLineNum int) {
 	if history == nil {
 		return 0
 	}
@@ -1013,6 +1013,14 @@ func getLastCommandLineNum(history *HashRBook) int {
 	if n == 0 {
 		return 0
 	}
-	e := history.elems[n-1]
-	return e.BeginCommandLineNum + e.NumCommandLines - 1
+	// since only the commands are numbered, we have
+	// to locate the last one.
+	for i := n - 1; i >= 0; i-- {
+		e := history.elems[i]
+		if e.Typ == Command {
+			return e.LastCommandLineNumber()
+		}
+	}
+	// no commands yet in this history (weird but oh well).
+	return 0
 }

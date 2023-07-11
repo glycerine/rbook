@@ -87,9 +87,13 @@ type HashRElem struct {
 	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"10"`
 
 	// To calibrate against the browser display, number the commands only,
-	// starting from [1]. Each newline within CmdJSON gets its own line number though,
+	// starting from 1, just as the first web line is [1].
+	// Each newline within CmdJSON gets its own line number though,
 	// so this will skip some integers for commands (code) that take multiple lines.
 	// It is not incremented for console output, images, or comments.
+	//
+	// See the function e.LastCommandLineNumber() for convenience.
+	//
 	BeginCommandLineNum int `msg:"beginCommandLineNum" json:"beginCommandLineNum" zid:"11"`
 
 	// and how many command lines are in this command. So the next command should
@@ -98,6 +102,13 @@ type HashRElem struct {
 
 	// convenience, not on disk.
 	msg []byte
+}
+
+func (e *HashRElem) LastCommandLineNumber() int {
+	if e.Typ == Command {
+		return e.BeginCommandLineNum + e.NumCommandLines - 1
+	}
+	return 0
 }
 
 func (e *HashRElem) String() (s string) {
