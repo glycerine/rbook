@@ -126,13 +126,23 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		os.Exit(0)
 	}
 
+	if c.WsHost == "" {
+		if hostname != "" {
+			c.WsHost = hostname
+		} else {
+			c.WsHost = GetExternalIP()
+		}
+	}
+
 	if c.RbookFilePath == "" {
 		args := fs.Args()
 		if len(args) == 1 {
 			c.RbookFilePath = args[0]
 			//vv("set c.RbookFilePath to '%v'", c.RbookFilePath)
 		} else {
-			c.RbookFilePath = "my.rbook"
+			// keep hostnames separate so working in the same git directory on a
+			// different host doesn't create collisions.
+			c.RbookFilePath = "my.rbook." + c.WsHost
 			//vv("defaulting c.RbookFilePath to '%v'", c.RbookFilePath)
 		}
 	}
@@ -173,14 +183,6 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 	if c.Host == "" {
 		// this means bind all interfaces, important to leave
 		// it alone!
-	}
-
-	if c.WsHost == "" {
-		if hostname != "" {
-			c.WsHost = hostname
-		} else {
-			c.WsHost = GetExternalIP()
-		}
 	}
 
 	avail1, avail2 := GetAvailPort2Excluding(c.Port)
