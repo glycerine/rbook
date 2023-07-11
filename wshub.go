@@ -97,6 +97,8 @@ top:
 				select {
 				//huh. got after long inactivity, panic: send on closed channel
 				// also got when old client coming back to new server.
+				// Saw panic: send on closed channel when browser went
+				// offline but server was still up.
 				case client.send <- e.msg:
 				case <-time.After(300 * time.Second):
 					//default:
@@ -104,6 +106,8 @@ top:
 					vvlog("closing client.send after i=%v out of %v", i, len(h.book.elems))
 					close(client.send)
 					delete(h.clients, client)
+					h.book.mut.Unlock()
+					continue top // don't try to send below on closed channel!
 				}
 			}
 			h.book.mut.Unlock()
