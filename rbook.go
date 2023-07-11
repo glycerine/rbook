@@ -301,6 +301,8 @@ require(png)
 	// don't need to hold mut mutex here b/c reload server not started yet
 	seqno := len(history.elems)
 
+	lastCommandLineNum := getLastCommandLineNum(history)
+
 	StartShowme(cfg, history) // serve the initial html and the png files to the web browsers
 	//vv("Showme http server started. Starting reload websocket server.")
 	cfg.startReloadServer(history) // websockets to tell browsers what to show when there's an update.
@@ -724,10 +726,13 @@ require(png)
 
 			} else { // cmd
 
-				msg := prepCommandMessage(cmd, seqno)
+				msg, numlines := prepCommandMessage(cmd, seqno)
 				e.Typ = Command
 				e.CmdJSON = msg
 				e.msg = []byte(msg)
+				e.BeginCommandLineNum = lastCommandLineNum + 1
+				e.NumCommandLines = numlines
+				lastCommandLineNum += numlines
 
 				writeScriptCommand(script, cmd)
 
@@ -834,7 +839,7 @@ func prepCommandMessageOld(msg string, seqno int) string {
 // new version of prepCommandMessage that, like prepCommentMessage, doesn't compress into one line
 // As with all now, add length: as prefix, so we can parse 2 messages that get piggy backed,
 // as occassionally happens on the websockets.
-func prepCommandMessage(msg string, seqno int) string {
+func prepCommandMessage(msg string, seqno int) (jsonstring string, numlines int) {
 	//n := len(msg)
 	//msg = msg[1 : n-1]
 
@@ -855,7 +860,7 @@ func prepCommandMessage(msg string, seqno int) string {
 
 	json := fmt.Sprintf(`{"seqno": %v, "command":%v}`, seqno, commandsJSON)
 	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
-	return lenPrefixedJson
+	return lenPrefixedJson, len(commands)
 }
 
 func prepCommentMessage(msg string, seqno int) string {
@@ -997,4 +1002,17 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 	}
 
 	fd.Sync()
+}
+
+// where we continue our command line numbering from
+func getLastCommandLineNum(history *HashRBook) int {
+	if history == nil {
+		return 0
+	}
+	n := len(history.elems)
+	if n == 0 {
+		return 0
+	}
+	e := history.elems[n-1]
+	return e.BeginCommandLineNum + e.NumCommandLines - 1
 }

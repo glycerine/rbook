@@ -86,6 +86,16 @@ type HashRElem struct {
 	// ImagePathHash = hash(ImageHost + ImagePath + ImageBy)
 	ImagePathHash string `msg:"imagePathHash" json:"imagePathHash" zid:"10"`
 
+	// To calibrate against the browser display, number the commands only,
+	// starting from [1]. Each newline within CmdJSON gets its own line number though,
+	// so this will skip some integers for commands (code) that take multiple lines.
+	// It is not incremented for console output, images, or comments.
+	BeginCommandLineNum int `msg:"beginCommandLineNum" json:"beginCommandLineNum" zid:"11"`
+
+	// and how many command lines are in this command. So the next command should
+	// be numbered BeginCommandLineNum + NumCommandLines
+	NumCommandLines int `msg:"numCommandLines" json:"numCommandLines" zid:"12"`
+
 	// convenience, not on disk.
 	msg []byte
 }
