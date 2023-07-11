@@ -732,7 +732,7 @@ require(png)
 				e.msg = []byte(msg)
 				e.BeginCommandLineNum = lastCommandLineNum + 1
 				e.NumCommandLines = numlines
-				lastCommandLineNum += numlines - 1
+				lastCommandLineNum += numlines
 
 				writeScriptCommand(script, cmd, e.BeginCommandLineNum)
 
@@ -947,7 +947,7 @@ func writeScriptComment(script *os.File, msg string) {
 }
 
 func writeScriptCommand(script *os.File, cmd string, linenum int) {
-	fmt.Fprintf(script, "    ## [%03d]\n%v\n", linenum, cmd)
+	fmt.Fprintf(script, "    ## command line [%03d]:\n%v\n", linenum, cmd)
 }
 
 func writeScriptImage(script *os.File, path string) {
