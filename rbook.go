@@ -734,7 +734,7 @@ require(png)
 				e.NumCommandLines = numlines
 				lastCommandLineNum += numlines - 1
 
-				writeScriptCommand(script, cmd)
+				writeScriptCommand(script, cmd, e.BeginCommandLineNum)
 
 				hub.broadcast <- e
 				//vv("send cmd='%v' as seqno = %v", cmd, seqno)
@@ -946,8 +946,8 @@ func writeScriptComment(script *os.File, msg string) {
 	}
 }
 
-func writeScriptCommand(script *os.File, cmd string) {
-	fmt.Fprintf(script, "%v\n", cmd)
+func writeScriptCommand(script *os.File, cmd string, linenum int) {
+	fmt.Fprintf(script, "    ## [%03d]\n%v\n", linenum, cmd)
 }
 
 func writeScriptImage(script *os.File, path string) {
