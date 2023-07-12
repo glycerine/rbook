@@ -946,8 +946,11 @@ func writeScriptComment(script *os.File, msg string) {
 	}
 }
 
+// 60 spaces to move the command line comments off to the right of the screen. Less distracting.
+var spacer string = strings.Repeat(" ", 60)
+
 func writeScriptCommand(script *os.File, cmd string, linenum int) {
-	fmt.Fprintf(script, "    ## command line [%03d]:\n%v\n", linenum, cmd)
+	fmt.Fprintf(script, spacer+" ## command line [%03d]:\n%v\n", linenum, cmd)
 }
 
 func writeScriptImage(script *os.File, path string) {
