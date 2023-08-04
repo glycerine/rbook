@@ -323,9 +323,7 @@ function showConsoleOutputDoubleClick(seqno) {
     }
    var topLine = document.getElementsByClassName('seqno_firstline_class_'+seqno)[0]
    topLine.classList.remove('hidingOutputGrayout');
-   if (topLine.hiddenInnerHTML === '') {
-      // nothing hiddent to restore, avoid killing our current content!
-   } else {
+   if (topLine.hiddenInnerHTML) {
       topLine.innerHTML = topLine.hiddenInnerHTML;
    }
 }
