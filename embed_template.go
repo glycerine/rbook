@@ -315,7 +315,10 @@ function hideConsoleOutputDoubleClick(seqno) {
    topLine.classList.add('hidingOutputGrayout');
    topLine.hiddenInnerHTML = topLine.innerHTML;
    topLine.innerHTML = '## ...                        (double click to show hidden console output)';
+   // in case we were a long ways from the top, bring the top back into view
+   topLine.scrollIntoView({behavior:"instant", block: "start", inline: "nearest"}); 
 }
+
 function showConsoleOutputDoubleClick(seqno) {
     var showClass = 'seqno_class_' + seqno;
     var elements = document.getElementsByClassName(showClass)
