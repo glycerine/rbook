@@ -60,7 +60,8 @@ var embedded_index_template = fmt.Sprintf(`
                         };
 
     .hidingOutputGrayout {
-       visibility: hidden;
+       color: skyblue;
+       border: 2px solid red;
     }
 
     /*.RcommandLine   { margin-top: -0.1em; }*/
@@ -313,7 +314,7 @@ function hideConsoleOutputDoubleClick(seqno) {
    var topLine = document.getElementsByClassName('seqno_firstline_class_'+seqno)[0]
    topLine.classList.add('hidingOutputGrayout');
    topLine.hiddenInnerHTML = topLine.innerHTML;
-   topLine.innerHTML = '## ... (hidden console output, double click this line to view again)';
+   topLine.innerHTML = '## ...                        (double click to show hidden console output)';
 }
 function showConsoleOutputDoubleClick(seqno) {
     var showClass = 'seqno_class_' + seqno;
