@@ -59,6 +59,10 @@ var embedded_index_template = fmt.Sprintf(`
     .RsecondCommandLine { color: rgba(0,0,0,0.4);
                         };
 
+    .hidingOutputGrayout {
+       visibility: hidden;
+    }
+
     /*.RcommandLine   { margin-top: -0.1em; }*/
 
     </style>
@@ -306,6 +310,10 @@ function hideConsoleOutputDoubleClick(seqno) {
     for (var i = 0; i < elements.length; i++){
         elements[i].style.display = 'none';
     }
+   var topLine = document.getElementsByClassName('seqno_firstline_class_'+seqno)[0]
+   topLine.classList.add('hidingOutputGrayout');
+   topLine.hiddenInnerHTML = topLine.innerHTML;
+   topLine.innerHTML = '## ... (hidden console output, double click this line to view again)';
 }
 function showConsoleOutputDoubleClick(seqno) {
     var showClass = 'seqno_class_' + seqno;
@@ -313,6 +321,13 @@ function showConsoleOutputDoubleClick(seqno) {
     for (var i = 0; i < elements.length; i++){
         elements[i].style.display = '';
     }
+   var topLine = document.getElementsByClassName('seqno_firstline_class_'+seqno)[0]
+   topLine.classList.remove('hidingOutputGrayout');
+   if (topLine.hiddenInnerHTML === '') {
+      // nothing hiddent to restore, avoid killing our current content!
+   } else {
+      topLine.innerHTML = topLine.hiddenInnerHTML;
+   }
 }
       
 function appendLog(msg){
