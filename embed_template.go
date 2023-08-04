@@ -300,6 +300,20 @@ function loaded()  {
     requestAnimationFrame(startRender);
 }
 
+function hideConsoleOutputDoubleClick(seqno) {
+    var hideClass = 'seqno_class_' + seqno;
+    var elements = document.getElementsByClassName(hideClass)
+    for (var i = 0; i < elements.length; i++){
+        elements[i].style.display = 'none';
+    }
+}
+function showConsoleOutputDoubleClick(seqno) {
+    var showClass = 'seqno_class_' + seqno;
+    var elements = document.getElementsByClassName(showClass)
+    for (var i = 0; i < elements.length; i++){
+        elements[i].style.display = '';
+    }
+}
       
 function appendLog(msg){
  
@@ -393,14 +407,17 @@ function appendLog(msg){
     // in theory the command and the output could arrive together, so
     // print the console output after the text of the command.
     if (update.console) {
+        var hideDoubleClickFun = ' ondblclick="hideConsoleOutputDoubleClick(' + update.seqno + ')" ';
+        var showDoubleClickFun = ' ondblclick="showConsoleOutputDoubleClick(' + update.seqno + ')" ';
+
         var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput"><pre><code>';
         for (let i = 0; i < update.console.length; i++) {
             if (i==0) {
-               newstuff += '<div class="RconsoleLine seqno_firstline_class_' + update.seqno + '">' + update.console[i] + '</div>';
+               newstuff += '<div class="RconsoleLine seqno_firstline_class_' + update.seqno + '" '+showDoubleClickFun+'>' + update.console[i] + '</div>';
             } else {
                // we put seqno_class_3119 only on the 2nd and later lines that we will fold in
                // according to any later overlay request to hide a big output from seqno 3119.
-               newstuff += '<div class="RconsoleLine seqno_class_' + update.seqno + '">' + update.console[i] + '</div>';
+               newstuff += '<div class="RconsoleLine seqno_class_' + update.seqno + '" '+hideDoubleClickFun+'>' + update.console[i] + '</div>';
             }
         }
          newstuff += '</code></pre></div>';
