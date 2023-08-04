@@ -1002,7 +1002,7 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 		}
 
 		if c.DumpTimestamps {
-			fmt.Printf("          ##  =====  ['%v'] =====:\n", e.Tm.In(Chicago).Format(RFC3339MicroNumericTZ))
+			fmt.Printf("          ##  ===== command line [%03d]: %v  =====:\n", e.BeginCommandLineNum, e.Tm.In(Chicago).Format(RFC3339MicroNumericTZ))
 		}
 		switch e.Typ {
 		case Command:
