@@ -17,6 +17,8 @@ const RFC3339NanoNumericTZ0pad = "2006-01-02T15:04:05.000000000-07:00"
 
 const RFC3339MicroTz0 = "2006-01-02T15:04:05.000000Z07:00"
 
+const RFC3339MicroNumericTZ = "2006-01-02T15:04:05.000000-07:00"
+
 var UtcTz *time.Location
 var NYC *time.Location
 var Chicago *time.Location

@@ -734,7 +734,7 @@ require(png)
 				e.NumCommandLines = numlines
 				lastCommandLineNum += numlines
 
-				writeScriptCommand(script, cmd, e.BeginCommandLineNum)
+				writeScriptCommand(script, cmd, e.BeginCommandLineNum, e.Tm)
 
 				hub.broadcast <- e
 				//vv("send cmd='%v' as seqno = %v", cmd, seqno)
@@ -947,10 +947,10 @@ func writeScriptComment(script *os.File, msg string) {
 }
 
 // 60 spaces to move the command line comments off to the right of the screen. Less distracting.
-var spacer string = strings.Repeat(" ", 60)
+var spacer string = strings.Repeat(" ", 52)
 
-func writeScriptCommand(script *os.File, cmd string, linenum int) {
-	fmt.Fprintf(script, spacer+" ## command line [%03d]:\n%v\n", linenum, cmd)
+func writeScriptCommand(script *os.File, cmd string, linenum int, at time.Time) {
+	fmt.Fprintf(script, spacer+" ## command line [%03d]: (%v)\n%v\n", linenum, at.In(Chicago).Format(RFC3339MicroNumericTZ), cmd)
 }
 
 func writeScriptImage(script *os.File, path string) {
@@ -983,7 +983,7 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 		}
 
 		if c.DumpTimestamps {
-			fmt.Printf("          ##  =====  ['%v'] =====:\n", e.Tm.In(Chicago).Format(RFC3339MicroTz0))
+			fmt.Printf("          ##  =====  ['%v'] =====:\n", e.Tm.In(Chicago).Format(RFC3339MicroNumericTZ))
 		}
 		switch e.Typ {
 		case Command:
