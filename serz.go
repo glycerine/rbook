@@ -25,6 +25,11 @@ const (
 	Console HashRTyp = 2
 	Image   HashRTyp = 4
 	Comment HashRTyp = 8
+
+	// things overlaid on top of the original stream:
+	// user notes, and requests to fold (hide) a big output.
+	OverlayLaterNote  HashRTyp = 16
+	OverlayHideOutput HashRTyp = 32
 )
 
 func (ty HashRTyp) String() string {
@@ -37,6 +42,11 @@ func (ty HashRTyp) String() string {
 		return "Console"
 	case Image:
 		return "Image"
+
+	case OverlayLaterNote:
+		return "OverlayLaterNote"
+	case OverlayHideOutput:
+		return "OverlayHideOutput"
 	}
 	panic(fmt.Sprintf("unrecognized HashRTyp = %v", int(ty)))
 }
@@ -100,6 +110,13 @@ type HashRElem struct {
 	// be numbered BeginCommandLineNum + NumCommandLines
 	NumCommandLines int `msg:"numCommandLines" json:"numCommandLines" zid:"12"`
 
+	// 5th type
+	OverlayNoteJSON string `msg:"overlayNote" json:"overlayNote" zid:"13"`
+
+	// 6th type
+	OverlayHideSeqno     int    `msg:"overlayHideSeqno" json:"overlayHideSeqno" zid:"14"`
+	OverlayHideSeqnoJSON string `msg:"overlayHideSeqnoJSON" json:"overlayHideSeqnoJSON" zid:"15"`
+
 	// convenience, not on disk.
 	msg []byte
 }
@@ -125,8 +142,12 @@ HashRElem{
 	ImagePath: %v,
 	ImageBy: (len: %v),
 	ImagePathHash: %v,
+	OverlayNoteJSON: %v,
+	OverlayHideSeqno: %v,
+	OverlayHideSeqnoJSON: %v,
+
 }
-`, e.Typ, e.Tm, e.Seqno, e.CmdJSON, e.ConsoleJSON, e.CommentJSON, e.ImageJSON, e.ImageHost, e.ImagePath, len(e.ImageBy), e.ImagePathHash)
+`, e.Typ, e.Tm, e.Seqno, e.CmdJSON, e.ConsoleJSON, e.CommentJSON, e.ImageJSON, e.ImageHost, e.ImagePath, len(e.ImageBy), e.ImagePathHash, e.OverlayNoteJSON, e.OverlayHideSeqno, e.OverlayHideSeqnoJSON)
 }
 
 // The header, aka init message.

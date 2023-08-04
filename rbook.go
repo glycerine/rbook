@@ -909,6 +909,24 @@ func prepConsoleMessage(consoleOut string, seqno int) string {
 	return lenPrefixedJson
 }
 
+func prepOverlayLaterNoteMessage(note string, seqno, overlayOnSeqno int) string {
+	if note == "" {
+		return ""
+	}
+	escNote, grew := escape(note)
+	_ = grew
+
+	json := fmt.Sprintf(`{"seqno": %v, "overlayNote":"%v", "overlayOnSeqno":%v}`, seqno, escNote, overlayOnSeqno)
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return lenPrefixedJson
+}
+
+func prepOverlayHideOutput(seqno, hideSeqno int) string {
+	json := fmt.Sprintf(`{"seqno": %v, "overlayHideSeqno":%v}`, seqno, hideSeqno)
+	lenPrefixedJson := fmt.Sprintf("%v:%v", len(json), json)
+	return lenPrefixedJson
+}
+
 func prepImageMessage(path, pathhash string, seqno int) string {
 	if path == "" {
 		return ""

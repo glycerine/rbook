@@ -354,6 +354,15 @@ function appendLog(msg){
         }
     }
 
+    if (update.overlayHideSeqno) {
+         // TODO
+         // hide the update.overlayHideSeqno number element
+    }
+    if (update.overlayNote) {
+         // TODO
+         // overlay update.overlayNote onto update.overlayOnSeqno
+    }
+
     if (update.command) {
          //console.log("we just saw command message: ", update.command);
 
@@ -386,7 +395,13 @@ function appendLog(msg){
     if (update.console) {
         var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput"><pre><code>';
         for (let i = 0; i < update.console.length; i++) {
-            newstuff += '<div class="RconsoleLine">' + update.console[i] + '</div>';
+            if (i==0) {
+               newstuff += '<div class="RconsoleLine seqno_firstline_class_' + update.seqno + '">' + update.console[i] + '</div>';
+            } else {
+               // we put seqno_class_3119 only on the 2nd and later lines that we will fold in
+               // according to any later overlay request to hide a big output from seqno 3119.
+               newstuff += '<div class="RconsoleLine seqno_class_' + update.seqno + '">' + update.console[i] + '</div>';
+            }
         }
          newstuff += '</code></pre></div>';
          var newDiv = document.createElement('div');
