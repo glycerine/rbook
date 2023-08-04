@@ -316,8 +316,10 @@ function hideConsoleOutputDoubleClick(seqno) {
    topLine.hiddenInnerHTML = topLine.innerHTML;
    topLine.innerHTML = '## ...                        (double click to show hidden console output)';
    // in case we were a long ways from the top, bring the top back into view
-   //topLine.scrollIntoView({behavior:"instant", block: "start", inline: "nearest"}); 
-   topLine.parentNode.scrollIntoView(true);
+   if (elements.length > 40) {
+      //topLine.scrollIntoView({behavior:"instant", block: "start", inline: "nearest"}); 
+      topLine.parentNode.scrollIntoView(true);
+   }
 }
 
 function showConsoleOutputDoubleClick(seqno) {
