@@ -453,11 +453,14 @@ function appendLog(msg){
         var hideDoubleClickFun = toggleDoubleClickFun;
         var showDoubleClickFun = toggleDoubleClickFun;
 
+        var isLong = false;
+
         // use seqno_topparent_3319 class as an ID to locate the "compressed" or not state.
         var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput seqno_topparent_'+update.seqno+'"><pre><code>';
 
          if (update.console.length >= 40) {
             // special case handling for very long output so we still show the top/bottom 15 lines
+            isLong = true;
 
             var tailLoc = update.console.length - 15;
             for (let i = 0; i < update.console.length; i++) {
@@ -492,7 +495,10 @@ function appendLog(msg){
          newDiv.innerHTML = newstuff;
          d.appendChild(newDiv);
 
-        //d.innerHTML += newstuff + '</code></pre></div>';
+         if (isLong) {
+             // auto-hide long outputs until double-clicked to show.
+             toggleConsoleOutputDoubleClick(update.seqno);
+         }
         //console.log("we added console output");
     }
 
