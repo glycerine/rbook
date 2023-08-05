@@ -60,8 +60,9 @@ var embedded_index_template = fmt.Sprintf(`
                         };
 
     .hidingOutputGrayout {
-       color: skyblue;
-       border: 2px solid red;
+         // never seems to get applied to leave it out.
+       // color: skyblue;
+       // border: 2px solid red;
     }
 
     /*.RcommandLine   { margin-top: -0.1em; }*/
@@ -334,6 +335,25 @@ function showConsoleOutputDoubleClick(seqno) {
       topLine.innerHTML = topLine.hiddenInnerHTML;
    }
 }
+
+
+function toggleConsoleOutputDoubleClick(seqno) {
+    var toggleClass = 'seqno_topparent_'+seqno;
+    var elements = document.getElementsByClassName(toggleClass)
+    if (elements) {
+        if (elements.length == 0) {
+           return;
+        }
+        var parent = elements[0];
+        if (parent.isRbookCompressed) {
+           parent.isRbookCompressed='';
+           showConsoleOutputDoubleClick(seqno);
+        } else {
+           parent.isRbookCompressed='compressed';
+           hideConsoleOutputDoubleClick(seqno);
+        }
+    }
+}
       
 function appendLog(msg){
  
@@ -427,19 +447,46 @@ function appendLog(msg){
     // in theory the command and the output could arrive together, so
     // print the console output after the text of the command.
     if (update.console) {
-        var hideDoubleClickFun = ' ondblclick="hideConsoleOutputDoubleClick(' + update.seqno + ')" ';
-        var showDoubleClickFun = ' ondblclick="showConsoleOutputDoubleClick(' + update.seqno + ')" ';
+        //var hideDoubleClickFun = ' ondblclick="hideConsoleOutputDoubleClick(' + update.seqno + ')" ';
+        //var showDoubleClickFun = ' ondblclick="showConsoleOutputDoubleClick(' + update.seqno + ')" ';
+        var toggleDoubleClickFun = ' ondblclick="toggleConsoleOutputDoubleClick(' + update.seqno + ')" ';
+        var hideDoubleClickFun = toggleDoubleClickFun;
+        var showDoubleClickFun = toggleDoubleClickFun;
 
-        var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput"><pre><code>';
-        for (let i = 0; i < update.console.length; i++) {
-            if (i==0) {
-               newstuff += '<div class="RconsoleLine seqno_firstline_class_' + update.seqno + '" '+showDoubleClickFun+'>' + update.console[i] + '</div>';
-            } else {
-               // we put seqno_class_3119 only on the 2nd and later lines that we will fold in
-               // according to any later overlay request to hide a big output from seqno 3119.
-               newstuff += '<div class="RconsoleLine seqno_class_' + update.seqno + '" '+hideDoubleClickFun+'>' + update.console[i] + '</div>';
+        // use seqno_topparent_3319 class as an ID to locate the "compressed" or not state.
+        var newstuff = '<div id="' + nextID() + '" class="RconsoleOutput seqno_topparent_'+update.seqno+'"><pre><code>';
+
+         if (update.console.length >= 40) {
+            // special case handling for very long output so we still show the top/bottom 15 lines
+
+            var tailLoc = update.console.length - 15;
+            for (let i = 0; i < update.console.length; i++) {
+               if (i==15) {
+                  // make the 15th (middle-ish?) line the one that changes content
+                  newstuff += '<div class="RconsoleLine seqno_firstline_class_' + update.seqno + '" '+showDoubleClickFun+'>' + update.console[i] + '</div>';
+               } else if (i > 15 && i < tailLoc) {
+                  // we put seqno_class_3119 for example to compress the middle lines.
+                  newstuff += '<div class="RconsoleLine seqno_class_' + update.seqno + '" '+hideDoubleClickFun+'>' + update.console[i] + '</div>';
+               } else {
+                  // head or tail lines:
+                  // these get the double click function but NOT the seqno_class so they stay visible always.
+                  newstuff += '<div class="RconsoleLine" '+hideDoubleClickFun+'>' + update.console[i] + '</div>';
+               }
             }
-        }
+
+         } else {
+            // regular, short console output, <= 40 lines.
+
+            for (let i = 0; i < update.console.length; i++) {
+               if (i==0) {
+                  newstuff += '<div class="RconsoleLine seqno_firstline_class_' + update.seqno + '" '+showDoubleClickFun+'>' + update.console[i] + '</div>';
+               } else {
+                  // we put seqno_class_3119 only on the 2nd and later lines that we will fold in
+                  // according to any later overlay request to hide a big output from seqno 3119.
+                  newstuff += '<div class="RconsoleLine seqno_class_' + update.seqno + '" '+hideDoubleClickFun+'>' + update.console[i] + '</div>';
+               }
+            }
+         }
          newstuff += '</code></pre></div>';
          var newDiv = document.createElement('div');
          newDiv.innerHTML = newstuff;
