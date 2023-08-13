@@ -513,7 +513,7 @@ require(png)
 	_ = captureHistory
 	// (list "" '(("..." . "")) '("..."))
 	// (list "" '((" " . "")) '(""))
-	essGarbage := `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
+
 	// more garbage that slipped through the above check:
 	// (list "stats" '(("x" . "") ("df1" . "") ("df2" . "") ("ncp" . "") ("log" . "FALSE")) '("x" "df1" "df2" "ncp" "log"))
 	var capture []string
@@ -559,7 +559,7 @@ require(png)
 			//vv("capture = %v lines\n", len(capture))
 			for _, line := range capture {
 				//fmt.Printf("line %02d: %v\n", i, line)
-				if strings.Contains(line, essGarbage) {
+				if isGarbage(line) {
 					continue
 				}
 				newlines += line + "\n"
@@ -632,7 +632,7 @@ require(png)
 				//vv("prevJSON = '%v'; prevJSON2 = '%v'", prevJSON, prevJSON2)
 
 				prev := prevJSON
-				if strings.Contains(prevJSON, essGarbage) {
+				if isGarbage(prevJSON) {
 					// more injected ESS garbage?
 					// try one further back. Yes this works, at least in the one time we saw.
 					//vv("trying prevJSON2='%v' instead of prevJSON='%v'", prevJSON2, prevJSON)
@@ -1049,4 +1049,29 @@ func getLastCommandLineNum(history *HashRBook) (lastCommandLineNum int) {
 	}
 	// no commands yet in this history (weird but oh well).
 	return 0
+}
+
+// annoying garbage that ess can auto inject... we attempt skip it/remove it
+// from the rbook command line stream.
+var annoyances = []string{`if (identical(getOption('pager'),`, // ... file.path(R.home('bin'), 'pager'))) options(pager='cat') # rather take the ESS one`
+	"local({\n",
+	//...
+	//    source("/Users/jaten/.emacs.d/ESS-17.11/etc/ESSR/R/.load.R", local = TRUE)
+	//    load.ESSR("/Users/jaten/.emacs.d/ESS-17.11/etc/ESSR/R")
+	//})`
+	`(list \"\" '((\"`,
+}
+
+var essGarbage string = `(list \"\" '((\"` // randomly injected by ESS, ignored by rbook.
+
+func isGarbage(s string) bool {
+	if strings.Contains(s, essGarbage) {
+		return true
+	}
+	for i := range annoyances {
+		if strings.HasPrefix(s, annoyances[i]) {
+			return true
+		}
+	}
+	return false
 }
