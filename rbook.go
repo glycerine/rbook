@@ -158,6 +158,13 @@ func main() {
 	panicOn(err)
 	bookpath := cwd + sep + fn
 
+	// lock boopath, or find out somebody else already has it locked.
+	udlock, err := NewUDLock(bookpath)
+	if err != nil {
+		panic(fmt.Sprintf("'%v' is already in use: '%v'", bookpath, err))
+	}
+	defer udlock.Close()
+
 	// Generate an R script too.
 	// The script will have text version of the binary .rbook, written
 	// in parallel, for ease reference. Obviously it will be missing
