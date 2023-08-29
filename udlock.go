@@ -42,6 +42,7 @@ func NewUDLock(path string) (lock *UDLock, err error) {
 		// if the .lock file is just stale and we can
 		// grab it.
 		conn, err1 := net.Dial("unix", path)
+		//vv("dial err1 = '%v' on path '%v'", err1, path)
 		if err1 == nil {
 			var buf [4096]byte
 			err2 := conn.SetReadDeadline(time.Now().Add(3 * time.Second))
@@ -58,6 +59,9 @@ func NewUDLock(path string) (lock *UDLock, err error) {
 				err = fmt.Errorf("path '%v' has a live lock already: '%v'", path, string(buf[:n]))
 				return
 			}
+		} else {
+			//vv("removing stale socket file b/c could not contact the process holding it")
+			os.Remove(path)
 		}
 	}
 	lsn, err2 := net.Listen("unix", path)
