@@ -133,7 +133,7 @@ func (lock *UDLock) start() {
 				err = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 				panicOn(err)
 				var buf [4096]byte
-				n, err := conn.Read(buf[:])
+				n, err := conn.Read(buf[:len("shutdown")])
 				if err == nil && n >= len("shutdown") {
 					if string(buf[:len("shutdown")]) == "shutdown" {
 						conn.Close()
