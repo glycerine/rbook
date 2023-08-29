@@ -158,12 +158,17 @@ func main() {
 	panicOn(err)
 	bookpath := cwd + sep + fn
 
-	// lock boopath, or find out somebody else already has it locked.
-	udlock, err := NewUDLock(bookpath)
-	if err != nil {
-		panic(fmt.Sprintf("'%v' is already in use: '%v'", bookpath, err))
+	if runtime.GOOS == "darwin" {
+		// unix domain sockets buggy on darwin/go1.21.0 ?
+		// https://github.com/golang/go/issues/62337
+	} else {
+		// lock boopath, or find out somebody else already has it locked.
+		udlock, err := NewUDLock(bookpath)
+		if err != nil {
+			panic(fmt.Sprintf("'%v' is already in use: '%v'", bookpath, err))
+		}
+		defer udlock.Close()
 	}
-	defer udlock.Close()
 
 	// Generate an R script too.
 	// The script will have text version of the binary .rbook, written
