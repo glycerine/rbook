@@ -163,7 +163,7 @@ func main() {
 	panicOn(err)
 	bookpath := cwd + sep + fn
 
-	if runtime.GOOS == "darwin" {
+	if false { // runtime.GOOS == "darwin" {
 		// unix domain sockets buggy on darwin/go1.21.0 ?
 		// https://github.com/golang/go/issues/62337
 	} else {
