@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -16,6 +17,9 @@ type UDLock struct {
 	Path     string
 	lsn      net.Listener
 	Finished chan struct{}
+
+	mut    sync.Mutex
+	isDone bool
 }
 
 // NewUDLock obtains a lock based on path. If the
@@ -80,6 +84,12 @@ func NewUDLock(path string) (lock *UDLock, err error) {
 
 // Close releases the lock
 func (lock *UDLock) Close() {
+	lock.mut.Lock()
+	done := lock.isDone
+	lock.mut.Unlock()
+	if done {
+		return
+	}
 	conn, err1 := net.DialTimeout("unix", lock.Path, 5*time.Second)
 
 	if err1 == nil {
@@ -95,7 +105,12 @@ func (lock *UDLock) Close() {
 
 func (lock *UDLock) start() {
 	go func() {
-		defer close(lock.Finished)
+		defer func() {
+			lock.mut.Lock()
+			lock.isDone = true
+			close(lock.Finished)
+			lock.mut.Unlock()
+		}()
 		for {
 			//vv("top of UDLock.start() loop")
 

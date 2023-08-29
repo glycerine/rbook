@@ -98,6 +98,8 @@ func intercept_SIGINT() {
 	}()
 }
 
+var globalUDLock *UDLock
+
 // avoid leaving dangling Xvfb/x11vnc/icewm when we kill the *R*
 // session from within emacs.
 func (cfg *RbookConfig) intercept_SIGTERM_and_cleanup() {
@@ -105,6 +107,9 @@ func (cfg *RbookConfig) intercept_SIGTERM_and_cleanup() {
 	signal.Notify(ch, syscall.SIGTERM)
 	go func() {
 		<-ch
+		if globalUDLock != nil {
+			globalUDLock.Close()
+		}
 		cfg.StopXvfb()
 		//fmt.Printf("rbook got SIGTERM and stopped helpers.")
 		// stop listening for SIGTERM, then send it again.
@@ -167,6 +172,7 @@ func main() {
 		if err != nil {
 			panic(fmt.Sprintf("'%v' is already in use: '%v'", bookpath, err))
 		}
+		globalUDLock = udlock
 		defer udlock.Close()
 	}
 
