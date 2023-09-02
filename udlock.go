@@ -88,6 +88,7 @@ func (lock *UDLock) Close() {
 	done := lock.isDone
 	lock.mut.Unlock()
 	if done {
+		os.Remove(lock.Path)
 		return
 	}
 	conn, err1 := net.DialTimeout("unix", lock.Path, 5*time.Second)
