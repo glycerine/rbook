@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var _ = filepath.Abs
+
 // UDLock uses a unix-domain socket to lock
 // a file to prevent two cooperating processing from
 // using the same file.
@@ -35,9 +37,16 @@ func NewUDLock(path string) (lock *UDLock, err error) {
 		path = path + ".lock"
 	}
 
-	path2, err0 := filepath.Abs(path)
-	panicOn(err0)
-	path = path2
+	// maybe path getting too long? try not extending it, shortening instead.
+	//path2, err0 := filepath.Abs(path)
+	//panicOn(err0)
+	//path = path2
+	//
+	// yes, without this path shortening, we can get spurious errors with
+	// a long path, like
+	// udlock.go:76 2023-09-11T10:41:41.364-05:00 net.Listen("unix", path='/home/jaten/models/dtn_calculated_indi/slow_small_careful_2023july02/simple_thresh/out.q10.dir/SPY.simtrade/my.rbook.rog.lock') give err2='listen unix /home/jaten/models/dtn_calculated_indi/slow_small_careful_2023july02/simple_thresh/out.q10.dir/SPY.simtrade/my.rbook.rog.lock: bind: invalid argument'
+	//
+	path = filepath.Base(path)
 
 	staleLock := false
 	if FileExists(path) {
@@ -70,6 +79,7 @@ func NewUDLock(path string) (lock *UDLock, err error) {
 	}
 	lsn, err2 := net.Listen("unix", path)
 	if err2 != nil {
+		vv(`net.Listen("unix", path='%v') give err2='%v'`, path, err2)
 		return nil, err2
 	}
 
@@ -119,7 +129,7 @@ func (lock *UDLock) start() {
 			// and check if we are shutting down
 			conn, err := lock.lsn.Accept()
 			if err != nil {
-				//vv("lsn.Accept error (probably closed due to shutdown): '%v'", err)
+				vv("lsn.Accept error (probably closed due to shutdown): '%v'", err)
 				return
 			}
 
