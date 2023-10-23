@@ -128,6 +128,14 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		os.Exit(0)
 	}
 
+	if c.Host == "" {
+		// this means bind all interfaces, important to leave
+		// it alone!
+	} else {
+		hostname = c.Host // allow the websockets to work inside
+		// docker when started with docker --name hostname
+	}
+
 	if c.WsHost == "" {
 		if hostname != "" {
 			c.WsHost = hostname
@@ -181,11 +189,6 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 		//c.Port = avail3 // ugh. works, but random port changes each time, requiring extra typing.
 	}
 	//AlwaysPrintf("main web server choosing port %v", c.Port)
-
-	if c.Host == "" {
-		// this means bind all interfaces, important to leave
-		// it alone!
-	}
 
 	avail1, avail2 := GetAvailPort2Excluding(c.Port)
 
