@@ -131,6 +131,13 @@ func (c *RbookConfig) FinishConfig(fs *flag.FlagSet) error {
 	if c.Host == "" {
 		// this means bind all interfaces, important to leave
 		// it alone!
+
+		// but we can still try to set hostname inside docker.
+		// User docker run ... -e CONTAINER_NAME=myname for this.
+		containerName := os.Getenv("CONTAINER_NAME")
+		if containerName != "" {
+			hostname = containerName
+		}
 	} else {
 		hostname = c.Host // allow the websockets to work inside
 		// docker when started with docker --name hostname
