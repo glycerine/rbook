@@ -63,6 +63,10 @@ type RbookConfig struct {
 	// Defaults to our hostname, then the first found
 	// external IP address. Not currently a flag, but
 	// could be.
+	//
+	// Update: we try to use window.location.host now instead,
+	// so that wherever the page is loaded from, the websockets
+	// try to call back to that server.
 	WsHost string // must fill something here to tell the client how to find us.
 
 	WsPort  int

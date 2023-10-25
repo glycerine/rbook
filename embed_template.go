@@ -510,8 +510,10 @@ function appendLog(msg){
         // remove the leading slash(es) from update.image to avoid the 247msec network 301 redirect
         // that happens when seeing host:port/rbook//path -> host:port/rbook/path
         var upimg = update.image.replace(/^\/+/, '');
+        //var urlhost = {{.WsHost}};
+        var urlhost = window.location.hostname; // .host has the :port too, which we elide.
 
-        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://{{.WsHost}}:{{.Port}}/rbook/' + upimg + '?pathhash=' + hash + '" style="max-width:100%%;"/></div>';
+        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://"+urlhost+":{{.Port}}/rbook/' + upimg + '?pathhash=' + hash + '" style="max-width:100%%;"/></div>';
 
          var newDiv = document.createElement('div');
          newDiv.innerHTML = newstuff;
@@ -538,17 +540,19 @@ function appendLog(msg){
     //requestAnimationFrame(startRender);
     
 } // end appendLog()
-
+var urlhost = window.location.hostname;
 try {
   if (window["WebSocket"]) {
     // The reload endpoint is hosted on a statically defined port.
     try {
-      tryConnectToReload("ws://{{.WsHost}}:{{.WsPort}}/reload");
+      //tryConnectToReload("ws://{{.WsHost}}:{{.WsPort}}/reload");
+      tryConnectToReload("ws://"+urlhost+":{{.WsPort}}/reload");
     }
     catch (ex) {
       // If an exception is thrown, that means that we couldn't connect to to WebSockets because of mixed content
       // security restrictions, so we try to connect using wss.
-      tryConnectToReload("wss://{{.WsHost}}:{{.WssPort}}/reload");
+      //tryConnectToReload("wss://{{.WsHost}}:{{.WssPort}}/reload");
+      tryConnectToReload("wss://"+urlhost+":{{.WssPort}}/reload");
     }
   } else {
     console.log("Your browser does not support WebSockets, cannot connect to the Reload service.");
