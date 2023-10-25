@@ -513,7 +513,7 @@ function appendLog(msg){
         //var urlhost = {{.WsHost}};
         var urlhost = window.location.hostname; // .host has the :port too, which we elide.
 
-        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://"+urlhost+":{{.Port}}/rbook/' + upimg + '?pathhash=' + hash + '" style="max-width:100%%;"/></div>';
+        var newstuff = '<div id="'+ nextID() +'" style="max-width: 800px"><img src="http://'+urlhost+':{{.Port}}/rbook/' + upimg + '?pathhash=' + hash + '" style="max-width:100%%;"/></div>';
 
          var newDiv = document.createElement('div');
          newDiv.innerHTML = newstuff;
