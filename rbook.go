@@ -355,7 +355,7 @@ require(png)
 		// start a png() file, reading to capture any plot.
 		rnd20 := cryrand.RandomStringWithUp(20)
 		nextPlotSavePath = fmt.Sprintf("%v/plotmini_%03d_%v.png", odirPlots, nextSave, rnd20)
-		err = embedr.EvalR(fmt.Sprintf(`png(filename='%v', height=800, width=800, bg="white")`, nextPlotSavePath))
+		err = embedr.EvalR(fmt.Sprintf(`png(filename='%v', height=800, width=800, bg="white", type="cairo-png")`, nextPlotSavePath))
 		if err != nil {
 			vv("error during initial png(filename='%v'): '%v'", nextPlotSavePath, err)
 			panic("could not start png file saving!")
@@ -419,7 +419,7 @@ require(png)
 			// start the next png(), reading to capture any plot.
 			rnd20 := cryrand.RandomStringWithUp(20)
 			nextPlotSavePath = fmt.Sprintf("%v/plotmini_%03d_%v.png", odirPlots, nextSave, rnd20)
-			err = embedr.EvalR(fmt.Sprintf(`png(filename='%v', height=800, width=800, bg="white")`, nextPlotSavePath))
+			err = embedr.EvalR(fmt.Sprintf(`png(filename='%v', height=800, width=800, bg="white", type="cairo-png")`, nextPlotSavePath))
 			if err != nil {
 				panic(fmt.Sprintf("error during subsequent png(filename='%v'): '%v'", nextPlotSavePath, err))
 			}
