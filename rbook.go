@@ -271,6 +271,8 @@ require(png)
 		vncPort := cfg.StartXvfbAndFriends(display)
 		fmt.Printf("Xvfb using DISPLAY=:%v  R_HOME=%v  vncPort=%v\n", disp, cfg.Rhome, vncPort)
 
+	} else if cfg.Display == "png" {
+		fmt.Printf("Writing to png files directly for plots.\n")
 	} else {
 		if cfg.Display == "" {
 			cfg.Display = ":10"
@@ -345,6 +347,21 @@ require(png)
 		panicOn(err)
 	}
 
+	// setup for svvPlot() to be able to use -display=png and not need X11/cairo stuff.
+	odirPlots := bookpath + ".plots"
+	panicOn(os.MkdirAll(odirPlots, 0777))
+	var nextPlotSavePath string
+	if cfg.Display == "png" {
+		// start a png() file, reading to capture any plot.
+		rnd20 := cryrand.RandomStringWithUp(20)
+		nextPlotSavePath = fmt.Sprintf("%v/plotmini_%03d_%v.png", odirPlots, nextSave, rnd20)
+		err = embedr.EvalR(fmt.Sprintf(`png(filename='%v', height=800, width=800, bg="white")`, nextPlotSavePath))
+		if err != nil {
+			vv("error during initial png(filename='%v'): '%v'", nextPlotSavePath, err)
+			panic("could not start png file saving!")
+		}
+	}
+
 	svvPlot := func() {
 		//fmt.Printf("svvPlot() called!  seqno=%v, bookpath='%v'\n", seqno, bookpath)
 
@@ -353,45 +370,61 @@ require(png)
 			Seqno: seqno,
 		}
 
-		odir := bookpath + ".plots"
-		panicOn(os.MkdirAll(odir, 0777))
-		rnd20 := cryrand.RandomStringWithUp(20)
-		path := fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
-		var err error
-		if runtime.GOOS == "darwin" {
-			err = embedr.EvalR(fmt.Sprintf(`quartz.save(file='%v', type = "png", device = dev.cur(), dpi = 100, bg="white")`, path))
+		if cfg.Display == "png" {
+			// save the .png file
+			err = embedr.EvalR(fmt.Sprintf(`dev.off()`))
+			panicOn(err)
 		} else {
-			err = embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
+			rnd20 := cryrand.RandomStringWithUp(20)
+			nextPlotSavePath = fmt.Sprintf("%v/plotmini_%03d_%v.png", odirPlots, nextSave, rnd20)
+			if runtime.GOOS == "darwin" {
+				err = embedr.EvalR(fmt.Sprintf(`quartz.save(file='%v', type = "png", device = dev.cur(), dpi = 100, bg="white")`, nextPlotSavePath))
+			} else {
+				err = embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, nextPlotSavePath))
+			}
 		}
 		if err != nil {
 			// possibly "no plot on device to save";
 			// don't bother to send to browser. And don't crash.
 			//continue
-			vv("error during savePlot(filename='%v'): '%v'", path, err)
+			vv("error during savePlot(filename='%v'): '%v'", nextPlotSavePath, err)
 			return
 		}
 		panicOn(err)
-		pathhash, imageby := PathHash(path)
-		//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
+		pathhash, imageby := PathHash(nextPlotSavePath)
+		//vv("saved to path = '%v'; pathhash='%v'", nextPlotSavePath, pathhash)
 		nextSave++
 
-		//vv("Reloading browser with image path '%v'", path)
-		msg := prepImageMessage(path, pathhash, seqno)
+		//vv("Reloading browser with image path '%v'", nextPlotSavePath)
+		msg := prepImageMessage(nextPlotSavePath, pathhash, seqno)
 
 		e.Typ = Image
 		e.ImageJSON = msg
 		e.ImageHost = hostname
-		e.ImagePath = path
+		e.ImagePath = nextPlotSavePath
 		e.ImageBy = imageby
 		e.ImagePathHash = pathhash
 		e.msg = []byte(msg)
 
-		writeScriptImage(script, path)
+		writeScriptImage(script, nextPlotSavePath)
 
 		hub.broadcast <- e
 		seqno++
 
 		archiveElem(e)
+
+		if cfg.Display == "png" {
+			// After nextPlotSavePath is done being referenced; and after
+			// nextSave has been incremented:
+			// start the next png(), reading to capture any plot.
+			rnd20 := cryrand.RandomStringWithUp(20)
+			nextPlotSavePath = fmt.Sprintf("%v/plotmini_%03d_%v.png", odirPlots, nextSave, rnd20)
+			err = embedr.EvalR(fmt.Sprintf(`png(filename='%v', height=800, width=800, bg="white")`, nextPlotSavePath))
+			if err != nil {
+				panic(fmt.Sprintf("error during subsequent png(filename='%v'): '%v'", nextPlotSavePath, err))
+			}
+		}
+
 		/*
 			// CODEX: keep in sync with code after the switch below!
 			history.mut.Lock()
@@ -672,38 +705,6 @@ require(png)
 		case cmd == "sv()":
 			svvPlot()
 			continue // svvPlot() does the archiveElem(); it has to for browser to see the plot.
-			/*
-				odir := bookpath + ".plots"
-				panicOn(os.MkdirAll(odir, 0777))
-				rnd20 := cryrand.RandomStringWithUp(20)
-				path = fmt.Sprintf("%v/plotmini_%03d_%v.png", odir, nextSave, rnd20)
-				err := embedr.EvalR(fmt.Sprintf(`savePlot(filename="%v")`, path))
-				if err != nil {
-					// possibly "no plot on device to save";
-					// don't bother to send to browser. And don't crash.
-					continue
-				}
-				panicOn(err)
-				pathhash, imageby := PathHash(path)
-				//vv("saved to path = '%v'; pathhash='%v'", path, pathhash)
-				nextSave++
-
-				//vv("Reloading browser with image path '%v'", path)
-				msg := prepImageMessage(path, pathhash, seqno)
-
-				e.Typ = Image
-				e.ImageJSON = msg
-				e.ImageHost = hostname
-				e.ImagePath = path
-				e.ImageBy = imageby
-				e.ImagePathHash = pathhash
-				e.msg = []byte(msg)
-
-				writeScriptImage(script, path)
-
-				hub.broadcast <- e
-				seqno++
-			*/
 		default:
 
 			// special handling for strings literal values
