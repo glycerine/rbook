@@ -34,6 +34,35 @@ var _ = exec.Command
 var curDirImages = make(map[string]*HashRElem)
 var curDirImagesLoaded = make(chan bool, 0)
 
+func getcwd() string {
+	cwd, err := os.Getwd()
+	panicOn(err)
+	return cwd
+}
+
+func (cfg *RbookConfig) createBrowserCodeOnDisk(readyIndexHtmlBuf *bytes.Buffer) {
+
+	cfg.myClientHtmlDir = getcwd()
+	cfg.myClientHtmlPath = cfg.myClientHtmlDir + sep + fmt.Sprintf(".browser.rbook.%v.%v.%v.%v.html",
+		cfg.WsHost, cfg.Port, cfg.WsPort, cfg.WssPort)
+	var err error
+	cfg.myClientHtmlFd, err = os.Create(cfg.myClientHtmlPath)
+	panicOn(err)
+	var nw int
+	nw, err = cfg.myClientHtmlFd.Write(readyIndexHtmlBuf.Bytes())
+	panicOn(err)
+	cfg.myClientHtmlModTime = time.Now()
+	cfg.myClientHtmlModSz = nw
+	// close to flush; and we will re-read it on demand.
+	panicOn(cfg.myClientHtmlFd.Close())
+	cfg.myClientHtmlFd = nil
+	fmt.Printf("\n  %v   has the rbook browser code: edit that and reload browser to debug.\n",
+		cfg.myClientHtmlPath)
+
+	//vv("readyIndexHtmlBuf = '%v'\n", readyIndexHtmlBuf.String())
+
+}
+
 func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	ProgramName = path.Base(os.Args[0])
@@ -51,22 +80,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	// write it out to a file on disk we can watch and maybe reload if changed,
 	// to edit the client side without killing the rbook webserver.
-	cfg.myClientHtmlPath = fmt.Sprintf(".browser.rbook.%v.%v.%v.%v.html",
-		cfg.WsHost, cfg.Port, cfg.WsPort, cfg.WssPort)
-	cfg.myClientHtmlFd, err = os.Create(cfg.myClientHtmlPath)
-	panicOn(err)
-	var nw int
-	nw, err = cfg.myClientHtmlFd.Write(readyIndexHtmlBuf.Bytes())
-	panicOn(err)
-	cfg.myClientHtmlModTime = time.Now()
-	cfg.myClientHtmlModSz = nw
-	// close to flush; and we will re-read it on demand.
-	panicOn(cfg.myClientHtmlFd.Close())
-	cfg.myClientHtmlFd = nil
-	fmt.Printf("\n  %v   has the rbook browser code: edit that and reload browser to debug.\n",
-		cfg.myClientHtmlPath)
-
-	//vv("readyIndexHtmlBuf = '%v'\n", readyIndexHtmlBuf.String())
+	cfg.createBrowserCodeOnDisk(&readyIndexHtmlBuf)
 
 	pngs, err := filepath.Glob("*.png")
 	panicOn(err)

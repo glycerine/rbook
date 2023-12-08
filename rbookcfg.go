@@ -93,6 +93,7 @@ type RbookConfig struct {
 
 	Display string
 
+	myClientHtmlDir     string // so we can not crash if R session changes directories.
 	myClientHtmlPath    string
 	myClientHtmlFd      *os.File
 	myClientHtmlModTime time.Time
