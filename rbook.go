@@ -351,6 +351,7 @@ require(png)
 
 		if err != nil || preSize == 0 {
 			vvlog("somebody has deleted our book: '%v'. re-creating it from memory.", bookpath)
+			appendFD.Close() // try not the leak the old fd.
 			appendFD = history.DeletePathAndReSaveFullBook(bookpath)
 			// the latest e is already written so we are done now.
 			return
