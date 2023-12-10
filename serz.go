@@ -195,6 +195,7 @@ func NewHashRBook(user, host, path string) *HashRBook {
 //
 // .
 func (h *HashRBook) DeletePathAndReSaveBookFullBook(path string) (appendFD *os.File) {
+	var err error
 	appendFD, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_APPEND|os.O_TRUNC, 0660)
 	panicOn(err)
 	h.Path = path
