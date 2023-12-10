@@ -386,7 +386,11 @@ require(png)
 
 				if len(history2.elems) != nelem-1 {
 					// we should just be missing the one that did not hit disk.
-					panic(fmt.Sprintf("unknown serialization problem: len(history2.elems)=%v; but nelem is not 1 more; nelem=len(history.elems) = %v; bookpath='%v'; my pid = %v", len(history2.elems), nelem, bookpath, MyPID))
+					vvlog("unknown serialization problem: len(history2.elems)=%v; but nelem is not 1 more; nelem=len(history.elems) = %v; bookpath='%v'; attempting to re-write full rbook to disk from memory, if we can.", len(history2.elems), nelem, bookpath)
+					appendFD.Close() // try not the leak the old fd.
+					appendFD = history.DeletePathAndReSaveFullBook(bookpath)
+					// the latest e is already written so we are done now.
+					return
 				}
 
 				// try to append again, after the re-open
