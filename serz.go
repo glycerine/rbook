@@ -187,6 +187,40 @@ func NewHashRBook(user, host, path string) *HashRBook {
 	}
 }
 
+// delete path before saving book over top of it. path becomes the new h.Path.
+// Used to recover the book if some other process has deleted the original file
+// but we still have the book in memory.
+//
+// Since we will do h.mut.Lock(), the mutex must not be held when calling us.
+//
+// .
+func (h *HashRBook) DeletePathAndReSaveBookFullBook(path string) (appendFD *os.File) {
+	appendFD, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_APPEND|os.O_TRUNC, 0660)
+	panicOn(err)
+	h.Path = path
+
+	h.mut.Lock()
+	defer h.mut.Unlock()
+
+	var by []byte
+	by, err = h.SaveToSlice()
+	panicOn(err)
+	_, err = appendFD.Write(by)
+	panicOn(err)
+
+	// write all elements
+	for _, e := range h.elems {
+		by, err := e.SaveToSlice()
+		panicOn(err)
+		_, err = appendFD.Write(by)
+		panicOn(err)
+	}
+	err = appendFD.Sync()
+	panicOn(err)
+
+	return
+}
+
 func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err error) {
 
 	fresh := true

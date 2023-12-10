@@ -349,6 +349,13 @@ require(png)
 		preSize, err = FileSize(bookpath)
 		panicOn(err)
 
+		if preSize == 0 {
+			vvlog("somebody has deleted our book: '%v'. re-creating it from memory.", bookpath)
+			appendFD = history.DeletePathAndReSaveBookFullBook(bookpath)
+			// the latest e is already written so we are done now.
+			return
+		}
+
 		_, err = appendFD.Write(by)
 		panicOn(err)
 		// flush to disk
@@ -367,8 +374,10 @@ require(png)
 				// assume that history will be the same, like the scenario that
 				// prompted this addition: git/rebase deleted and re-created our file.
 				var history2 *HashRBook
-				history2, appendFD, err = ReadBook(username, hostname, bookpath)
+				var appendFD2 *os.File
+				history2, appendFD2, err = ReadBook(username, hostname, bookpath)
 				panicOn(err)
+				appendFD = appendFD2
 
 				history.mut.Lock()
 				nelem := len(history.elems)
