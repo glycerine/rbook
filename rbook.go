@@ -351,7 +351,7 @@ require(png)
 
 		if preSize == 0 {
 			vvlog("somebody has deleted our book: '%v'. re-creating it from memory.", bookpath)
-			appendFD = history.DeletePathAndReSaveBookFullBook(bookpath)
+			appendFD = history.DeletePathAndReSaveFullBook(bookpath)
 			// the latest e is already written so we are done now.
 			return
 		}

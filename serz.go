@@ -194,7 +194,7 @@ func NewHashRBook(user, host, path string) *HashRBook {
 // Since we will do h.mut.Lock(), the mutex must not be held when calling us.
 //
 // .
-func (h *HashRBook) DeletePathAndReSaveBookFullBook(path string) (appendFD *os.File) {
+func (h *HashRBook) DeletePathAndReSaveFullBook(path string) (appendFD *os.File) {
 	var err error
 	appendFD, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_APPEND|os.O_TRUNC, 0660)
 	panicOn(err)
