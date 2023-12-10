@@ -21,6 +21,12 @@ var VerboseVerbose bool = false
 var pp = PP
 var vv = VV
 
+var MyPID int
+
+func init() {
+	MyPID = os.Getpid()
+}
+
 func panicOn(err error) {
 	if err != nil {
 		panic(err)
@@ -113,7 +119,7 @@ func vvlog(format string, a ...interface{}) {
 // to file handle
 func TSFprintf(fd *os.File, format string, a ...interface{}) {
 	tsPrintfMut.Lock()
-	fmt.Fprintf(fd, "\n%s %s ", FileLine(3), ts())
+	fmt.Fprintf(fd, "\n%s %s [pid %v]", FileLine(3), ts(), MyPID)
 	fmt.Fprintf(fd, format+"\n", a...)
 	tsPrintfMut.Unlock()
 }
