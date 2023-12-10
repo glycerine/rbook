@@ -345,6 +345,9 @@ require(png)
 		panicOn(err)
 		_, err = appendFD.Write(by)
 		panicOn(err)
+		// flush to disk
+		err = appendFD.Sync()
+		panicOn(err)
 	}
 
 	// setup for svvPlot() to be able to use -display=png and not need X11/cairo stuff.
