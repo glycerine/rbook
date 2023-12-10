@@ -458,7 +458,7 @@ require(png)
 		e.ImagePathHash = pathhash
 		e.msg = []byte(msg)
 
-		writeScriptImage(script, nextPlotSavePath)
+		script = writeScriptImage(script, nextPlotSavePath)
 
 		hub.broadcast <- e
 		seqno++
@@ -545,7 +545,7 @@ require(png)
 		e.msg = []byte(msg)
 
 		// append to our text file version on disk
-		writeScriptConsole(script, capture)
+		script = writeScriptConsole(script, capture)
 
 		hub.broadcast <- e
 		seqno++
@@ -751,7 +751,7 @@ require(png)
 				e.msg = []byte(msg)
 
 				// append to our text file version on disk
-				writeScriptConsole(script, prevCaptureOK)
+				script = writeScriptConsole(script, prevCaptureOK)
 
 				hub.broadcast <- e
 				seqno++
@@ -792,7 +792,7 @@ require(png)
 				e.CommentJSON = msg
 				e.msg = []byte(msg)
 
-				writeScriptComment(script, cmd)
+				script = writeScriptComment(script, cmd)
 
 				hub.broadcast <- e
 				seqno++
@@ -808,7 +808,7 @@ require(png)
 				e.NumCommandLines = numlines
 				lastCommandLineNum += numlines
 
-				writeScriptCommand(script, cmd, e.BeginCommandLineNum, e.Tm)
+				script = writeScriptCommand(script, cmd, e.BeginCommandLineNum, e.Tm)
 
 				hub.broadcast <- e
 				//vv("send cmd='%v' as seqno = %v", cmd, seqno)
@@ -854,7 +854,7 @@ require(png)
 						e2.msg = []byte(msg)
 
 						// append to our text file version on disk
-						writeScriptConsole(script, captureOK)
+						script = writeScriptConsole(script, captureOK)
 
 						hub.broadcast <- e2
 						seqno++
@@ -1022,10 +1022,10 @@ func prepInitMessage(book *HashRBook) string {
 	return lenPrefixedJson
 }
 
-func writeScriptComment(script *os.File, msg string) {
+func writeScriptComment(script *os.File, msg string) *os.File {
 
 	if msg == "" {
-		return
+		return script
 	}
 	n := len(msg)
 	msg = msg[2 : n-1]
@@ -1036,24 +1036,29 @@ func writeScriptComment(script *os.File, msg string) {
 	for _, line := range lines {
 		fmt.Fprintf(script, "### %v\n", line)
 	}
+
+	return script
 }
 
 // 60 spaces to move the command line comments off to the right of the screen. Less distracting.
 // Now 52 to make room for the timestamp too.
 var spacer string = strings.Repeat(" ", 52)
 
-func writeScriptCommand(script *os.File, cmd string, linenum int, at time.Time) {
+func writeScriptCommand(script *os.File, cmd string, linenum int, at time.Time) *os.File {
 	fmt.Fprintf(script, spacer+" ## command line [%03d]: %v\n%v\n", linenum, at.In(Chicago).Format(RFC3339MicroNumericTZ), cmd)
+	return script
 }
 
-func writeScriptImage(script *os.File, path string) {
+func writeScriptImage(script *os.File, path string) *os.File {
 	fmt.Fprintf(script, "    ##img=readPNG('%v');x11();grid::grid.raster(img); #saved\n", path)
+	return script
 }
 
-func writeScriptConsole(script *os.File, prevCaptureOK []string) {
+func writeScriptConsole(script *os.File, prevCaptureOK []string) *os.File {
 	for _, line := range prevCaptureOK {
 		fmt.Fprintf(script, "    ## %v\n", line)
 	}
+	return script
 }
 
 type DecodeJSON struct {
