@@ -343,11 +343,60 @@ require(png)
 
 		by, err := e.SaveToSlice()
 		panicOn(err)
+
+		// try to detect if file needs to be re-opened to continue to append:
+		var preSize, postSize int64
+		preSize, err = FileSize(bookpath)
+		panicOn(err)
+
 		_, err = appendFD.Write(by)
 		panicOn(err)
 		// flush to disk
 		err = appendFD.Sync()
 		panicOn(err)
+
+		postSize, err = FileSize(bookpath)
+		panicOn(err)
+
+		if len(by) > 0 {
+			// we expect postSize to be == preSize + len(by) now.
+			if postSize <= preSize {
+				// probably git deleted and replaced our file. Re-open.
+				vvlog("detected write not hitting disk: '%v' pre-write size: %v; post-write size: %v; will re-open file.", bookpath, preSize, postSize)
+
+				// assume that history will be the same, like the scenario that
+				// prompted this addition: git/rebase deleted and re-created our file.
+				var history2 *HashRBook
+				history2, appendFD, err = ReadBook(username, hostname, bookpath)
+				panicOn(err)
+
+				history.mut.Lock()
+				nelem := len(history.elems)
+				history.mut.Unlock()
+
+				if len(history2.elems) != nelem-1 {
+					// we should just be missing the one that did not hit disk.
+					panic(fmt.Sprintf("unknown serialization problem: len(history2.elems)=%v; but nelem is not 1 more; nelem=len(history.elems) = %v; bookpath='%v'; my pid = %v", len(history2.elems), nelem, bookpath, MyPID))
+				}
+
+				// try to append again, after the re-open
+
+				_, err = appendFD.Write(by)
+				panicOn(err)
+
+				// flush to disk
+				err = appendFD.Sync()
+				panicOn(err)
+
+				postSize, err = FileSize(bookpath)
+				panicOn(err)
+
+				if postSize <= preSize {
+					vvlog("detected write STILL not hitting disk after re-open: '%v' pre-write size: %v; post-write size: %v; about to panic.", bookpath, preSize, postSize)
+					panic(fmt.Sprintf("could not append to binary book file: '%v': pre-write size: %v; post-write size: %v", bookpath, preSize, postSize))
+				}
+			}
+		}
 	}
 
 	// setup for svvPlot() to be able to use -display=png and not need X11/cairo stuff.

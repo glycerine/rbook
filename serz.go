@@ -208,6 +208,8 @@ func ReadBook(user, host, path string) (h *HashRBook, appendFD *os.File, err err
 		by, err = h.SaveToSlice()
 		panicOn(err)
 		_, err = appendFD.Write(by)
+		panicOn(err)
+		err = appendFD.Sync()
 		return
 	}
 
