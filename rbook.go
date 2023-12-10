@@ -347,9 +347,9 @@ require(png)
 		// try to detect if file needs to be re-opened to continue to append:
 		var preSize, postSize int64
 		preSize, err = FileSize(bookpath)
-		panicOn(err)
+		// allow error here because if file was deleted we will get a "no such file" error.
 
-		if preSize == 0 {
+		if err != nil || preSize == 0 {
 			vvlog("somebody has deleted our book: '%v'. re-creating it from memory.", bookpath)
 			appendFD = history.DeletePathAndReSaveFullBook(bookpath)
 			// the latest e is already written so we are done now.

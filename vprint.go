@@ -119,7 +119,7 @@ func vvlog(format string, a ...interface{}) {
 // to file handle
 func TSFprintf(fd *os.File, format string, a ...interface{}) {
 	tsPrintfMut.Lock()
-	fmt.Fprintf(fd, "\n%s %s [pid %v]", FileLine(3), ts(), MyPID)
+	fmt.Fprintf(fd, "\n%s %s [pid %v] ", FileLine(3), ts(), MyPID)
 	fmt.Fprintf(fd, format+"\n", a...)
 	tsPrintfMut.Unlock()
 }
