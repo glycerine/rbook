@@ -460,6 +460,12 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		http.ServeContent(w, r, "", modtime, readSeeker)
 	})
 
+	http.HandleFunc("/candles", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Private-Network", "true")
+		fmt.Fprintf(w, "%v\n", candles)
+	})
+	
+
 	host := cfg.Host
 	if host == "" {
 		host = hostname // for nice presentation to the user.
@@ -498,3 +504,67 @@ func ModTime(fn string) (m time.Time) {
 	}
 	return fi.ModTime()
 }
+
+// demo the candles chart from trading view-- apache 2 licensed library;
+// see also misc/lightweight-charts.standalone.production.js for the
+// 156KB library.
+var candles string = `
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0"
+        />
+        <title>Large Dataset</title>
+
+        <script
+            type="text/javascript"
+            src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"
+        ></script>
+    </head>
+
+    <body style="padding: 0; margin: 0">
+        <div
+            id="container"
+            style="position: absolute; width: 100%; height: 100%"
+        ></div>
+
+        <script type="text/javascript">
+            function generateData() {
+                var res = [];
+                var time = new Date(Date.UTC(2018, 0, 1, 0, 0, 0, 0));
+                for (var i = 0; i < 1200000; ++i) {
+                    const sign = Math.random() < 0.5 ? -1 : 1;
+                    const rand = Math.random();
+                    res.push({
+                        time: time.getTime() / 1000,
+                        open: i,
+                        close: i + sign * rand * 100,
+                        high: i + rand * 200,
+                        low: i - rand * 200,
+                    });
+                    time.setUTCDate(time.getUTCDate() + 1);
+                }
+
+                return res;
+            }
+
+            var chart = LightweightCharts.createChart(
+                document.getElementById("container")
+            );
+
+            var mainSeries = chart.addCandlestickSeries({
+                upColor: "#26a69a",
+                downColor: "#ef5350",
+                borderVisible: false,
+                wickUpColor: "#26a69a",
+                wickDownColor: "#ef5350",
+            });
+
+            mainSeries.setData(generateData());
+        </script>
+    </body>
+</html>
+`
