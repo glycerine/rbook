@@ -158,6 +158,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	if cfg.ViewOnly {
+		// skipping R session, just showing .png; so
+		// make the minimum possible book that showme needs
+		skeleton := &HashRBook{
+			path2image: make(map[string]*HashRElem),
+		}
+		StartShowme(cfg, skeleton)
+		select {} // hang forever
+	}
+
 	fn := cfg.RbookFilePath
 	cwd, err := os.Getwd()
 	panicOn(err)

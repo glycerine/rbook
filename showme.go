@@ -78,9 +78,11 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	err = tmpl.Execute(&readyIndexHtmlBuf, cfg)
 	panicOn(err)
 
-	// write it out to a file on disk we can watch and maybe reload if changed,
-	// to edit the client side without killing the rbook webserver.
-	cfg.createBrowserCodeOnDisk(&readyIndexHtmlBuf)
+	if !cfg.ViewOnly {
+		// write it out to a file on disk we can watch and maybe reload if changed,
+		// to edit the client side without killing the rbook webserver.
+		cfg.createBrowserCodeOnDisk(&readyIndexHtmlBuf)
+	}
 
 	pngs, err := filepath.Glob("*.png")
 	panicOn(err)
@@ -316,18 +318,20 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		http.ServeContent(w, r, "", modtime, readSeeker)
 	})
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		//http.ServeFile(w, r, "index.html")
-		w.Header().Set("Access-Control-Allow-Private-Network", "true")
+	if !cfg.ViewOnly {
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			//http.ServeFile(w, r, "index.html")
+			w.Header().Set("Access-Control-Allow-Private-Network", "true")
 
-		// re-read from cfg.myClientHtmlPath each time, to pick up any
-		// changes on disk.
-		by, err := ioutil.ReadFile(cfg.myClientHtmlPath)
-		panicOn(err)
-		readyIndexHtmlBuf.Reset()
-		readyIndexHtmlBuf.Write(by) // cache our read from disk for reference.
-		w.Write(readyIndexHtmlBuf.Bytes())
-	})
+			// re-read from cfg.myClientHtmlPath each time, to pick up any
+			// changes on disk.
+			by, err := ioutil.ReadFile(cfg.myClientHtmlPath)
+			panicOn(err)
+			readyIndexHtmlBuf.Reset()
+			readyIndexHtmlBuf.Write(by) // cache our read from disk for reference.
+			w.Write(readyIndexHtmlBuf.Bytes())
+		})
+	}
 
 	http.HandleFunc("/greencheckmark", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")

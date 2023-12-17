@@ -91,7 +91,8 @@ type RbookConfig struct {
 	ShowVersion  bool
 	ShowVersion2 bool
 
-	Display string
+	Display  string
+	ViewOnly bool
 
 	myClientHtmlDir     string // so we can not crash if R session changes directories.
 	myClientHtmlPath    string
@@ -121,6 +122,8 @@ func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
 	fs.StringVar(&c.Wallpaper, "wall", fmt.Sprintf("%v/.wallpaper", home), "path or symlink to wallpaper to set on the Xvfb/x11vnc")
 	fs.BoolVar(&c.ShowVersion, "v", false, "show rbook version and exit")
 	fs.BoolVar(&c.ShowVersion2, "version", false, "show rbook version and exit")
+
+	fs.BoolVar(&c.ViewOnly, "viewonly", false, "for viewing .png in this directory; skip starting R session.")
 
 	fs.StringVar(&c.Display, "display", "", "X11 display number (example: -display :99) on which to display our X11 plots. Defaults to :10 but can be the string 'xvfb' (without quotes) if you want to start a new Xvfb based display to run on; however this can conflict with other Xvfb client programs (for unknown reasons) and so is not recommended. Use 'png' to just save directly to png files, skipping x11/windowing.")
 }
