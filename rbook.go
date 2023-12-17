@@ -91,7 +91,8 @@ func intercept_SIGINT() {
 	//vv("intercept_SIGINT installing")
 	c := make(chan os.Signal, 100)
 	stopMonitoringSIGINT = func() {
-		close(c)
+		signal.Stop(c) // signal package will never send on c now
+		close(c)       // the go routine below will exit.
 	}
 	signal.Notify(c, os.Interrupt)
 	go func() {
