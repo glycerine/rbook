@@ -84,9 +84,15 @@ func PathHash(path string) (hash string, imageBy []byte) {
 	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil)), by
 }
 
+// provide a way for rbook -viewonly to turn off ctrl-c intercept.
+var stopMonitoringSIGINT func()
+
 func intercept_SIGINT() {
 	//vv("intercept_SIGINT installing")
 	c := make(chan os.Signal, 100)
+	stopMonitoringSIGINT = func() {
+		close(c)
+	}
 	signal.Notify(c, os.Interrupt)
 	go func() {
 		for sig := range c {
@@ -164,6 +170,7 @@ func main() {
 		skeleton := &HashRBook{
 			path2image: make(map[string]*HashRElem),
 		}
+		stopMonitoringSIGINT() // allow ctrl-c to shutdown.
 		StartShowme(cfg, skeleton)
 		select {} // hang forever
 	}

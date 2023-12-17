@@ -401,7 +401,9 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		host = hostname // for nice presentation to the user.
 	}
 
-	fmt.Printf("\nUse http://%v:%v        -- for the rbook R session.\n", host, cfg.Port)
+	if !cfg.ViewOnly {
+		fmt.Printf("\nUse http://%v:%v        -- for the rbook R session.\n", host, cfg.Port)
+	}
 	if !viewOff {
 		fmt.Printf("\nUse http://%v:%v/view   -- to view all .png images in initial directory.\n\n", host, cfg.Port)
 	}
