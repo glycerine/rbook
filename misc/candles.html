@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      #main,
+      html,
+      body {
+	  width: 100%;
+      }
+      #main {
+	  height: 800px;
+      }
+    </style>
+    
     <meta charset="utf-8" />
     <!-- Include the ECharts file you just downloaded -->
     <script src="https://fastly.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
@@ -11,7 +22,7 @@
 
   <body>
     <!-- Prepare a DOM with a defined width and height for ECharts -->
-    <div id="main" style="width: 600px;height:400px;"></div>
+    <div id="main"></div>
 
     <!--script type="text/javascript"-->
     <script type="module">
@@ -22,6 +33,10 @@
 
       var chartDom = document.getElementById('main');
       var myChart = echarts.init(chartDom);
+      window.addEventListener('resize', function() {
+	  myChart.resize();
+      });
+      
       var option;
 
       const upColor = '#00da3c';
