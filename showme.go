@@ -34,6 +34,8 @@ var _ = exec.Command
 var curDirImages = make(map[string]*HashRElem)
 var curDirImagesLoaded = make(chan bool, 0)
 
+var gJsonCandles []byte
+
 func getcwd() string {
 	cwd, err := os.Getwd()
 	panicOn(err)
@@ -322,14 +324,16 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	http.Handle("/testdata/", http.StripPrefix("/testdata/",
 		http.FileServer(http.Dir("testdata"))))
 
+	// load default candles, these can be replaced via setWebData() in R.
+	home := os.Getenv("HOME")
+	gJsonCandles, err = ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/testdata/stock-DJI.json")
+	panicOn(err)
+
 	http.HandleFunc("/data/stock-DJI.json", func(w http.ResponseWriter, r *http.Request) {
 		vv("/data/stock-DJI.json requested: '%v'", r.URL.Path)
 
 		w.Header().Set("Content-Type", "application/json")
-		home := os.Getenv("HOME")
-		jsonCandles, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/testdata/stock-DJI.json")
-		panicOn(err)
-		_, err = w.Write(jsonCandles)
+		_, err = w.Write(gJsonCandles)
 		panicOn(err)
 	})
 

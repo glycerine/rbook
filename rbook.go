@@ -529,6 +529,12 @@ require(png)
 		*/
 	}
 
+	setWebDataFunc := func() {
+		vv("setWebDataFunc called.")
+		gJsonCandles = make([]byte, len(dat))
+		copy(gJsonCandles, dat)
+	}
+
 	dvvFunc := func() {
 
 		// collect any text in the sink
@@ -605,6 +611,7 @@ require(png)
 	embedr.SetGoCallbackForCleanup(func() { cfg.StopXvfb() })
 	embedr.SetRCallbackToGoFunc(svvPlot)
 	embedr.SetRCallbackToGoFuncDvv(dvvFunc)
+	embedr.SetRCallbackToGoFuncSetWebData(setWebDataFunc)
 
 	// In .Last.sys,
 	// do graphics.off() first to try and avoid q() resulting in:
@@ -622,6 +629,7 @@ require(png)
 	// for in an R program loop... save the current graph (to browser).
 	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
 	embedr.EvalR(`dvv=function(...){ .C("CallRCallbackToGoFuncDvv"); c()}`)
+	embedr.EvalR(`setWebData=function(...){ .C("CallRCallbackToGoFuncSetWebData"); c()}`)
 
 	// on darwin, we need to start a quartz window with
 	// the bg="white", or else the browser will get an opaque
