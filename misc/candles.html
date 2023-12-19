@@ -15,8 +15,8 @@
     <meta charset="utf-8" />
     <!-- Include the ECharts file you just downloaded -->
     <script src="https://fastly.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://fastly.jsdelivr.net/npm/seedrandom@3.0.5/seedrandom.min.js"></script>
-    <script src="https://fastly.jsdelivr.net/npm/acorn@8.7.1/dist/acorn.min.js"></script>
+    <!--script src="https://fastly.jsdelivr.net/npm/seedrandom@3.0.5/seedrandom.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/acorn@8.7.1/dist/acorn.min.js"></script-->
     <script src="echarts.js"></script>
   </head>
 
@@ -71,6 +71,13 @@
 	  }
 	  return result;
       }
+
+      // Add variable to track mode
+      var drawMode;
+      var drawChangeSeen;
+      // Register line drawing
+      var lineStart;
+      
       $.get('/data/stock-DJI.json', function (rawData) {
 	  var data = splitData(rawData);
 	  myChart.setOption(
@@ -113,12 +120,53 @@
 		  },
 		  toolbox: {
 		      feature: {
+			  myLine: {
+			      show: true,
+			      title: 'Draw Line',
+			      icon: 'path://M511.692,0.308c-6.183-6.183-16.183-6.183-22.365,0L199.768,297.276c-3.125,3.125-4.768,7.197-4.768,11.365s1.643,8.24,4.768,11.365L489.327,510.91c3.125,3.125,7.197,4.768,11.365,4.768s8.24-1.643,11.365-4.768L511.692,11.673C517.875,7.507,517.875,6.08,511.692,0.308z M181.869,303.135L45.964,439.04c-6.183,6.183-6.183,16.183,0,22.365c6.183,6.183,16.183,6.183,22.365,0l135.905-135.905c6.183-6.183,6.183-16.183,0-22.365C198.052,296.952,187.052,296.952,181.869,303.135z M205.308,326.573L58.756,473.125c-6.183,6.183-6.183,16.183,0,22.365c6.183,6.183,16.183,6.183,22.365,0l146.552-146.552c6.183-6.183,6.183-16.183,0-22.365C221.491,320.39,211.491,320.39,205.308,326.573z',
+			      //icon: 'path://M832 112.992v704c0 50.176-40.928 91.008-91.008 91.008h-304c-50.176 0-91.008-40.832-91.008-91.008v-704c0-50.176 40.832-91.008 91.008-91.008h304c50.24 0 91.008 40.832 91.008 91.008zM219.008 312.992c-60.416 0-109.408 48.64-109.408 108.992 0 60.416 48.64 109.376 109.376 109.376 60.416 0 109.376-48.96 109.376-109.376 0-60.352-48.96-108.992-109.376-108.992zM512 312.992c-60.352 0-109.344 48.64-109.344 108.992 0 60.416 48.64 109.376 109.344 109.376 60.48 0 109.44-48.96 109.44-109.376 0-60.352-48.96-108.992-109.44-108.992zM804.992 312.992c-60.416 0-109.44 48.64-109.44 108.992 0 60.416 48.64 109.376 109.44 109.376 60.352 0 109.312-48.96 109.312-109.376 0-60.352-48.96-108.992-109.312-108.992z',
+
+			      
+			      onclick: (options) => {
+
+				  // Toggle draw mode
+				  drawMode = !drawMode;
+				  drawChangeSeen = null;
+				  var borderColor = '#33f';
+				  if (drawMode) {
+				      // Set red border color
+				      borderColor = 'red';
+				  } else {
+				      // Revert border color
+				      borderColor = '#33f';
+
+				      // Clear line start
+				      lineStart = null;
+				  }
+
+				  // Set updated options
+				  myChart.setOption({
+				      toolbox: {
+					  feature: {
+					      myLine: {
+						  iconStyle: {
+						      borderColor: borderColor
+						  }
+					      }
+					  }
+				      }
+				  });
+
+			      } // end onclick
+			  },   // end myLine
 			  dataZoom: {
 			      yAxisIndex: false
 			  },
 			  brush: {
 			      type: ['lineX', 'clear']
-			  }
+			  },
+			  restore: {},
+			  saveAsImage: {}
 		      }
 		  },
 		  brush: {
@@ -160,7 +208,7 @@
 		      {
 			  type: 'category',
 			  data: data.categoryData,
-			  boundaryGap: false,
+		          boundaryGap: false,
 			  axisLine: { onZero: false },
 			  splitLine: { show: false },
 			  min: 'dataMin',
@@ -285,9 +333,139 @@
 	      ]
 	  });
       });
-
-      option && myChart.setOption(option);
       
+      
+      option && myChart.setOption(option);
+
+      myChart.on('dataZoom', (params) => {
+	  console.log("dataZoom seen! params = ", params);	  
+	  const options = params.batch[0];
+	  const startTS = options.start;
+	  const endTS = options.end;
+	  //yourService.getData(startTS, endTS).subscribe(data => {
+	      // Replace the old data of your series by the fetched elements
+	      // If you reset the zoom, you will still have the detailed area
+	  //});
+      });
+      
+      
+      myChart.getZr().on('click', params => {
+	  if (drawMode) {
+	      console.log("click found; params = ", params);
+	      
+	      option.xAxis.min = 'dataMin';
+	      option.xAxis.max = 'dataMax';
+	      
+	      if (!drawChangeSeen) {
+		  drawChangeSeen = true;
+		  return;
+	      }
+	      //params.cancelBubble = true;
+	      
+	      // Retrieve mouse click coordinates
+	      var pixelX = params.offsetX;
+	      var pixelY = params.offsetY;
+	      
+	      // Convert pixel coordinates to data coordinates
+	      var dataCoordinates = myChart.convertFromPixel('grid', [pixelX, pixelY]);
+	      
+	      // The `dataCoordinates` variable now contains the data coordinates
+	      //console.log('Data Coordinates:', dataCoordinates, '  and lineStart = ', lineStart);
+	      
+	      if (!lineStart) {
+		  
+		  lineStart = dataCoordinates; // [params.offsetX, params.offsetY];
+		  console.log(' lineStart = ', lineStart);
+		  
+	      } else {
+		  var lineEndCoords = dataCoordinates;
+		  
+		  // Save current axis settings - did not help
+		  var xAxis = myChart.getOption().xAxis[0];
+		  var yAxis = myChart.getOption().yAxis[0];
+
+		  // so just turn off re-scaling?
+		  xAxis.scale = false;
+		  yAxis.scale = false;
+		  
+		  console.log(' lineStart = ', lineStart, '  ->  lineEnd = ', dataCoordinates);
+
+		  //if (option.series === undefined) {
+		    // options.series = [];
+		  //}
+		  //var currentSeries = option.series[0];
+		  //currentSeries.data.push(lineStart, lineEndCoords);
+		  
+		  option.series.push({
+			  type: 'line',
+			  data: [lineStart, dataCoordinates]
+		  });
+		  
+		  // Restore axis settings
+		  //option.xAxis = xAxis;
+		  //option.yAxis = yAxis;
+
+		  option.xAxis.min = 'dataMin';
+		  option.xAxis.max = 'dataMax';
+		  
+		  myChart.setOption(option);
+		  lineStart = null;
+	      }
+	  }
+      });
+      
+      /*
+      // Variables to track drawing
+      var isDrawing = false;
+      var startPoint = [];
+
+      // Function to start drawing
+      function startDrawing(params) {
+	  //if (params === undefined || params.event === undefined) {
+	    //  return
+	  //}
+	  //console.log("startDrawing top: params = " + JSON.stringify(params));
+	  isDrawing = true;
+	  startPoint = [params.event.offsetX, params.event.offsetY];
+
+	  // Connect mousemove and mouseup events
+	  echarts.connect([myChart]);
+
+	  // Listen for mousemove event
+	  myChart.getZr().on('mousemove', function (event) {
+	      if (isDrawing) {
+		  drawLine(event.offsetX, event.offsetY);
+	      }
+	  });
+
+	  // Listen for mouseup event
+	  myChart.getZr().on('mouseup', function () {
+	      isDrawing = false;
+	  });
+      }
+
+      // Function to draw a line
+      function drawLine(endX, endY) {
+
+	  option.graphic =  [
+		  {
+		      type: 'line',
+		      id: 'drawn-line',
+		      shape: {
+			  x1: startPoint[0],
+			  y1: startPoint[1],
+			  x2: endX,
+			  y2: endY,
+		      },
+		      style: {
+			  stroke: 'red',
+			  lineWidth: 2,
+		      },
+		  },
+	      ];
+	  myChart.setOption(object);
+      } // end drawLine
+      */
       
     </script>
     
