@@ -1,6 +1,7 @@
+<!DOCTYPE html>
     <html>
     <head>
-    <script type = "text/JavaScript">
+    <script type = "module">
     
 import * as echarts from 'echarts/core';
 
@@ -106,14 +107,17 @@ $.get(ROOT_PATH + '/data/asset/data/stock-DJI.json', function (rawData) {
 		    {
 			xAxisIndex: 'all'
 		    }
-		}
 	    ]
-	});
-    });
+	    }
+	}));
+});
 
 option && myChart.setOption(option);
       
-      </script></head><body>
+</script>
 
+	</head>
+	<body>
+      <div id="main"></div>
       </body></html>
       

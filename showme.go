@@ -274,13 +274,37 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	}
 
 	http.HandleFunc("/candles/", func(w http.ResponseWriter, r *http.Request) {
+		vv("candles requested")
 		// https://echarts.apache.org/examples/en/editor.html?c=candlestick-brush
 
 		home := os.Getenv("HOME")
-		brush, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/misc/echart_candlestick_brush.js")
+		//brush, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/misc/echart_candlestick_brush.js")
+		brush, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/misc/candles.html")
 		panicOn(err)
 
 		_, err = w.Write(brush)
+		panicOn(err)
+	})
+
+	http.HandleFunc("/candles/echarts.js", func(w http.ResponseWriter, r *http.Request) {
+		vv("candles/echarts.js requested")
+		// https://echarts.apache.org/examples/en/editor.html?c=candlestick-brush
+
+		home := os.Getenv("HOME")
+		echarts, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/misc/echarts-5.4.3/dist/echarts.js")
+		panicOn(err)
+		_, err = w.Write(echarts)
+		panicOn(err)
+	})
+
+	http.HandleFunc("/candles/echarts.js.map", func(w http.ResponseWriter, r *http.Request) {
+		vv("candles/echarts.js.map requested")
+		// https://echarts.apache.org/examples/en/editor.html?c=candlestick-brush
+
+		home := os.Getenv("HOME")
+		echarts, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/misc/echarts-5.4.3/dist/echarts.js.map")
+		panicOn(err)
+		_, err = w.Write(echarts)
 		panicOn(err)
 	})
 
