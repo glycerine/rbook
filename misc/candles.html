@@ -31,8 +31,17 @@
 
       //var ROOT_PATH = '';
 
+      // try to get fractional X-coordinates instead of integer-clamped.
+      var optionsInit = {
+	  xAxis: {
+	      type: 'value'
+	  },
+	  series: [{
+	      coordinateSystem: 'cartesian2d'
+	  }]
+      }
       var chartDom = document.getElementById('main');
-      var myChart = echarts.init(chartDom);
+      var myChart = echarts.init(chartDom, optionsInit);
       window.addEventListener('resize', function() {
 	  myChart.resize();
       });
@@ -218,6 +227,7 @@
 		  xAxis: [
 		      {
 			  type: 'category',
+			  //type: 'value', // scrunches all bars into left side, no good.
 			  data: data.categoryData,
 		          boundaryGap: false,
 			  axisLine: { onZero: false },
@@ -230,6 +240,7 @@
 		      },
 		      {
 			  type: 'category',
+			  //type: 'value',
 			  gridIndex: 1,
 			  data: data.categoryData,
 			  boundaryGap: false,
