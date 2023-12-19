@@ -530,9 +530,78 @@ require(png)
 	}
 
 	setWebDataFunc := func() {
-		vv("setWebDataFunc called.")
-		gJsonCandles = make([]byte, len(dat))
-		copy(gJsonCandles, dat)
+		dat, err := embedr.EvalR_fullback(`.my.webData`)
+		panicOn(err)
+		// strings come through as []string
+		// data frames come through as map[string]interface{} where
+		// the interface{} is []float64{} with the columns.
+		vv("setWebDataFunc called. dat = '%#v'", dat)
+		//		gJsonCandles = make([]byte, len(dat))
+		//		copy(gJsonCandles, dat)
+
+		switch x := dat.(type) {
+		default:
+			vv("don't know what to do with dat type '%T'", dat)
+		case map[string]interface{}:
+			// turn it into gJsonCandles
+
+			var tms []string
+			var f [][]float64
+			var fnames []string
+			name2col := make(map[string]int)
+			for fld, col := range x {
+				switch y := col.(type) {
+				case []string:
+					if fld == "tm" {
+						tms = y
+					} else {
+						vv("not sure what to do with a string dataframe column that is not 'tm' but instead named: '%v'", fld)
+						panic(fmt.Sprintf("not sure what to do with a string dataframe column that is not 'tm' but instead named: '%v'", fld))
+					}
+				case []float64:
+					fnames = append(fnames, fld)
+					name2col[fld] = len(f)
+					f = append(f, y)
+				default:
+					vv("unsure what to do with column '%v' of type %T", fld, col)
+					panic(fmt.Sprintf("unsure what to do with column '%v' of type %T", fld, col))
+				}
+			}
+
+			buf := &bytes.Buffer{}
+			// [["2004-01-02",10452.74,10409.85,10367.41,10554.96,168890000], ... ]
+			fmt.Fprintf(buf, "[")
+
+			vv("starting on i loop")
+			for i, tm := range tms {
+				if i > 0 {
+					fmt.Fprintf(buf, ",")
+				} else {
+					vv("debug, buf = '%v'", string(buf.Bytes()))
+				}
+				// tm is already a string, no need
+				// for .In(Chicago).Format(RFC3339MicroNumericTZ) stuff.
+				fmt.Fprintf(buf, `["%v"`, tm)
+
+				// go in strict Open,Close,Low,High,Volume order, which echart expects.
+				for _, nm := range []string{"op", "cl", "lo", "hi", "sz"} {
+					j, ok := name2col[nm]
+					if !ok {
+						vv("could not locate expected column '%v' in '%#v'; must be labelled: tm,op,cl,lo,hi,sz", nm, name2col)
+						panic(fmt.Sprintf("could not locate expected column '%v' in '%#v'; must be labelled: tm,op,cl,lo,hi,sz", nm, name2col))
+					}
+					vv("trying to access j=%v from len f = %v", j, len(f))
+					fmt.Fprintf(buf, ",%v", f[j][i]) // print value from row i, column j.
+
+					vv("ok at i = %v", i)
+				}
+				fmt.Fprintf(buf, "]")
+			}
+			fmt.Fprintf(buf, "]")
+
+			vv("done just fine with gJsonCandles translation")
+			gJsonCandles = buf.Bytes()
+		}
 	}
 
 	dvvFunc := func() {
@@ -629,7 +698,8 @@ require(png)
 	// for in an R program loop... save the current graph (to browser).
 	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
 	embedr.EvalR(`dvv=function(...){ .C("CallRCallbackToGoFuncDvv"); c()}`)
-	embedr.EvalR(`setWebData=function(...){ .C("CallRCallbackToGoFuncSetWebData"); c()}`)
+	embedr.EvalR(`.my.webData <<- c();`)
+	embedr.EvalR(`setWebData=function(webData){ .my.webData <<- webData; .C("CallRCallbackToGoFuncSetWebData"); c()}`)
 
 	// on darwin, we need to start a quartz window with
 	// the bg="white", or else the browser will get an opaque
