@@ -124,8 +124,6 @@
 			      show: true,
 			      title: 'Draw Line',
 			      icon: 'path://M511.692,0.308c-6.183-6.183-16.183-6.183-22.365,0L199.768,297.276c-3.125,3.125-4.768,7.197-4.768,11.365s1.643,8.24,4.768,11.365L489.327,510.91c3.125,3.125,7.197,4.768,11.365,4.768s8.24-1.643,11.365-4.768L511.692,11.673C517.875,7.507,517.875,6.08,511.692,0.308z M181.869,303.135L45.964,439.04c-6.183,6.183-6.183,16.183,0,22.365c6.183,6.183,16.183,6.183,22.365,0l135.905-135.905c6.183-6.183,6.183-16.183,0-22.365C198.052,296.952,187.052,296.952,181.869,303.135z M205.308,326.573L58.756,473.125c-6.183,6.183-6.183,16.183,0,22.365c6.183,6.183,16.183,6.183,22.365,0l146.552-146.552c6.183-6.183,6.183-16.183,0-22.365C221.491,320.39,211.491,320.39,205.308,326.573z',
-			      //icon: 'path://M832 112.992v704c0 50.176-40.928 91.008-91.008 91.008h-304c-50.176 0-91.008-40.832-91.008-91.008v-704c0-50.176 40.832-91.008 91.008-91.008h304c50.24 0 91.008 40.832 91.008 91.008zM219.008 312.992c-60.416 0-109.408 48.64-109.408 108.992 0 60.416 48.64 109.376 109.376 109.376 60.416 0 109.376-48.96 109.376-109.376 0-60.352-48.96-108.992-109.376-108.992zM512 312.992c-60.352 0-109.344 48.64-109.344 108.992 0 60.416 48.64 109.376 109.344 109.376 60.48 0 109.44-48.96 109.44-109.376 0-60.352-48.96-108.992-109.44-108.992zM804.992 312.992c-60.416 0-109.44 48.64-109.44 108.992 0 60.416 48.64 109.376 109.44 109.376 60.352 0 109.312-48.96 109.312-109.376 0-60.352-48.96-108.992-109.312-108.992z',
-
 			      
 			      onclick: (options) => {
 
@@ -350,28 +348,62 @@
       
       option && myChart.setOption(option);
 
-      myChart.on('dataZoom', (params) => {
-	  // seen often whenever we zoom in / out.
-	  //console.log("dataZoom seen! params = ", params);	  
-	  const options = params.batch[0];
-	  const startTS = options.start;
-	  const endTS = options.end;
-	  //yourService.getData(startTS, endTS).subscribe(data => {
-	      // Replace the old data of your series by the fetched elements
-	      // If you reset the zoom, you will still have the detailed area
-	  //});
+
+      // Function to draw a line
+      function drawLine(endCoord) {
+          if (lineStart) {
+	      var o = myChart.getOption();
+
+	      // update the last line in place
+	       o.series[o.series.length - 1] = {
+			  type: 'line',
+		          data: [lineStart, endCoord]
+	        };
+	      
+	        myChart.setOption(o);
+	     }
+      } // end drawLine
+      
+      // Connect mousemove and mouseup events
+      echarts.connect([myChart]);
+      var lineInProgress = false;
+      
+      // Listen for mousemove event
+      myChart.getZr().on('mousemove', function (event) {
+	  if (drawMode && drawChangeSeen) {
+	      if (lineStart) {
+		  console.log("mousemove; coords = [ ", event.offsetX, " ", event.offsetY, " ];");
+
+		  var coord = myChart.convertFromPixel('grid', [event.offsetX, event.offsetY]);			  
+		  if (!lineInProgress) {
+		      lineInProgress = true;
+		      var o = myChart.getOption();
+		      o.series.push({
+			  type: 'line',
+		          data: [lineStart, coord]
+	              });
+		      // no need to set since drawLine will update immediately.
+		  }
+		  drawLine(coord);		  
+	      }
+	  }
       });
       
+      // Listen for mouseup event
+      myChart.getZr().on('mouseup', function () {
+	  console.log("mouseup"); // mouseup = the release of the left mouse button.
+	  lineInProgress = false;
+      });
       
       myChart.getZr().on('click', params => {
 	  if (drawMode) {
-	      console.log("click found; params = ", params);
-	      
 	      if (!drawChangeSeen) {
+		  // skip the first click on the DrawLine icon
 		  drawChangeSeen = true;
 		  return;
 	      }
-
+	      //console.log("click found; params = ", params);
+	      
 	      // modifying o (instead of option) prevents the zoom jump when set set it.
 	      var o = myChart.getOption(); 
 	      
@@ -387,7 +419,7 @@
 	      
 	      if (!lineStart) {
 		  
-		  lineStart = dataCoordinates; // [params.offsetX, params.offsetY];
+		  lineStart = dataCoordinates; 
 		  console.log(' lineStart = ', lineStart);
 		  
 	      } else {
@@ -395,9 +427,10 @@
 		  
 		  console.log(' lineStart = ', lineStart, '  ->  lineEnd = ', dataCoordinates);
 
+		  // works, but line color changes each time.
 		  o.series.push({
 			  type: 'line',
-			  data: [lineStart, lineEndCoords]
+		          data: [lineStart, lineEndCoords]
 		  });
 		  
 		  myChart.setOption(o);
@@ -436,29 +469,7 @@
 	      isDrawing = false;
 	  });
       }
-
-      // Function to draw a line
-      function drawLine(endX, endY) {
-
-	  option.graphic =  [
-		  {
-		      type: 'line',
-		      id: 'drawn-line',
-		      shape: {
-			  x1: startPoint[0],
-			  y1: startPoint[1],
-			  x2: endX,
-			  y2: endY,
-		      },
-		      style: {
-			  stroke: 'red',
-			  lineWidth: 2,
-		      },
-		  },
-	      ];
-	  myChart.setOption(object);
-      } // end drawLine
-      */
+*/
       
     </script>
     
