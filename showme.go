@@ -276,7 +276,8 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	http.HandleFunc("/candles/", func(w http.ResponseWriter, r *http.Request) {
 		// https://echarts.apache.org/examples/en/editor.html?c=candlestick-brush
 
-		brush, err := ioutil.ReadFile("~/go/src/github.com/glycerine/rbook/misc/echart_candlestick_brush.js")
+		home := os.Getenv("HOME")
+		brush, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/misc/echart_candlestick_brush.js")
 		panicOn(err)
 
 		_, err = w.Write(brush)
