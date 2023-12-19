@@ -308,6 +308,17 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		panicOn(err)
 	})
 
+	http.HandleFunc("/candles/echart_candlestick_brush.js", func(w http.ResponseWriter, r *http.Request) {
+		vv("candles/echart_candlestick_brush.js requested")
+		w.Header().Set("Content-Type", "text/javascript")
+
+		home := os.Getenv("HOME")
+		echarts, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/misc/echart_candlestick_brush.js")
+		panicOn(err)
+		_, err = w.Write(echarts)
+		panicOn(err)
+	})
+
 	http.HandleFunc("/keep/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			vv("only GET supported")
