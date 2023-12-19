@@ -166,7 +166,20 @@
 			      type: ['lineX', 'clear']
 			  },
 			  restore: {},
-			  saveAsImage: {}
+			  saveAsImage: {
+			      "show": true,
+			      "title": "Download Chart",
+			      //"icon": "M4.7,22.9L29.3,45.5L54.7,23.4M4.6,43.6L4.6,58L53.8,58L53.8,43.6M29.2,45.1L29.2,0",
+			      "type": "png",
+			      "connectedBackgroundColor": "#fff",
+			      "name": "",
+			      "excludeComponents": [
+				  "toolbox"
+			      ],
+			      "lang": [
+				  "Right Click to Save Image"
+	                      ]
+			  }
 		      }
 		  },
 		  brush: {
@@ -338,7 +351,8 @@
       option && myChart.setOption(option);
 
       myChart.on('dataZoom', (params) => {
-	  console.log("dataZoom seen! params = ", params);	  
+	  // seen often whenever we zoom in / out.
+	  //console.log("dataZoom seen! params = ", params);	  
 	  const options = params.batch[0];
 	  const startTS = options.start;
 	  const endTS = options.end;
@@ -353,14 +367,13 @@
 	  if (drawMode) {
 	      console.log("click found; params = ", params);
 	      
-	      option.xAxis.min = 'dataMin';
-	      option.xAxis.max = 'dataMax';
-	      
 	      if (!drawChangeSeen) {
 		  drawChangeSeen = true;
 		  return;
 	      }
-	      //params.cancelBubble = true;
+
+	      // modifying o (instead of option) prevents the zoom jump when set set it.
+	      var o = myChart.getOption(); 
 	      
 	      // Retrieve mouse click coordinates
 	      var pixelX = params.offsetX;
@@ -380,36 +393,16 @@
 	      } else {
 		  var lineEndCoords = dataCoordinates;
 		  
-		  // Save current axis settings - did not help
-		  var xAxis = myChart.getOption().xAxis[0];
-		  var yAxis = myChart.getOption().yAxis[0];
-
-		  // so just turn off re-scaling?
-		  xAxis.scale = false;
-		  yAxis.scale = false;
-		  
 		  console.log(' lineStart = ', lineStart, '  ->  lineEnd = ', dataCoordinates);
 
-		  //if (option.series === undefined) {
-		    // options.series = [];
-		  //}
-		  //var currentSeries = option.series[0];
-		  //currentSeries.data.push(lineStart, lineEndCoords);
-		  
-		  option.series.push({
+		  o.series.push({
 			  type: 'line',
-			  data: [lineStart, dataCoordinates]
+			  data: [lineStart, lineEndCoords]
 		  });
 		  
-		  // Restore axis settings
-		  //option.xAxis = xAxis;
-		  //option.yAxis = yAxis;
-
-		  option.xAxis.min = 'dataMin';
-		  option.xAxis.max = 'dataMax';
-		  
-		  myChart.setOption(option);
+		  myChart.setOption(o);
 		  lineStart = null;
+		  
 	      }
 	  }
       });
