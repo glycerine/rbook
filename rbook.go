@@ -535,7 +535,7 @@ require(png)
 		// strings come through as []string
 		// data frames come through as map[string]interface{} where
 		// the interface{} is []float64{} with the columns.
-		vv("setWebDataFunc called. dat = '%#v'", dat)
+		//vv("setWebDataFunc called. dat = '%#v'", dat)
 		//		gJsonCandles = make([]byte, len(dat))
 		//		copy(gJsonCandles, dat)
 
@@ -572,12 +572,12 @@ require(png)
 			// [["2004-01-02",10452.74,10409.85,10367.41,10554.96,168890000], ... ]
 			fmt.Fprintf(buf, "[")
 
-			vv("starting on i loop")
+			//vv("starting on i loop")
 			for i, tm := range tms {
 				if i > 0 {
 					fmt.Fprintf(buf, ",")
 				} else {
-					vv("debug, buf = '%v'", string(buf.Bytes()))
+					//vv("debug, buf = '%v'", string(buf.Bytes()))
 				}
 				// tm is already a string, no need
 				// for .In(Chicago).Format(RFC3339MicroNumericTZ) stuff.
@@ -590,16 +590,16 @@ require(png)
 						vv("could not locate expected column '%v' in '%#v'; must be labelled: tm,op,cl,lo,hi,sz", nm, name2col)
 						panic(fmt.Sprintf("could not locate expected column '%v' in '%#v'; must be labelled: tm,op,cl,lo,hi,sz", nm, name2col))
 					}
-					vv("trying to access j=%v from len f = %v", j, len(f))
+					//vv("trying to access j=%v from len f = %v", j, len(f))
 					fmt.Fprintf(buf, ",%v", f[j][i]) // print value from row i, column j.
 
-					vv("ok at i = %v", i)
+					//vv("ok at i = %v", i)
 				}
 				fmt.Fprintf(buf, "]")
 			}
 			fmt.Fprintf(buf, "]")
 
-			vv("done just fine with gJsonCandles translation")
+			//vv("done just fine with gJsonCandles translation")
 			gJsonCandles = buf.Bytes()
 		}
 	}

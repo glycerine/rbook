@@ -276,7 +276,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	}
 
 	http.HandleFunc("/candles/", func(w http.ResponseWriter, r *http.Request) {
-		vv("candles requested")
+		//vv("candles requested")
 		// https://echarts.apache.org/examples/en/editor.html?c=candlestick-brush
 
 		home := os.Getenv("HOME")
@@ -289,7 +289,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	})
 
 	http.HandleFunc("/candles/echarts.js", func(w http.ResponseWriter, r *http.Request) {
-		vv("candles/echarts.js requested")
+		//vv("candles/echarts.js requested")
 		// https://echarts.apache.org/examples/en/editor.html?c=candlestick-brush
 
 		home := os.Getenv("HOME")
@@ -300,7 +300,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	})
 
 	http.HandleFunc("/candles/echarts.js.map", func(w http.ResponseWriter, r *http.Request) {
-		vv("candles/echarts.js.map requested")
+		//vv("candles/echarts.js.map requested")
 		// https://echarts.apache.org/examples/en/editor.html?c=candlestick-brush
 
 		home := os.Getenv("HOME")
@@ -311,7 +311,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	})
 
 	http.HandleFunc("/candles/echart_candlestick_brush.js", func(w http.ResponseWriter, r *http.Request) {
-		vv("candles/echart_candlestick_brush.js requested")
+		//vv("candles/echart_candlestick_brush.js requested")
 		w.Header().Set("Content-Type", "text/javascript")
 
 		home := os.Getenv("HOME")
@@ -330,7 +330,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	panicOn(err)
 
 	http.HandleFunc("/data/stock-DJI.json", func(w http.ResponseWriter, r *http.Request) {
-		vv("/data/stock-DJI.json requested: '%v'", r.URL.Path)
+		//vv("/data/stock-DJI.json requested: '%v'", r.URL.Path)
 
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(gJsonCandles)
