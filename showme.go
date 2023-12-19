@@ -319,6 +319,16 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		panicOn(err)
 	})
 
+	http.Handle("/testdata/", http.StripPrefix("/testdata/",
+		http.FileServer(http.Dir("testdata"))))
+	/*
+		testdata := http.FileServer(http.Dir("testdata"))
+		http.HandleFunc("/testdata/", func(w http.ResponseWriter, r *http.Request) {
+			vv("/testdata/ requested: '%v'", r.URL.Path)
+			testdata.ServeHTTP(w, r)
+		})
+	*/
+
 	http.HandleFunc("/keep/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			vv("only GET supported")
