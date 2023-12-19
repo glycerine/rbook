@@ -462,7 +462,6 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	http.HandleFunc("/tvcandles", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Private-Network", "true")
-		w.Header().Set("Content-Type", "text/javascript")			
 
 		if r.URL.Path == "/tvcandles/lightweight-charts.standalone.production.js" {
 			home := os.Getenv("HOME")
@@ -472,6 +471,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 			panicOn(err)
 			_, err = w.Write(tvlib)
 			panicOn(err)
+			w.Header().Set("Content-Type", "text/javascript")
 			return
 		}
 		fmt.Fprintf(w, "%v\n", tvcandles)
@@ -545,14 +545,17 @@ var tvcandles string = `
         ></div>
 
         <script type="text/javascript">
+            var t0, t1;
             function generateData() {
                 var res = [];
                 var time = new Date(Date.UTC(2018, 0, 1, 0, 0, 0, 0));
+                t0 = time.getTime() / 1000; // unix epoch seconds
                 for (var i = 0; i < 1200000; ++i) {
                     const sign = Math.random() < 0.5 ? -1 : 1;
                     const rand = Math.random();
+                    t1 = time.getTime() / 1000;
                     res.push({
-                        time: time.getTime() / 1000,
+                        time: t1,
                         open: i,
                         close: i + sign * rand * 100,
                         high: i + rand * 200,
@@ -577,6 +580,32 @@ var tvcandles string = `
             });
 
             mainSeries.setData(generateData());
+
+// check: can we draw a line?
+const line = chart.createShape({
+  price: 1199600, // Y-coordinate of the line
+  color: 'red',
+  shape: 'horizontalLine',
+  scaleId: 'price',
+  priceScale: {
+    autoScale: false,
+  },
+  lineStyle: 10, // Line width
+});
+
+chart.applyOptions({
+  priceScale: {
+    //mode: LightweightCharts.PriceScaleMode.Logarithmic, // or Linear
+    mode: LightweightCharts.PriceScaleMode.Linear,
+  },
+});
+
+line.applyOptions({
+  time: {
+    from: t0, // Unix timestamp from
+    to: t1, // Unix timestamp to
+  },
+});
         </script>
     </body>
 </html>
