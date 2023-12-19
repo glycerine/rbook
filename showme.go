@@ -321,13 +321,17 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 
 	http.Handle("/testdata/", http.StripPrefix("/testdata/",
 		http.FileServer(http.Dir("testdata"))))
-	/*
-		testdata := http.FileServer(http.Dir("testdata"))
-		http.HandleFunc("/testdata/", func(w http.ResponseWriter, r *http.Request) {
-			vv("/testdata/ requested: '%v'", r.URL.Path)
-			testdata.ServeHTTP(w, r)
-		})
-	*/
+
+	http.HandleFunc("/data/stock-DJI.json", func(w http.ResponseWriter, r *http.Request) {
+		vv("/data/stock-DJI.json requested: '%v'", r.URL.Path)
+
+		w.Header().Set("Content-Type", "application/json")
+		home := os.Getenv("HOME")
+		jsonCandles, err := ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/testdata/stock-DJI.json")
+		panicOn(err)
+		_, err = w.Write(jsonCandles)
+		panicOn(err)
+	})
 
 	http.HandleFunc("/keep/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {

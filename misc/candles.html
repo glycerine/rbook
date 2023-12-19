@@ -71,7 +71,7 @@
 	  }
 	  return result;
       }
-      $.get('/testdata/stock-DJI.json', function (rawData) {
+      $.get('/data/stock-DJI.json', function (rawData) {
 	  var data = splitData(rawData);
 	  myChart.setOption(
 	      (option = {
