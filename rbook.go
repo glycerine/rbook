@@ -699,7 +699,7 @@ require(png)
 	embedr.EvalR(`svv=function(...){ .C("CallRCallbackToGoFunc"); c()}`)
 	embedr.EvalR(`dvv=function(...){ .C("CallRCallbackToGoFuncDvv"); c()}`)
 	embedr.EvalR(`.my.webData <<- c();`)
-	embedr.EvalR(`setWebData=function(webData){ .my.webData <<- webData; .C("CallRCallbackToGoFuncSetWebData"); c()}`)
+	embedr.EvalR(`setweb=function(webData){ .my.webData <<- webData; .C("CallRCallbackToGoFuncSetWebData"); c()}`)
 
 	// on darwin, we need to start a quartz window with
 	// the bg="white", or else the browser will get an opaque
