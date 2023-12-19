@@ -1,3 +1,7 @@
+    <html>
+    <head>
+    <script type = "text/JavaScript">
+    
 import * as echarts from 'echarts/core';
 
 import {
@@ -108,4 +112,8 @@ $.get(ROOT_PATH + '/data/asset/data/stock-DJI.json', function (rawData) {
     });
 
 option && myChart.setOption(option);
+      
+      </script></head><body>
+
+      </body></html>
       
