@@ -460,9 +460,21 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		http.ServeContent(w, r, "", modtime, readSeeker)
 	})
 
-	http.HandleFunc("/candles", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tvcandles", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Private-Network", "true")
-		fmt.Fprintf(w, "%v\n", candles)
+		w.Header().Set("Content-Type", "text/javascript")			
+
+		if r.URL.Path == "/tvcandles/lightweight-charts.standalone.production.js" {
+			home := os.Getenv("HOME")
+			tvlib, err := ioutil.ReadFile(home +
+				"/go/src/github.com/glycerine/rbook/misc/"+
+				"lightweight-charts.standalone.production.js")
+			panicOn(err)
+			_, err = w.Write(tvlib)
+			panicOn(err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", tvcandles)
 	})
 	
 
@@ -508,7 +520,7 @@ func ModTime(fn string) (m time.Time) {
 // demo the candles chart from trading view-- apache 2 licensed library;
 // see also misc/lightweight-charts.standalone.production.js for the
 // 156KB library.
-var candles string = `
+var tvcandles string = `
 <!DOCTYPE html>
 <html>
     <head>
@@ -521,7 +533,8 @@ var candles string = `
 
         <script
             type="text/javascript"
-            src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"
+            //src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"
+            src="./lightweight-charts.standalone.production.js"
         ></script>
     </head>
 
