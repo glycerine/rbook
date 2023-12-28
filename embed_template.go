@@ -24,7 +24,7 @@ var embedded_index_template = fmt.Sprintf(`
   <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/default.min.css"> -->
 
   <!-- how to choose a specific style: -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/devibeans.min.css">
+  <link rel="stylesheet" href="/js_css/cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/devibeans.min.css">
 
   <style>
     body {
@@ -69,7 +69,7 @@ var embedded_index_template = fmt.Sprintf(`
 
     </style>
 
-   <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
+   <script src="/js_css/cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
 
     <script type="text/javascript">
 

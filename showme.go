@@ -150,6 +150,9 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}()
 	*/
 
+	http.Handle("/js_css/", http.StripPrefix("/js_css/",
+		http.FileServer(http.Dir("js_css"))))
+
 	http.Handle("/images/", http.StripPrefix("/images/",
 		http.FileServer(http.Dir(cwd))))
 	//http.FileServer(http.Dir("."))))
