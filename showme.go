@@ -150,10 +150,13 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}()
 	*/
 
+	home := os.Getenv("HOME")
+	homeRbook := home + "/go/src/github.com/glycerine/rbook/"
+
 	myCSS := "js_css/cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/devibeans.min.css"
 	http.HandleFunc("/"+myCSS, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
-		css, err := ioutil.ReadFile(myCSS)
+		css, err := ioutil.ReadFile(homeRbook + myCSS)
 		panicOn(err)
 		nw, err := w.Write(css)
 		panicOn(err)
@@ -165,7 +168,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 	myJS := "js_css/cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"
 	http.HandleFunc("/"+myJS, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/javascript")
-		js, err := ioutil.ReadFile(myJS)
+		js, err := ioutil.ReadFile(homeRbook + myJS)
 		panicOn(err)
 		nw, err := w.Write(js)
 		panicOn(err)
