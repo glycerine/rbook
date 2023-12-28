@@ -352,7 +352,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		http.FileServer(http.Dir("testdata"))))
 
 	// load default candles, these can be replaced via setWebData() in R.
-	home := os.Getenv("HOME")
+	//home := os.Getenv("HOME")
 	gJsonCandles, err = ioutil.ReadFile(home + "/go/src/github.com/glycerine/rbook/testdata/stock-DJI.json")
 	panicOn(err)
 
@@ -493,7 +493,7 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		if r.URL.Path == "/tvcandles/lightweight-charts.standalone.production.js" {
 			home := os.Getenv("HOME")
 			tvlib, err := ioutil.ReadFile(home +
-				"/go/src/github.com/glycerine/rbook/misc/"+
+				"/go/src/github.com/glycerine/rbook/misc/" +
 				"lightweight-charts.standalone.production.js")
 			panicOn(err)
 			_, err = w.Write(tvlib)
@@ -503,7 +503,6 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}
 		fmt.Fprintf(w, "%v\n", tvcandles)
 	})
-	
 
 	host := cfg.Host
 	if host == "" {
