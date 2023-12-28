@@ -150,8 +150,29 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}()
 	*/
 
-	http.Handle("/js_css/", http.StripPrefix("/js_css/",
-		http.FileServer(http.Dir("js_css"))))
+	myCSS := "js_css/cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/devibeans.min.css"
+	http.HandleFunc("/"+myCSS, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css")
+		css, err := ioutil.ReadFile(myCSS)
+		panicOn(err)
+		nw, err := w.Write(css)
+		panicOn(err)
+		if nw != len(css) {
+			panic(fmt.Sprintf("short write %v of %v on copy to css '%v'", nw, len(css), myCSS))
+		}
+	})
+
+	myJS := "js_css/cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"
+	http.HandleFunc("/"+myJS, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/javascript")
+		js, err := ioutil.ReadFile(myJS)
+		panicOn(err)
+		nw, err := w.Write(js)
+		panicOn(err)
+		if nw != len(js) {
+			panic(fmt.Sprintf("short write %v of %v on copy to js '%v'", nw, len(js), myJS))
+		}
+	})
 
 	http.Handle("/images/", http.StripPrefix("/images/",
 		http.FileServer(http.Dir(cwd))))
