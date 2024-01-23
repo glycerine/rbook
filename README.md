@@ -239,6 +239,9 @@ x11vnc -display :99 -forever -nopw -quiet -xkb
 Now a vnc client connecting to port 5900 will
 show the xvfb frame buffer.
 
+Update: we avoid Xvfb by default now, and just use the :10 default running (real) Xserver
+for everything in possible. This is much more reliable.
+
 earlier notes
 -------------
 
@@ -325,7 +328,9 @@ mikemtnbikes
 2022 Oct 25 
 ~~~
 
-copyright
+author
 ---------
 
-Copyright (C) 2022 Jason E. Aten, Ph.D. All rights reserved.
+Copyright (C) 2022-2024 by Jason E. Aten, Ph.D. All rights reserved.
+
+License: MIT
