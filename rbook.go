@@ -760,7 +760,12 @@ require(png)
 		//vv("lastHistory = '%v'; trailingSemicolon = %v", lastHistory, trailingSemicolon)
 
 		sinkgot, err := embedr.EvalR_fullback(`zrecord_mini_console`)
-		panicOn(err)
+
+		//panicOn(err) // RevalErr, can happen from ctrl-c terminate. let us not crash:
+		if err != nil {
+			vv("error requesting zrecord_mini_console: '%v'", err)
+			continue
+		}
 		capture, capturedOutputOK = sinkgot.([]string)
 
 		if capturedOutputOK {
