@@ -129,6 +129,7 @@ func (lock *UDLock) start() {
 			// and check if we are shutting down
 			conn, err := lock.lsn.Accept()
 			if err != nil {
+				// ex: 'accept unix my.rbook.rog.lock: use of closed network connection'
 				vv("lsn.Accept error (probably closed due to shutdown): '%v'", err)
 				return
 			}
