@@ -105,6 +105,29 @@ func intercept_SIGINT() {
 	}()
 }
 
+func ignore_SIGPIPE() {
+
+	// Alternative approach: just call signal.Ignore(syscall.SIGPIPE).
+	// ref: https://github.com/golang/go/issues/32386
+	signal.Ignore(syscall.SIGPIPE)
+
+	// calling signal.Notify for SIGPIPE means that if we get a
+	// broken pipe on stdin or stdout, then
+	// the golang runtime will not exit with 141 error code to the shell.
+	// https://pkg.go.dev/os/signal#hdr-SIGPIPE
+	/*
+		//vv("intercept_SIGPIPE installing")
+		c := make(chan os.Signal, 100)
+		signal.Notify(c, syscall.SIGPIPE)
+		go func() {
+			for sig := range c {
+				_ = sig
+				fmt.Printf("rbook got SIGPIPE... ignoring\n")
+			}
+		}()
+	*/
+}
+
 var globalUDLock *UDLock
 
 // avoid leaving dangling Xvfb/x11vnc/icewm when we kill the *R*
@@ -131,6 +154,9 @@ func main() {
 
 	// crashes orphan shm segments, clean them up.
 	CleanupOrphanedSharedMemorySegmentsFromXvfbCrashes()
+
+	// try to not exit to bash with 141 (SIGPIPE error, signal 13) on occassion.
+	ignore_SIGPIPE()
 
 	cfg := &RbookConfig{}
 	// there will be R arguments we don't recognize, so
