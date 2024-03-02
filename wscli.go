@@ -29,6 +29,7 @@ SOFTWARE.
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -68,6 +69,28 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan []byte
+
+	// coordinate readPump and writePump goro: notice and shutdown if
+	// the other dies.
+	doneMut sync.Mutex
+	done    bool
+	doneCh  chan struct{}
+}
+
+func (c *Client) setDone() {
+	c.doneMut.Lock()
+	if !c.done { // only close once.
+		close(c.doneCh)
+		c.done = true
+	}
+	c.doneMut.Unlock()
+}
+
+func (c *Client) isDone() (res bool) {
+	c.doneMut.Lock()
+	res = c.done
+	c.doneMut.Unlock()
+	return
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -75,6 +98,7 @@ func (c *Client) readPump() {
 	defer func() {
 		c.hub.unregister <- c
 		c.conn.Close()
+		c.setDone()
 	}()
 	for {
 		_, _, err := c.conn.ReadMessage()
@@ -89,6 +113,9 @@ func (c *Client) readPump() {
 			}
 			vvlog("An error happened when reading from the Websocket client: %v", err)
 			break
+		}
+		if c.isDone() {
+			return // writePump has shut down, so we should too.
 		}
 	}
 }
@@ -105,6 +132,7 @@ func (c *Client) writePump() {
 	defer func() {
 		ticker.Stop()
 		c.conn.Close()
+		c.setDone()
 	}()
 	for {
 		select {
@@ -135,6 +163,11 @@ func (c *Client) writePump() {
 			if err := c.write(websocket.PingMessage, []byte{}); err != nil {
 				return
 			}
+			if c.isDone() {
+				return // readPump has shut down, so we should too.
+			}
+		case <-c.doneCh:
+			return // readPump has shut down, so we should too.
 		}
 	}
 }
@@ -146,8 +179,17 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		vv("error trying upgrader.Upgrade(): '%v'", err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 8192)}
+	client := NewClient(hub, conn)
 	client.hub.register <- client
 	go client.writePump()
 	client.readPump()
+}
+
+func NewClient(hub *Hub, conn *websocket.Conn) *Client {
+	return &Client{
+		hub:    hub,
+		conn:   conn,
+		send:   make(chan []byte, 8192),
+		doneCh: make(chan struct{}),
+	}
 }

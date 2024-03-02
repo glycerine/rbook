@@ -93,9 +93,10 @@ func createCertFiles() (cert string, key string) {
 
 func (cfg *RbookConfig) startReloadServer(book *HashRBook) {
 	hub = newHub(book)
-	go hub.runRestarter()
+	go hub.runRestarter() // never returns, recovers from all panics on its goroutine.
 	http.HandleFunc("/reload", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
+		vvlog("serveWs has returned: request was r = '%#v'", r)
 	})
 
 	go startServer(cfg)
@@ -105,11 +106,13 @@ func (cfg *RbookConfig) startReloadServer(book *HashRBook) {
 
 func startServer(cfg *RbookConfig) {
 	err := http.ListenAndServe(fmt.Sprintf(":%v", cfg.WsPort), nil)
+	vvlog("startServer ListenAndServe has exited with err= '%v'", err)
 	panicOn(err)
 }
 
 func startServerTLS(cfg *RbookConfig) {
 	cert, key := createCertFiles()
 	err := http.ListenAndServeTLS(fmt.Sprintf(":%v", cfg.WssPort), cert, key, nil)
+	vvlog("startServerTLS ListenAndServeTLS has exited with err= '%v'", err)
 	panicOn(err)
 }
