@@ -49,16 +49,16 @@ sequence of plots and analysis.
 
 * approach: 
 
-To capture graphs, we run under Xvfb and
-use the R savePlot() call. This only
-happens on user demand. The user
+To capture graphs, we run under X11 or Xvfb and
+use the R savePlot() call. This
+happens automatically for plot() and hist() calls, 
+and other graphics can be saved on demand. The user
 calls sv() at the R prompt to save the 
-current graph to the browser.
+current graph to the browser; or svv() in the middle of code.
 
-Interactive graph development is followed
-in by running a vnc client attached to Xvfb session.
-
-https://www.realvnc.com/en/ is a free VNC viewer.
+Interactive graph development is followed in a web browser.
+x11vnc can also be used, of course, as we are writing to
+an X11 environment. https://www.realvnc.com/en/ is a free VNC viewer.
 There are multiple free alternatives.
 
             
@@ -73,19 +73,19 @@ listening browser over a websocket.
 * approach to showing command output (prints, etc):
 
 To capture the output of commands, we use
-the R sink() facility. Like graphs, printed command
-output is only written to the browser on demand. The
-user types dv() to "display the last console value" in
-the browser. We use the R sink() facility
+the R sink() facility. Like plots, printed command
+output is automatically written to the browser.
+We use the R sink() facility
 to capture the last value seen at the R
 top level.
 
 * Push communication with listening browsers:
 
-Rbook runs a web server to serve images to the browsers.
-Simultaneously, rbook also runs a websocket interface 
-that it uses to push to subscribed web browsers 
-each new code/plot addition for display.
+The rbook program provides a web server to serve 
+the rbook file to browsers. Its uses websockets to
+push to updates to web browsers as
+each new lines is enter, or printed, or when there is
+a new plot to display.
 
 * Comments from the prompt into the book
 
@@ -186,7 +186,7 @@ greenpack or other means. But we'll defer login until needed.
 installation
 =============
 
-Preparation:
+Preparation: (Xvfb are x11vnc are no longer the defaults; but are supported so we build against them). 
 ~~~
 apt install Xvfb x11vnc icewm
 ~~~
