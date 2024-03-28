@@ -15,10 +15,10 @@ When in an interactive R session, the rbook
 binary is also serving a live web view of the
 session to any (or multple) web browsers. 
 
-Like a Jupyter notebook, plots can be saved and shown
+Like a Jupyter notebook, plots are saved and shown
 inline with the R code.
 
-R output and free-form comments can also be logged.
+R output is logged and free-form comments can be appended to the log.
 
 Since all graphics, comments, code, and chosen output
 are logged, rbooks form a simple, compact, and append-only
@@ -41,7 +41,10 @@ We want to enable saving and recording of an R session, including
 plots, commands, and command output to the rbook. The
 rbook is displayed in a web browser and updated
 as the user's R session progresses. Should be usable
-under an ESS/emacs environment.
+under an ESS/emacs environment. Thus our work sessions
+can survive R running out of memory or crashing. We
+can easily repeat our work, and visualize the same
+sequence of plots and analysis.
 
 
 * approach: 
