@@ -20,7 +20,7 @@ inline with the R code.
 
 R output is logged and free-form comments can be appended to the log.
 
-Since all graphics, comments, code, and chosen output
+Since all graphics, comments, code, and output
 are logged, rbooks form a simple, compact, and append-only
 digital lab notebook for R.
 
