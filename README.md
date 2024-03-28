@@ -243,7 +243,7 @@ Now a vnc client connecting to port 5900 will
 show the xvfb frame buffer.
 
 Update: we avoid Xvfb by default now, and just use the :10 default running (real) Xserver
-for everything in possible. This is much more reliable.
+for everything. This is much more reliable.
 
 earlier notes
 -------------
