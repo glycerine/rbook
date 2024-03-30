@@ -1,6 +1,6 @@
 ![rbooklogo](https://github.com/glycerine/rbook/blob/master/logo_rbook.png)
 
-![session_screenshot](https://github.com/glycerine/rbook/blob/master/rbook_session2.png)
+![session_screenshot](https://github.com/glycerine/rbook/blob/master/rbook_session3.png)
 
 rbook
 ========
