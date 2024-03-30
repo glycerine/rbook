@@ -20,7 +20,9 @@ the why
    rbook, creating a seemless log.
    
 4. Replication and documentation.  Priority can be critical in a research setting. A microsecond
-   precision timestamp is recorded for every line of R executed.
+   precision timestamp is recorded for every line of R executed. By commiting the single
+   binary rbook file to git, research progress over years can be precisely 
+   reconstructed if need be.
 
 
 the what
