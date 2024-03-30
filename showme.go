@@ -177,6 +177,8 @@ func StartShowme(cfg *RbookConfig, b *HashRBook) {
 		}
 	})
 
+	// support -viewonly. but the browser is serving stale images,
+	// we need to put the etag cache busting in...
 	http.Handle("/images/", http.StripPrefix("/images/",
 		http.FileServer(http.Dir(cwd))))
 	//http.FileServer(http.Dir("."))))
