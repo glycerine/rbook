@@ -257,6 +257,11 @@ there's nothing special about it.
 Have Go toolchain already installed, so `make` can call `go`.
 
 ~~~
+git clone https://github.com/glycerine/embedr
+cd embedr
+make
+
+cd ..
 git clone https://github.com/glycerine/rbook
 cd rbook
 make
