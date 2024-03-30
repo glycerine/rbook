@@ -190,6 +190,8 @@ greenpack or other means. But we'll defer login until needed.
 installation
 =============
 
+System: developed under linux. Also works under MacOS. Windows support has not yet been implemented.
+
 Preparation: (Xvfb are x11vnc are no longer the defaults; but are supported so we build against them). 
 ~~~
 apt install Xvfb x11vnc icewm
@@ -199,7 +201,11 @@ This installs the dependencies.
 Any X window manager can be used. `icewm` seems nice, but
 there's nothing special about it.
 
+Have Go toolchain already installed, so `make` can call `go`.
+
 ~~~
+git clone https://github.com/glycerine/rbook
+cd rbook
 make
 ~~~~
 
