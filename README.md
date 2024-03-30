@@ -234,7 +234,8 @@ have only the binary, rbook -dump will regenerate the text form.
 
 [x] Ctrl-c will interrupt R code. (The interrupt happens as soon as R interpreted code gets to run. If C or Fortran code is running without callback, we have to wait for them finish.)
 
-[ ] authentiation: deferred. None at the moment.
+[ ] authentiation: deferred/todo. There is no HTTPs or auth at the moment. Since this
+was developed for personal use, a private, personal VPN sufficed.
 
 The login.go contains a simple cookie based login example
 that would need to be made persistent to disk with
