@@ -104,7 +104,7 @@ type RbookConfig struct {
 // call DefineFlags before myflags.Parse()
 func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
 
-	fs.BoolVar(&c.DumpTimestamps, "dumpts", false, "-dump but add timestamps to each line")
+	fs.BoolVar(&c.DumpTimestamps, "dumpts", false, "like -dump but print the timestamp beside each line, showing when it was entered.")
 	fs.StringVar(&c.Host, "host", "", "host/ip to server on (optional)")
 	fs.IntVar(&c.Port, "port", 0, "port to serve index.html for images/R updates on (optional; if -port is taken or 0, defaults to the first free port at or above 8888)")
 	fs.StringVar(&c.RbookFilePath, "path", "", "path to the .rbook file to read and append to. this is also the default command line argument, so -path can be omitted in front of the path (default is my.rbook in the current dir)")
