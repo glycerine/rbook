@@ -3,8 +3,27 @@
 rbook
 ========
 
-Project `rbook` provides R notebooks,
-affectionately known as rbooks.
+the why
+--------
+
+1. Staying in flow; for speed of exploration, research, and development. For fast, in-flow data analysis, nothing
+   beats the power trio of macs, ESS, and R.  They run circles around the competition.
+
+2. Ease of iteration on graphics. With graphics in the browser rather thatn in X11 or VNC,
+   we have a snapshot at each step in development, and we can see all the graphs we ever made.
+   Each step is clear, and repeatable.
+   
+3. Recovery from memory exaustion and crashes. By recording exactly what we did, even
+   if we went off script and down a deep rabbit-hole, we can reconstruct our findings. We
+   can readily continue our analysis after an R crash.
+   
+4. Replication and documentation.  These can be critical in a research setting.
+
+
+the what
+--------
+
+Project `rbook` provides R notebooks, affectionately known as rbooks.
 
 The server binary itself is called simply `rbook`
 and is used as a drop-in replacement
