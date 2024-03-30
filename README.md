@@ -179,6 +179,8 @@ have only the binary, rbook -dump will regenerate the text form.
    x11vnc server. Rbook should start them if they are
    not already running.
 
+[x] Ctrl-c will interrupt R code. (The interrupt happens as soon as R interpreted code gets to run. If C or Fortran code is running without callback, we have to wait for them finish.)
+
 [ ] authentiation: deferred. None at the moment.
 
 The login.go contains a simple cookie based login example
