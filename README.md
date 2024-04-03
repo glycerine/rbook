@@ -63,28 +63,45 @@ $ rbook -h
 Usage of rbook:
 
   -display string
-    	X11 display number (example: -display :99) on which to display our X11 plots. Defaults to :10 but can be the string 'xvfb' (without quotes) if you want to start a new Xvfb based display to run on; however this can conflict with other Xvfb client programs (for unknown reasons) and so is not recommended. Use 'png' to just save directly to png files, skipping x11/windowing.
+    	X11 display number (example: -display :99) on which to
+      display our X11 plots. Defaults to :10 but can be the string
+      'xvfb' (without quotes) if you want to start a new Xvfb based
+      display to run on; however this can conflict with other Xvfb
+      client programs (for unknown reasons) and so is not
+      recommended. Use 'png' to just save directly to png files,
+      skipping x11/windowing.
   -dump
-    	write script version of the -path binary book to standard out, then exit.
+    	write script version of the -path binary book to
+      standard out, then exit.
   -dumpts
-    	like -dump but print the timestamp beside each line, showing when it was entered.
+    	like -dump but print the timestamp beside each line,
+      showing when it was entered.
   -help
     	show this help given rbook -h
   -host string
     	host/ip to server on (optional)
   -path string
-    	path to the .rbook file to read and append to. this is also the default command line argument, so -path can be omitted in front of the path (default is my.rbook in the current dir)
+    	path to the .rbook file to read and append to. this
+      is also the default command line argument, so -path
+      can be omitted in front of the path (default is
+      my.rbook.hostname in the current dir)
   -port int
-    	port to serve index.html for images/R updates on (optional; if -port is taken or 0, defaults to the first free port at or above 8888)
+    	port to serve index.html for images/R updates on (optional;
+      if -port is taken or 0, defaults to the first free port
+      at or above 8888)
   -rhome string
-    	value of R_HOME to start R with. This directory should have contents: bin  COPYING  etc  lib  library  modules  site-library  SVN-REVISION (default "/usr/lib/R")
+    	value of R_HOME to start R with. This directory should have
+      contents: bin  COPYING  etc  lib  library  modules  site-library  SVN-REVISION
+      (default "/usr/lib/R")
   -v	show rbook version and exit
   -version
     	show rbook version and exit
   -viewonly
-    	for viewing .png in this directory; skip starting R session.
+    	for viewing .png in this directory; skip starting
+      R session.
   -wall string
-    	path or symlink to wallpaper to set on the Xvfb/x11vnc (default "/home/jaten/.wallpaper")
+    	path or symlink to wallpaper to set on the Xvfb/x11vnc
+      (default "/home/jaten/.wallpaper")
 ~~~
 
 old notes, mostly historical interest, showing the design path
