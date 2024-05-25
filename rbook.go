@@ -215,6 +215,8 @@ func main() {
 	if false { // runtime.GOOS == "darwin" {
 		// unix domain sockets buggy on darwin/go1.21.0 ?
 		// https://github.com/golang/go/issues/62337
+	} else if cfg.Dump || cfg.DumpTimestamps {
+		// don't bother locking if we are just going to -dump or -dumpts and exit.
 	} else {
 		// lock boopath, or find out somebody else already has it locked.
 		udlock, err := NewUDLock(bookpath)
