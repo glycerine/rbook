@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -206,6 +207,10 @@ func main() {
 	cwd, err := os.Getwd()
 	panicOn(err)
 	bookpath := cwd + sep + fn
+	if len(fn) > 0 && (filepath.IsAbs(fn) || fn[0] == '/' || fn[0] == '~') {
+		// we have an absolute path, prepending cwd will make a mess.
+		bookpath = fn
+	}
 
 	if false { // runtime.GOOS == "darwin" {
 		// unix domain sockets buggy on darwin/go1.21.0 ?
@@ -453,6 +458,16 @@ require(png)
 					vvlog("detected write STILL not hitting disk after re-open: '%v' pre-write size: %v; post-write size: %v; about to panic.", bookpath, preSize, postSize)
 					panic(fmt.Sprintf("could not append to binary book file: '%v': pre-write size: %v; post-write size: %v", bookpath, preSize, postSize))
 				}
+
+				// also need to fix the my.rbook.hostname.rsh file. /proc/pid/fd will show as deleted.
+				if script != nil {
+					script.Close()
+				}
+				script, err = os.OpenFile(scriptPath, os.O_CREATE|os.O_RDWR|os.O_APPEND|os.O_TRUNC, 0770)
+				panicOn(err)
+				cfg.dumpToScript(script, history)
+				err = script.Sync()
+				panicOn(err)
 			}
 		}
 	}
@@ -1211,6 +1226,10 @@ type DecodeJSON struct {
 }
 
 func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
+
+	// try to dedup commands, can have repeated command lines in our history.
+	lastCommandLineNum := 0
+
 	for i, e := range book.elems {
 		colon := bytes.Index(e.msg, []byte{':'})
 		msg := e.msg[colon+1:]
@@ -1227,6 +1246,18 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 				extra = fmt.Sprintf("command line [%03d] ", e.BeginCommandLineNum)
 			}
 			fmt.Printf("          ##  ===== %v %v =====:\n", e.Tm.In(Chicago).Format(RFC3339MicroNumericTZ), extra)
+		} else {
+			// match what incrementally appended .rsh looks like, so we can
+			// re-create on git rebase deletion.
+			if e.BeginCommandLineNum > 0 {
+				if e.BeginCommandLineNum == lastCommandLineNum {
+					// eliminate duplicates
+					continue
+				}
+				lastCommandLineNum = e.BeginCommandLineNum
+				// keep this matching the writeScriptCommand() output at rbook.go:1203
+				fmt.Fprintf(fd, spacer+" ## command line [%03d]: %v\n", e.BeginCommandLineNum, e.Tm.In(Chicago).Format(RFC3339MicroNumericTZ))
+			}
 		}
 		switch e.Typ {
 		case Command:
@@ -1239,7 +1270,7 @@ func (c *RbookConfig) dumpToScript(fd *os.File, book *HashRBook) {
 			}
 		case Console:
 			for _, line := range d.Console {
-				fmt.Fprintf(fd, "   %v\n", line)
+				fmt.Fprintf(fd, "    %v\n", line)
 			}
 		case Image:
 			fmt.Fprintf(fd, "    ##img=readPNG('%v');x11();grid::grid.raster(img); #saved\n", d.Image)
