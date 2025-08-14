@@ -9,7 +9,7 @@ the why
 1. Staying in flow; for speed of exploration, research, and development. For fast, in-flow data analysis, nothing
    beats the power trio of emacs, ESS, and R.  Together they run circles around the competition.
 
-2. Ease of iteration on graphics. With graphics in the browser rather thatn in X11 or VNC,
+2. Ease of iteration on graphics. With graphics in the browser rather than in X11 or VNC,
    we have a snapshot at each step in development, and we can see all the graphs we ever made.
    Each step is clear, and repeatable. We can have 100s of png in an rbook, far more than
    R/X11 can keep open at once.
