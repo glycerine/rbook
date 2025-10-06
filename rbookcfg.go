@@ -109,7 +109,7 @@ func (c *RbookConfig) DefineFlags(fs *flag.FlagSet) {
 	fs.IntVar(&c.Port, "port", 0, "port to serve index.html for images/R updates on (optional; if -port is taken or 0, defaults to the first free port at or above 8888)")
 	fs.StringVar(&c.RbookFilePath, "path", "", "path to the .rbook file to read and append to. this is also the default command line argument, so -path can be omitted in front of the path (default is my.rbook in the current dir)")
 
-	defaultR_HOME := "/usr/lib/R" // linux
+	defaultR_HOME := "/usr/local/lib/R" // linux
 	if runtime.GOOS == "darwin" {
 		defaultR_HOME = "/Library/Frameworks/R.framework/Versions/Current/Resources"
 	}

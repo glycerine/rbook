@@ -3,6 +3,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/glycerine/greenpack/msgp"
 )
 
@@ -527,6 +529,16 @@ var unmarshalMsgFieldSkip6zgensym_965f3afadc761adf_7 = []bool{false, false, fals
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *HashRBook) Msgsize() (s int) {
 	s = 1 + 19 + msgp.TimeSize + 17 + msgp.StringPrefixSize + len(z.BookID) + 15 + msgp.StringPrefixSize + len(z.User) + 15 + msgp.StringPrefixSize + len(z.Host) + 15 + msgp.StringPrefixSize + len(z.Path)
+	return
+}
+func (z *HashRBook) Gstring() (r string) {
+	r = "&HashRBook{\n"
+	r += fmt.Sprintf("CreateTm: %v,\n", z.CreateTm)
+	r += fmt.Sprintf("  BookID: \"%v\",\n", z.BookID)
+	r += fmt.Sprintf("    User: \"%v\",\n", z.User)
+	r += fmt.Sprintf("    Host: \"%v\",\n", z.Host)
+	r += fmt.Sprintf("    Path: \"%v\",\n", z.Path)
+	r += "}\n"
 	return
 }
 
@@ -1349,6 +1361,27 @@ var unmarshalMsgFieldSkip13zgensym_965f3afadc761adf_14 = []bool{false, false, fa
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *HashRElem) Msgsize() (s int) {
 	s = 3 + 15 + msgp.IntSize + 13 + msgp.TimeSize + 16 + msgp.IntSize + 18 + msgp.StringPrefixSize + len(z.CmdJSON) + 22 + msgp.StringPrefixSize + len(z.ConsoleJSON) + 20 + msgp.StringPrefixSize + len(z.ImageJSON) + 22 + msgp.StringPrefixSize + len(z.CommentJSON) + 20 + msgp.StringPrefixSize + len(z.ImageHost) + 20 + msgp.StringPrefixSize + len(z.ImagePath) + 18 + msgp.BytesPrefixSize + len(z.ImageBy) + 24 + msgp.StringPrefixSize + len(z.ImagePathHash) + 30 + msgp.IntSize + 26 + msgp.IntSize + 22 + msgp.StringPrefixSize + len(z.OverlayNoteJSON) + 27 + msgp.IntSize + 31 + msgp.StringPrefixSize + len(z.OverlayHideSeqnoJSON)
+	return
+}
+func (z *HashRElem) Gstring() (r string) {
+	r = "&HashRElem{\n"
+	r += fmt.Sprintf("                 Typ: %v,\n", z.Typ)
+	r += fmt.Sprintf("                  Tm: %v,\n", z.Tm)
+	r += fmt.Sprintf("               Seqno: %v,\n", z.Seqno)
+	r += fmt.Sprintf("             CmdJSON: \"%v\",\n", z.CmdJSON)
+	r += fmt.Sprintf("         ConsoleJSON: \"%v\",\n", z.ConsoleJSON)
+	r += fmt.Sprintf("           ImageJSON: \"%v\",\n", z.ImageJSON)
+	r += fmt.Sprintf("         CommentJSON: \"%v\",\n", z.CommentJSON)
+	r += fmt.Sprintf("           ImageHost: \"%v\",\n", z.ImageHost)
+	r += fmt.Sprintf("           ImagePath: \"%v\",\n", z.ImagePath)
+	r += fmt.Sprintf("             ImageBy: %v,\n", z.ImageBy)
+	r += fmt.Sprintf("       ImagePathHash: \"%v\",\n", z.ImagePathHash)
+	r += fmt.Sprintf(" BeginCommandLineNum: %v,\n", z.BeginCommandLineNum)
+	r += fmt.Sprintf("     NumCommandLines: %v,\n", z.NumCommandLines)
+	r += fmt.Sprintf("     OverlayNoteJSON: \"%v\",\n", z.OverlayNoteJSON)
+	r += fmt.Sprintf("    OverlayHideSeqno: %v,\n", z.OverlayHideSeqno)
+	r += fmt.Sprintf("OverlayHideSeqnoJSON: \"%v\",\n", z.OverlayHideSeqnoJSON)
+	r += "}\n"
 	return
 }
 
